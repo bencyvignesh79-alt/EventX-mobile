@@ -1120,7 +1120,7 @@ No event found for this code.
 
 Do not return private transaction data. Return a generic authorization
 response.
-
+ 
 ------------------------------------------------------------------------
 
 # 47. Concurrency Rules
