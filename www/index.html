@@ -1,0 +1,2706 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#16215c">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <title>Relfam</title>
+  <style>
+    :root {
+      --bg-a: #eaf1ff;
+      --bg-b: #fdf2f6;
+      --panel: #ffffff;
+      --navy: #16215c;
+      --navy-2: #24327a;
+      --blue: #2f6bef;
+      --blue-2: #4f8ef7;
+      --gold: #eab308;
+      --gold-2: #f2a63d;
+      --pink: #ff5c8a;
+      --pink-2: #ff3d78;
+      --text: #1c1f3a;
+      --muted: #6b7093;
+      --line: #eaecf7;
+      --mint: #2ab77c;
+      --shadow: 0 10px 26px rgba(30, 40, 100, 0.08);
+      --shadow-lg: 0 18px 40px rgba(30, 40, 100, 0.14);
+      --success-bg: #e8f8f0;
+      --success: #1f9d63;
+      --pending-bg: #fff2df;
+      --pending: #d98a1a;
+      --old-bg: #f1eefc;
+      --old: #7457d1;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      background: linear-gradient(180deg, var(--bg-a) 0%, var(--bg-b) 100%);
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+      color: var(--text);
+    }
+    h1, h2, h3 { font-family: 'Poppins', sans-serif; margin: 0; }
+    .display { font-family: 'Playfair Display', Georgia, serif; }
+    button, input, textarea, select { font: inherit; }
+    button { border: 0; cursor: pointer; background: none; }
+    input, textarea, select {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 14px;
+      width: 100%;
+      padding: 13px 14px;
+      outline: none;
+    }
+    textarea { min-height: 84px; resize: vertical; }
+    a { color: inherit; }
+
+    .phone {
+      width: min(430px, 100vw);
+      min-height: 100vh;
+      margin: 0 auto;
+      background: #f7f8fd;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(29, 25, 63, 0.04);
+    }
+    .screen { min-height: 100vh; padding-bottom: 96px; }
+    .page { padding: 18px; }
+
+    /* ---------- Shared bits ---------- */
+    .row { display: flex; align-items: center; justify-content: space-between; }
+    .icon-btn {
+      width: 42px; height: 42px; display: grid; place-items: center;
+      border-radius: 14px; background: #fff; box-shadow: var(--shadow);
+      font-size: 18px; color: var(--navy); flex-shrink: 0;
+    }
+    .header {
+      display: flex; align-items: center; justify-content: space-between; padding: 18px 18px 4px;
+    }
+    .header-title { text-align: center; flex: 1; }
+    .header-title h1 { font-size: 20px; font-weight: 800; color: var(--navy); }
+    .header-title p { margin: 2px 0 0; font-size: 11px; color: var(--muted); }
+    .sub { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .muted { color: var(--muted); }
+    .strong { font-weight: 700; }
+    .card {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
+      box-shadow: 0 6px 18px rgba(30, 40, 100, 0.05); padding: 16px;
+    }
+    .primary, .secondary, .ghost {
+      width: 100%; border-radius: 16px; padding: 15px 16px; font-weight: 800; font-size: 14px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .primary {
+      background: linear-gradient(135deg, var(--blue-2) 0%, var(--blue) 100%);
+      color: #fff; box-shadow: 0 14px 26px rgba(47, 107, 239, 0.28);
+    }
+    .secondary {
+      background: #fff; color: var(--blue); border: 1px solid #dbe6ff;
+    }
+    .ghost { background: transparent; color: var(--pink-2); border: 1px solid #ffd7e2; }
+    .pink-btn {
+      background: linear-gradient(135deg, var(--pink-2) 0%, var(--pink) 100%);
+      color: #fff; box-shadow: 0 14px 26px rgba(255, 61, 120, 0.28);
+    }
+    .gold-btn {
+      background: linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
+      color: #fff; box-shadow: 0 14px 26px rgba(234, 179, 8, 0.28);
+    }
+    .field { display: block; margin-bottom: 12px; }
+    .field label {
+      display: block; font-size: 11px; letter-spacing: 0.04em;
+      color: var(--muted); font-weight: 700; margin-bottom: 6px;
+    }
+    .field-icon { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+    .field-icon input, .field-icon select { border: 0; padding: 0; }
+    .form-stack { display: grid; gap: 14px; }
+    .back-link {
+      color: var(--blue); font-weight: 800; padding: 0; margin-bottom: 4px;
+      font-size: 20px; display: inline-flex;
+    }
+    .toast {
+      position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%);
+      width: min(380px, calc(100vw - 36px)); background: #1c1f3a; color: #fff; padding: 12px 16px;
+      border-radius: 12px; font-size: 12.5px; font-weight: 700; box-shadow: 0 18px 30px rgba(29, 23, 59, 0.25);
+      z-index: 30; text-align: center;
+    }
+
+    /* ---------- Bottom nav ---------- */
+    .bottom-nav {
+      position: fixed; bottom: 0; width: min(430px, 100vw); display: grid; grid-template-columns: repeat(5, 1fr);
+      background: rgba(255,255,255,0.97); backdrop-filter: blur(10px); border-top: 1px solid var(--line);
+      padding: 10px 8px calc(8px + env(safe-area-inset-bottom)); z-index: 9; align-items: end;
+    }
+    .nav-btn {
+      color: var(--muted); font-size: 10px; font-weight: 800; padding: 4px 2px 0;
+      display: grid; place-items: center; gap: 4px;
+    }
+    .nav-btn.active { color: var(--blue); }
+    .nav-btn b { font-size: 19px; }
+    .nav-fab {
+      width: 50px; height: 50px; border-radius: 50%; margin: -26px auto 0;
+      background: linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
+      color: #fff; font-size: 24px; display: grid; place-items: center;
+      box-shadow: 0 14px 24px rgba(234, 179, 8, 0.4);
+    }
+    .fab {
+      position: absolute; right: 18px; bottom: 96px; width: 52px; height: 52px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue-2) 0%, var(--blue) 100%); color: #fff;
+      font-size: 24px; display: grid; place-items: center; box-shadow: 0 14px 26px rgba(47,107,239,0.35); z-index: 8;
+    }
+
+    /* ---------- Auth ---------- */
+    .login-screen {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(180deg, #eaf1ff 0%, #fdf1f5 100%); padding: 30px 22px;
+    }
+    .auth-emblem { text-align: center; font-size: 46px; margin-bottom: 6px; }
+    .auth-heading { text-align: center; font-size: 27px; font-weight: 800; color: var(--navy); margin: 4px 0 4px; }
+    .auth-sub { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+    .auth-card {
+      width: 100%; background: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 26px; padding: 20px 18px; box-shadow: 0 22px 40px rgba(90, 64, 157, 0.1);
+    }
+    .auth-tabs { display: grid; grid-template-columns: 1fr 1fr; background: #eef1fb; border-radius: 14px; padding: 4px; margin-bottom: 18px; }
+    .auth-tab { border-radius: 11px; font-weight: 800; font-size: 12px; color: var(--muted); padding: 11px 10px; }
+    .auth-tab.active { background: #fff; color: var(--blue); box-shadow: 0 6px 12px rgba(47,107,239,0.14); }
+    .divider { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 11px; font-weight: 700; margin: 14px 0; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+    .note-strip {
+      display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--line);
+      border-radius: 16px; padding: 12px 14px; font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 16px;
+    }
+    .signup-strip {
+      display: flex; align-items: center; justify-content: center; gap: 6px; background: #fff; border: 1px solid var(--line);
+      border-radius: 16px; padding: 14px; margin-top: 12px; font-size: 13px; font-weight: 600;
+    }
+    .signup-strip a, .link-accent { color: var(--pink-2); font-weight: 800; }
+    .otp-boxes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 16px 0; }
+    .otp-boxes input {
+      text-align: center; font-size: 20px; font-weight: 800; padding: 14px 0; border-radius: 14px;
+    }
+
+    /* ---------- Home ---------- */
+    .greeting-card {
+      margin: 4px 18px 18px; padding: 20px 18px; border-radius: 26px; box-shadow: var(--shadow);
+      background: linear-gradient(135deg, #eef4ff 0%, #fff0f6 100%);
+    }
+    .eyebrow { font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); font-weight: 800; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .action-card { min-height: 110px; flex-direction: column; align-items: flex-start; justify-content: space-between; text-align: left; }
+    .action-card small { color: var(--muted); font-size: 11px; }
+    .emoji-badge {
+      width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-size: 22px;
+    }
+    .section { padding: 0 18px; margin-top: 20px; }
+    .section-head { margin-bottom: 12px; }
+    .section-head h2 { font-size: 16px; font-weight: 800; color: var(--navy); }
+    .link-text { color: var(--blue); font-size: 12px; font-weight: 800; }
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 18px; margin-top: 14px; }
+    .role-tile {
+      border-radius: 22px; padding: 20px 14px; text-align: left; box-shadow: var(--shadow); min-height: 128px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .role-tile .ic { font-size: 30px; }
+    .role-tile h3 { font-size: 15px; margin-top: 8px; }
+    .role-tile p { margin: 3px 0 0; font-size: 10.5px; opacity: 0.85; }
+
+    /* ---------- Events list ---------- */
+    .events-header { text-align: center; padding: 16px 50px 4px; }
+    .events-header h1 { font-size: 25px; font-weight: 800; color: var(--navy); }
+    .meta-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 6px; font-size: 12.5px; }
+    .event-card {
+      display: flex; gap: 0; border-radius: 20px; overflow: hidden; background: #fff; border: 1px solid var(--line);
+      box-shadow: 0 8px 20px rgba(30,40,100,0.06); text-align: left; width: 100%;
+    }
+    .event-cover {
+      width: 104px; flex-shrink: 0; display: flex; align-items: flex-end; padding: 10px; font-size: 30px;
+      color: #fff; position: relative;
+    }
+    .event-cover span.cover-emoji { font-size: 30px; }
+    .event-body { flex: 1; padding: 12px 14px; min-width: 0; }
+    .event-name { font-size: 15px; font-weight: 800; color: var(--navy); }
+    .event-meta { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .stat-row { display: flex; gap: 0; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+    .stat-col { flex: 1; }
+    .stat-col .lbl { font-size: 9.5px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+    .stat-col .val { font-size: 12.5px; font-weight: 800; margin-top: 2px; }
+    .code-chip { display: inline-flex; align-items: center; gap: 6px; background: #eef1fb; color: var(--navy-2); font-weight: 800; font-size: 11.5px; padding: 6px 12px; border-radius: 999px; letter-spacing: 0.03em; }
+
+    /* ---------- Hub cards (Create/Open, Send/Receive) ---------- */
+    .hub-banner {
+      margin: 4px 0 18px; border-radius: 22px; padding: 22px 18px; text-align: center; font-size: 40px;
+      background: linear-gradient(135deg, #eef4ff 0%, #fff0f6 100%); box-shadow: var(--shadow);
+    }
+    .hub-card {
+      display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; border-radius: 22px;
+      padding: 18px; border: 1px solid var(--line); box-shadow: var(--shadow); margin-bottom: 14px;
+    }
+    .hub-icon {
+      width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; flex-shrink: 0;
+    }
+    .hub-card .arrow-circle {
+      width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-size: 17px; flex-shrink: 0;
+    }
+    .hub-card h3 { font-size: 16.5px; font-weight: 800; }
+    .hub-card p { margin: 3px 0 0; font-size: 12px; color: var(--muted); }
+
+    /* ---------- Type grid ---------- */
+    .type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+    .type-tile {
+      border: 1px solid var(--line); border-radius: 16px; padding: 14px 6px; text-align: center; background: #fff;
+      display: grid; place-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: var(--text);
+      position: relative;
+    }
+    .type-tile.active { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(47,107,239,0.15); color: var(--blue); }
+    .type-tile .ti { font-size: 22px; }
+    .more-panel { margin-top: 14px; border-radius: 18px; padding: 14px; background: #f4f6fd; }
+    .more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .more-tile { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 14px; padding: 10px 12px; font-size: 12px; font-weight: 700; text-align: left; }
+    .collection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    .collection-tile {
+      border-radius: 18px; padding: 16px 10px; text-align: center; box-shadow: var(--shadow);
+      display: grid; place-items: center; gap: 6px; font-weight: 800; font-size: 12.5px; color: var(--text);
+      border: 2px solid transparent;
+    }
+    .collection-tile.active { border-color: var(--blue); }
+    .collection-tile .ci { font-size: 28px; }
+
+    /* ---------- Records ---------- */
+    .summary-card {
+      margin: 14px 18px 0; border-radius: 22px; padding: 18px; background: linear-gradient(135deg,#eef2ff 0%,#f5eeff 100%);
+      box-shadow: var(--shadow);
+    }
+    .summary-title { font-size: 13.5px; font-weight: 800; color: var(--navy); margin-bottom: 12px; }
+    .summary-split { display: flex; align-items: center; }
+    .summary-item { flex: 1; display: flex; align-items: center; gap: 10px; }
+    .summary-icon { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; flex-shrink: 0; }
+    .summary-divider { width: 1px; height: 34px; background: var(--line); margin: 0 6px; }
+    .summary-item .lbl { font-size: 11px; color: var(--muted); font-weight: 700; }
+    .summary-item .val { font-size: 17px; font-weight: 800; margin-top: 1px; }
+    .yet-row { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(30,40,100,0.08); }
+    .yet-row .lbl { font-size: 11px; color: var(--muted); font-weight: 700; }
+    .yet-row .val { font-size: 18px; font-weight: 800; color: var(--blue); margin-top: 2px; }
+    .filter-row { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; scrollbar-width: none; }
+    .filter-row::-webkit-scrollbar { display: none; }
+    .filter-chip {
+      flex-shrink: 0; display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--line);
+      border-radius: 999px; padding: 9px 14px; font-size: 11.5px; font-weight: 800; color: var(--text);
+    }
+    .filter-chip.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .search-row { display: flex; gap: 8px; margin-top: 10px; }
+    .search-row input { flex: 1; }
+    .detail-filter-btn { flex-shrink: 0; display: flex; align-items: center; gap: 6px; padding: 0 14px; border: 1px solid #dbe6ff; border-radius: 14px; color: var(--blue); font-weight: 800; font-size: 11.5px; background: #fff; position: relative; }
+    .filter-badge { position: absolute; top: -6px; right: -6px; background: var(--pink-2); color: #fff; font-size: 9px; width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; }
+    .record-row { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 13px; margin-bottom: 10px; }
+    .record-icon { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-size: 20px; flex-shrink: 0; }
+    .record-mid { flex: 1; min-width: 0; }
+    .record-mid .t { font-size: 13.5px; font-weight: 800; }
+    .record-mid .m { display: flex; gap: 8px; font-size: 11px; color: var(--muted); margin-top: 3px; flex-wrap: wrap; }
+    .record-side { text-align: right; flex-shrink: 0; }
+    .record-side .amt { font-size: 14px; font-weight: 800; }
+    .status-chip { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 800; padding: 4px 9px; border-radius: 999px; margin-top: 5px; }
+    .status-chip.Pending { background: var(--pending-bg); color: var(--pending); }
+    .status-chip.Complete { background: var(--success-bg); color: var(--success); }
+    .status-chip.Old { background: var(--old-bg); color: var(--old); }
+    .mode-chip { font-size: 9.5px; font-weight: 800; padding: 3px 8px; border-radius: 999px; background: #eef1fb; color: var(--navy-2); }
+    .empty-state { text-align: center; padding: 34px 18px; color: var(--muted); }
+    .empty-state .e { font-size: 40px; margin-bottom: 10px; }
+
+    /* ---------- Gift / entry form ---------- */
+    .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip-select {
+      border: 1px solid var(--line); border-radius: 999px; padding: 10px 16px; font-size: 12.5px; font-weight: 800;
+      color: var(--text); background: #fff;
+    }
+    .chip-select.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+    .check-pill { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; font-weight: 700; font-size: 13px; flex: 1; text-align: left; background: #fff; }
+    .check-pill.active { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(47,107,239,0.15); }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(20,20,40,0.5); display: grid; place-items: center; z-index: 60; padding: 24px; }
+    .modal-card { background: #fff; border-radius: 24px; padding: 30px 26px; text-align: center; width: min(340px, 100%); box-shadow: 0 24px 50px rgba(0,0,0,0.25); }
+    .modal-check { width: 64px; height: 64px; border-radius: 50%; background: var(--success-bg); color: var(--success); font-size: 32px; display: grid; place-items: center; margin: 0 auto; }
+    .check-pill input { width: 16px; height: 16px; padding: 0; }
+    .mobile-row { display: flex; gap: 8px; }
+    .mobile-row select { flex: 0 0 84px; }
+    .mobile-row input { flex: 1; }
+
+    /* ---------- Filter Records screen ---------- */
+    .filter-section { margin-bottom: 20px; }
+    .filter-section h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 10px; }
+    .place-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    /* ---------- Profile ---------- */
+    .profile-card { display: flex; gap: 14px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 16px; box-shadow: var(--shadow); }
+    .avatar { width: 58px; height: 58px; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(135deg, #ffd4e7 0%, #dfeaff 100%); font-size: 26px; }
+    .menu-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 4px; border-bottom: 1px solid var(--line); font-weight: 700; font-size: 13.5px; }
+    .menu-item:last-child { border-bottom: 0; }
+    .menu-item .mi-left { display: flex; align-items: center; gap: 10px; }
+    .toggle-pill { width: 46px; height: 26px; border-radius: 999px; background: var(--line); position: relative; flex-shrink: 0; }
+    .toggle-pill.on { background: var(--blue); }
+    .toggle-pill::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .toggle-pill.on::after { left: 23px; }
+    .role-chip { font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 999px; }
+    .role-chip.Admin { background: #fff3d6; color: #a06a00; }
+    .role-chip.Member { background: #dbe6ff; color: var(--blue); }
+    .role-chip.Guest { background: #f1eefc; color: var(--old); }
+    .faq-item { border-bottom: 1px solid var(--line); padding: 14px 4px; }
+    .faq-item .q { font-weight: 800; font-size: 13.5px; display: flex; justify-content: space-between; }
+    .faq-item .a { margin-top: 8px; font-size: 12.5px; color: var(--muted); display: none; line-height: 1.5; }
+    .faq-item.open .a { display: block; }
+    .star-row { display: flex; gap: 8px; font-size: 26px; }
+    .star-row span { opacity: 0.35; cursor: pointer; }
+    .star-row span.on { opacity: 1; }
+
+    /* ---------- Find Event / Contribute / Live / Share ---------- */
+    .brand-row { display: flex; align-items: center; gap: 10px; }
+    .brand-mark { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg,var(--pink) 0%,var(--blue) 100%); display: grid; place-items: center; font-size: 18px; color: #fff; }
+    .brand-name { font-weight: 800; font-size: 15px; color: var(--navy); line-height: 1.1; }
+    .brand-name small { display: block; font-size: 9px; color: var(--muted); font-weight: 600; letter-spacing: 0.03em; }
+    .find-illustration { text-align: center; font-size: 64px; margin: 22px 0; opacity: 0.85; }
+    .code-input-row { display: flex; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 4px 6px 4px 16px; box-shadow: var(--shadow); }
+    .code-input-row input { border: 0; flex: 1; font-weight: 800; letter-spacing: 0.04em; }
+    .overview-cover { height: 190px; border-radius: 22px; background: linear-gradient(135deg,#f7c9a0 0%,#f2a0c4 100%); position: relative; display: flex; align-items: flex-end; justify-content: center; }
+    .overview-cover .heart { font-size: 40px; }
+    .verified-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--success-bg); color: var(--success); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; margin-top: 4px; }
+    .host-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 12px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .action-icon-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+    .action-icon { display: flex; flex-direction: column; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 12px 6px; font-size: 10.5px; font-weight: 700; box-shadow: var(--shadow); }
+    .action-icon .ai { font-size: 20px; }
+    .trust-row { display: flex; gap: 10px; margin-top: 14px; }
+    .trust-tile { flex: 1; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 12px; text-align: center; }
+    .trust-tile .tv { font-size: 17px; font-weight: 800; color: var(--navy); }
+    .trust-tile .tl { font-size: 10px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+    .avatar-stack { display: flex; }
+    .avatar-stack span { width: 22px; height: 22px; border-radius: 50%; background: #dbe6ff; border: 2px solid #fff; display: grid; place-items: center; font-size: 10px; margin-left: -8px; }
+    .avatar-stack span:first-child { margin-left: 0; }
+    .map-placeholder { height: 190px; border-radius: 18px; background: linear-gradient(135deg,#eef2ff 0%,#f7f8fd 100%); display: grid; place-items: center; font-size: 40px; border: 1px solid var(--line); position: relative; overflow: hidden; }
+    .map-placeholder::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(47,107,239,0.12) 1px, transparent 1px); background-size: 14px 14px; }
+    .amount-preset-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .amount-preset { border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; font-weight: 800; font-size: 13px; background: #fff; flex: 1; text-align: center; min-width: 68px; }
+    .amount-preset.active { border-color: var(--blue); background: #eaf1ff; color: var(--blue); }
+    .qr-placeholder { width: 150px; height: 150px; margin: 0 auto; border-radius: 16px; background: repeating-conic-gradient(#1c1f3a 0% 25%, #fff 0% 50%) 0 0 / 20px 20px; border: 6px solid #fff; box-shadow: var(--shadow); }
+    .pay-app-row { display: flex; justify-content: space-around; margin-top: 14px; }
+    .pay-app { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; color: var(--muted); }
+    .pay-app .pi { width: 42px; height: 42px; border-radius: 12px; background: #fff; border: 1px solid var(--line); display: grid; place-items: center; font-size: 18px; }
+    .video-placeholder { height: 210px; border-radius: 18px; background: linear-gradient(135deg,#1c1f3a 0%,#3a2f6b 100%); position: relative; display: flex; align-items: flex-end; padding: 12px; }
+    .live-badge { position: absolute; top: 12px; left: 12px; background: var(--pink-2); color: #fff; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 999px; display: flex; align-items: center; gap: 4px; }
+    .chat-bubble { display: flex; gap: 10px; padding: 10px 0; }
+    .chat-bubble .cb-av { width: 30px; height: 30px; border-radius: 50%; background: #eef1fb; display: grid; place-items: center; font-size: 13px; flex-shrink: 0; }
+    .chat-bubble .cb-name { font-weight: 800; font-size: 12px; }
+    .chat-bubble .cb-msg { font-size: 12px; color: var(--muted); margin-top: 1px; }
+    .share-code-card { background: linear-gradient(135deg,#f4eeff 0%,#fff0f6 100%); border: 1px dashed #cbb8ff; border-radius: 18px; padding: 16px; text-align: center; }
+    .share-code-card .code { font-size: 22px; font-weight: 800; letter-spacing: 0.06em; color: var(--navy); margin-top: 4px; }
+    .share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
+    .share-app { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; color: var(--text); }
+    .share-app .sa-icon { width: 48px; height: 48px; border-radius: 50%; background: #fff; border: 1px solid var(--line); display: grid; place-items: center; font-size: 20px; box-shadow: var(--shadow); }
+    .trust-strip { margin-top: 18px; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px; }
+    .trust-strip h4 { font-size: 12.5px; font-weight: 800; color: var(--navy); margin-bottom: 12px; }
+    .trust-strip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; text-align: center; }
+    .trust-strip-grid .ts-icon { font-size: 20px; }
+    .trust-strip-grid .ts-label { font-size: 9.5px; color: var(--muted); font-weight: 700; margin-top: 4px; line-height: 1.3; }
+    .avatar-photo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg,#ffd4e7 0%,#dfeaff 100%); display: grid; place-items: center; font-size: 26px; position: relative; }
+    .avatar-photo .cam-badge { position: absolute; bottom: -2px; right: -2px; width: 22px; height: 22px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; font-size: 10px; border: 2px solid #fff; }
+    .group-label { font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 18px 0 8px 4px; }
+    .menu-item .mi-title { font-size: 13.5px; font-weight: 800; }
+    .menu-item .mi-desc { font-size: 10.5px; color: var(--muted); font-weight: 600; margin-top: 1px; }
+  </style>
+</head>
+<body>
+  <div class="phone" id="app"></div>
+
+  <script>
+    const app = document.getElementById('app');
+
+    const eventTypeMeta = {
+      'Wedding':               { emoji: '💍', grad: 'linear-gradient(135deg,#f7c9a0 0%,#f2a0c4 100%)', prefix: 'WED' },
+      'Engagement':            { emoji: '💞', grad: 'linear-gradient(135deg,#f9b6d3 0%,#f78fb3 100%)', prefix: 'ENG' },
+      'Housewarming':          { emoji: '🏡', grad: 'linear-gradient(135deg,#8fd3c8 0%,#6fb1e0 100%)', prefix: 'HSW' },
+      'Birthday':              { emoji: '🎂', grad: 'linear-gradient(135deg,#c8a8f0 0%,#f7a8d0 100%)', prefix: 'BDY' },
+      'Baby Shower':           { emoji: '🍼', grad: 'linear-gradient(135deg,#a8e0d8 0%,#a8c8f0 100%)', prefix: 'BBS' },
+      'Ear Piercing Ceremony': { emoji: '💎', grad: 'linear-gradient(135deg,#f0c8a0 0%,#f0a0b8 100%)', prefix: 'EPC' },
+      'default':               { emoji: '✨', grad: 'linear-gradient(135deg,#b8c0f0 0%,#d8b8f0 100%)', prefix: 'EVT' }
+    };
+
+    const collectionTypeMeta = {
+      'Family':    { emoji: '👨‍👩‍👧', grad: 'linear-gradient(135deg,#dbe6ff 0%,#eef2ff 100%)' },
+      'Friend':    { emoji: '🙌', grad: 'linear-gradient(135deg,#ffd9e6 0%,#fff0f5 100%)' },
+      'Corporate': { emoji: '🏢', grad: 'linear-gradient(135deg,#c9f0e4 0%,#e8faf4 100%)' },
+      'Religious': { emoji: '🛕', grad: 'linear-gradient(135deg,#ffe6bf 0%,#fff3de 100%)' },
+      'default':   { emoji: '📁', grad: 'linear-gradient(135deg,#e6e0fb 0%,#f4f0ff 100%)' }
+    };
+
+    const eventTypes = ['Wedding', 'Engagement', 'Housewarming', 'Birthday', 'Baby Shower', 'More'];
+    const moreEventTypes = [
+      { name: 'Anniversary', icon: '💍' }, { name: 'Naming Ceremony', icon: '👶' },
+      { name: 'Reception', icon: '🍽️' }, { name: 'Puberty Ceremony', icon: '🌸' },
+      { name: 'Ear Piercing Ceremony', icon: '✨' }, { name: 'Religious Function', icon: '🙏' },
+      { name: 'Memorial Gathering', icon: '🕯️' }, { name: 'Custom Event', icon: '➕' }
+    ];
+    const countryCodes = ['+91', '+1', '+44', '+971', '+65'];
+
+    function genCode(prefix) {
+      return `${prefix}${Math.floor(1000 + Math.random() * 9000)}`;
+    }
+
+    function seedEvents() {
+      return [
+        { id: 1, name: "Rahul & Priya Wedding", type: 'Wedding', code: 'WED4821', upi: 'rahulpriya@okhdfcbank', date: '25 May 2025', time: '07:00 PM', venue: 'The Grand Taj, Anna Salai, Chennai, Tamil Nadu', host: 'Louis Antony', trustScore: 98, familyVerified: 12, targetAmount: 200000,
+          records: [
+            { id: 101, title: "Wedding Moi", person: 'Ravi Shankar', mobile: '+91 90000 11122', place: 'Chennai', oldAmount: 0, newAmount: 5000, amount: 5000, mode: 'Cash', status: 'Pending', date: '18 May 2025', direction: 'received', icon: '🎁' },
+            { id: 102, title: 'Wedding Moi', person: 'Arun Kumar', mobile: '+91 98765 43210', place: 'Coimbatore', oldAmount: 5000, newAmount: 0, amount: 5000, mode: 'UPI', status: 'Old', date: '17 May 2025', direction: 'received', icon: '🎓' },
+            { id: 103, title: 'Wedding Moi', person: 'Kumar Family', mobile: '+91 90112 23344', place: 'Trichy', oldAmount: 2000, newAmount: 3000, amount: 5000, mode: 'Cash', status: 'Complete', date: '16 May 2025', direction: 'received', icon: '🛕' }
+          ] },
+        { id: 2, name: "Aarav's Birthday", type: 'Birthday', code: 'BDY3390', upi: 'aaravbday@okaxis', date: '18 Jul 2025', time: '04:00 PM', venue: 'Maple Banquet, Noida, India', host: 'Arun Kumar', trustScore: 92, familyVerified: 6, targetAmount: 100000, records: [] },
+        { id: 3, name: 'Housewarming Party', type: 'Housewarming', code: 'HSW1077', upi: 'housewarming@okicici', date: '05 Aug 2025', time: '12:00 PM', venue: '45, Sector 45, Gurugram, India', host: 'Arun Kumar', trustScore: 95, familyVerified: 8, targetAmount: 100000, records: [] },
+        { id: 4, name: 'Ear Piercing Ceremony', type: 'Ear Piercing Ceremony', code: 'EPC2458', upi: 'epc2025@okhdfcbank', date: '24 May 2025', time: '11:00 AM', venue: '123, Green Park, New Delhi, India', host: 'Arun Kumar', trustScore: 90, familyVerified: 5, targetAmount: 50000, records: [] }
+      ];
+    }
+
+    function seedCollections() {
+      return [
+        { id: 1, name: 'Sharma Family Events', type: 'Family',
+          entries: [
+            { id: 901, title: 'Ravi Wedding', person: 'Arun', mobile: '+91 98765 43210', place: 'Chennai', receiverUpi: 'arun@okhdfcbank', oldAmount: 5000, newAmount: 0, amount: 5000, mode: 'Cash', status: 'Complete', date: '12 May 2025', direction: 'given', icon: '🎁' },
+            { id: 902, title: 'Housewarming', person: 'Nithya', mobile: '+91 90000 22233', place: 'Bangalore', receiverUpi: 'nithya@okaxis', oldAmount: 0, newAmount: 2000, amount: 2000, mode: 'UPI', status: 'Pending', date: '02 Jun 2025', direction: 'given', icon: '🏡' }
+          ] },
+        { id: 2, name: 'College Friends', type: 'Friend', entries: [] }
+      ];
+    }
+
+    const state = {
+      user: JSON.parse(localStorage.getItem('eventxUser') || 'null'),
+      page: 'home',
+      authTab: 'password',
+      otpSent: false,
+      events: JSON.parse(localStorage.getItem('eventxEvents') || 'null') || seedEvents(),
+      collections: JSON.parse(localStorage.getItem('eventxCollections') || 'null') || seedCollections(),
+      reminders: JSON.parse(localStorage.getItem('eventxReminders') || 'null') || [
+        { id: 1, title: "Return ₹500 to Arun", date: '2026-09-01', note: 'Old obligation from Ravi\'s wedding', status: 'Active' }
+      ],
+      family: JSON.parse(localStorage.getItem('eventxFamily') || 'null') || [
+        { id: 1, name: 'Meena R.', relation: 'Daughter', mobile: '+91 90000 11111', role: 'Member', status: 'Active' },
+        { id: 2, name: 'Suresh R.', relation: 'Brother', mobile: '+91 90000 22222', role: 'Guest', status: 'Active' }
+      ],
+      settings: JSON.parse(localStorage.getItem('eventxSettings') || 'null') || {
+        hideAmounts: false, appLock: false, biometric: false, notifPayment: true, notifReminders: true
+      },
+      contributions: JSON.parse(localStorage.getItem('eventxContributions') || 'null') || [],
+      contributeAmount: 501,
+      nextEventId: 5,
+      nextCollectionId: 3,
+      nextRecordId: 1000,
+      nextFamilyId: 3,
+      nextReminderId: 2,
+      familyDraft: { name: '', mobile: '' },
+      activeEventId: null,
+      activeCollectionId: null,
+      selectedType: 'Wedding',
+      showMore: false,
+      selectedCollectionType: 'Family',
+      entryContext: { kind: 'event', id: null },
+      entryMode: 'Cash',
+      entryStatus: 'Pending',
+      mobileChangeStage: 'enter',
+      recordsFilter: 'all',
+      recordsSearch: '',
+      detailedFilter: { places: [], amountBucket: 'all', customFrom: '', customTo: '', visits: [], statuses: [], period: 'all' },
+      toast: ''
+    };
+
+    function persist() {
+      localStorage.setItem('eventxEvents', JSON.stringify(state.events));
+      localStorage.setItem('eventxCollections', JSON.stringify(state.collections));
+      localStorage.setItem('eventxReminders', JSON.stringify(state.reminders));
+      localStorage.setItem('eventxFamily', JSON.stringify(state.family));
+      localStorage.setItem('eventxSettings', JSON.stringify(state.settings));
+      localStorage.setItem('eventxContributions', JSON.stringify(state.contributions));
+    }
+
+    function nav(page) {
+      state.page = page;
+      window.scrollTo(0, 0);
+      render();
+    }
+
+    function showToast(message) {
+      state.toast = message;
+      render();
+      setTimeout(() => { state.toast = ''; render(); }, 1600);
+    }
+
+    function getUserName() { return state.user?.name || 'Arun Kumar'; }
+    function getUserEmail() { return state.user?.email || 'demo@relfam.app'; }
+    function getActiveEvent() { return state.events.find(e => e.id === state.activeEventId) || state.events[0]; }
+    function getActiveCollection() { return state.collections.find(c => c.id === state.activeCollectionId) || state.collections[0]; }
+    function money(n) {
+      if (state.settings.hideAmounts) return '••••';
+      return '₹' + Number(n || 0).toLocaleString('en-IN');
+    }
+    function typeMeta(t) { return eventTypeMeta[t] || eventTypeMeta.default; }
+    function collMeta(t) { return collectionTypeMeta[t] || collectionTypeMeta.default; }
+
+    /* ---------- Derived ledger totals (source of truth = records, never stored separately) ---------- */
+    function eventTotals(ev) {
+      const received = ev.records.filter(r => r.direction === 'received').reduce((s, r) => s + r.amount, 0);
+      const given = ev.records.filter(r => r.direction === 'given').reduce((s, r) => s + r.amount, 0);
+      const completed = ev.targetAmount || 0;
+      const pending = Math.max(completed - received, 0);
+      return { received, given, collected: received, pending, completed };
+    }
+    function collectionTotals(col) {
+      const sent = col.entries.reduce((s, e) => s + e.amount, 0);
+      const pending = col.entries.filter(e => e.status === 'Pending').reduce((s, e) => s + e.amount, 0);
+      const completed = col.entries.filter(e => e.status === 'Complete').reduce((s, e) => s + e.amount, 0);
+      return { sent, pending, completed };
+    }
+
+    /* ---------- Auth ---------- */
+    function authScreen() {
+      return `
+        <div class="login-screen">
+          <div style="width:100%;">
+            <div class="auth-emblem">🎁</div>
+            <div class="auth-heading">Welcome Back 👋</div>
+            <p class="auth-sub">Login to your account</p>
+            <div class="auth-card">
+              <div class="auth-tabs">
+                <button class="auth-tab ${state.authTab === 'password' ? 'active' : ''}" onclick="state.authTab='password'; render();">Login with Password</button>
+                <button class="auth-tab ${state.authTab === 'otp' ? 'active' : ''}" onclick="nav('otp')">Login with OTP</button>
+              </div>
+              <div class="form-stack">
+                <div class="field-icon">✉️<input id="authEmail" placeholder="Enter your email or mobile no" value="demo@relfam.app"></div>
+                <div class="field-icon">🔒<input id="authPass" type="password" placeholder="Enter your password" value="eventx123"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('authPass', this)">👁️</button></div>
+                <div style="text-align:right;margin-top:-4px;"><span class="link-accent" style="font-size:12px;" onclick="showToast('Password reset link sent')">Forgot Password?</span></div>
+                <button class="primary" onclick="loginAction()">Login</button>
+                <div class="divider">OR</div>
+                <button class="secondary" onclick="nav('otp')">💬 Login with OTP</button>
+              </div>
+            </div>
+            <div class="note-strip">🛡️ Your data is safe and secure with us</div>
+            <div class="signup-strip">Don't have an account? <a class="link-accent" onclick="nav('signup')">Sign Up</a></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function signupScreen() {
+      state.acceptedTerms = state.acceptedTerms || false;
+      return `
+        <div class="login-screen">
+          <div style="width:100%;">
+            <div class="auth-emblem">🎁</div>
+            <div class="auth-heading">Welcome</div>
+            <p class="auth-sub">Create your account to get started</p>
+            <div class="auth-card">
+              <div class="form-stack">
+                <div class="field-icon">👤<input id="suName" placeholder="Enter your name"></div>
+                <div class="field-icon">✉️<input id="suEmail" placeholder="Enter your email"></div>
+                <div class="field-icon">📱<strong style="color:var(--blue);">+91</strong><input id="suMobile" placeholder="Enter phone number"></div>
+                <div class="field-icon">📱<strong style="color:var(--blue);">+91</strong><input id="suAltMobile" placeholder="Alternative mobile number (optional)"></div>
+                <div class="field-icon">🔒<input id="suPass" type="password" placeholder="Enter password"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('suPass', this)">👁️</button></div>
+                <div class="field-icon">🔒<input id="suConfirm" type="password" placeholder="Confirm password"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('suConfirm', this)">👁️</button></div>
+                <div class="row" style="gap:8px;justify-content:flex-start;">
+                  <input type="checkbox" id="suTerms" ${state.acceptedTerms ? 'checked' : ''} style="width:16px;height:16px;padding:0;flex:0;" onchange="state.acceptedTerms=this.checked;">
+                  <span>I agree to the <a class="link-accent" onclick="nav('terms');">Terms &amp; Conditions</a></span>
+                </div>
+                <button class="primary" onclick="signupAction()">Sign Up</button>
+                <div class="divider">Already have an account?</div>
+                <button class="secondary" onclick="nav('auth')">Login</button>
+              </div>
+            </div>
+            <div class="note-strip">🛡️ Your data is safe and secure with us</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function togglePwd(id, btn) {
+      const input = document.getElementById(id);
+      input.type = input.type === 'password' ? 'text' : 'password';
+      btn.textContent = input.type === 'password' ? '👁️' : '🙈';
+    }
+
+    function signupAction() {
+      const name = document.getElementById('suName').value;
+      const email = document.getElementById('suEmail').value;
+      const pass = document.getElementById('suPass').value;
+      const confirm = document.getElementById('suConfirm').value;
+      if (!name) { showToast('Enter your name'); return; }
+      if (!document.getElementById('suTerms').checked) { showToast('Please accept the Terms & Conditions'); return; }
+      if (pass.length < 8) { showToast('Password must be at least 8 characters'); return; }
+      if (pass !== confirm) { showToast('Passwords do not match'); return; }
+      state.user = { name, email: email || 'demo@relfam.app', mobile: '+91 ' + (document.getElementById('suMobile').value || '98765 43210'), address: 'Chennai, Tamil Nadu, India', dob: '', language: 'English', joinedAt: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) };
+      localStorage.setItem('eventxUser', JSON.stringify(state.user));
+      state.page = 'home';
+      showToast('Account created — welcome to Relfam!');
+    }
+
+    function termsScreen() {
+      return `
+        <div class="login-screen" style="align-items:flex-start;padding-top:60px;">
+          <div class="modal-backdrop" style="position:absolute;inset:0;">
+            <div class="modal-card" style="text-align:left;max-height:82vh;overflow-y:auto;">
+              <div class="row"><span class="strong" style="font-size:18px;color:var(--navy);">🛡️ Terms &amp; Conditions</span><button class="icon-btn" style="box-shadow:none;" onclick="nav('signup')">✕</button></div>
+              <p class="sub" style="margin-top:10px;">Welcome to Relfam. By using this app, you agree to the following terms:</p>
+              <div style="margin-top:14px;display:grid;gap:14px;">
+                <div><b>1. Personal Use Only</b><p class="sub" style="margin-top:4px;">This app is designed to help users track gift and moi records. It should not be used for illegal or fraudulent activities.</p></div>
+                <div><b>2. Data Accuracy</b><p class="sub" style="margin-top:4px;">Users are responsible for the accuracy of the data they enter. The app does not verify or guarantee any information.</p></div>
+                <div><b>3. No Financial Liability</b><p class="sub" style="margin-top:4px;">Relfam is only a tracking tool. We are not responsible for any financial loss, disputes, or misunderstandings between users.</p></div>
+                <div><b>4. Privacy of Data</b><p class="sub" style="margin-top:4px;">Your data is stored securely. We do not sell or share your personal information with third parties.</p></div>
+              </div>
+              <button class="pink-btn primary" style="margin-top:20px;" onclick="acceptTerms()">Accept &amp; Continue</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    function acceptTerms() {
+      state.acceptedTerms = true;
+      nav('signup');
+    }
+
+    function otpScreen() {
+      return `
+        <div class="login-screen">
+          <div style="width:100%;">
+            <button class="back-link" onclick="nav('auth')">←</button>
+            <div class="auth-emblem">🛡️</div>
+            <div class="auth-heading">Login with OTP</div>
+            <p class="auth-sub">Enter the OTP sent to your mobile or email</p>
+            <div class="auth-card">
+              <div class="field-icon" style="margin-bottom:16px;">
+                <span>📱</span><strong style="color:var(--blue);">+91</strong>
+                <input id="otpMobile" placeholder="Enter your mobile or email" style="border:0;padding:0;">
+              </div>
+              ${!state.otpSent ? `
+                <button class="primary" onclick="sendOtp()">Send OTP</button>
+              ` : `
+                <div class="divider">Sent · <span class="link-accent" onclick="showToast('OTP resent')" style="margin-left:4px;">Resend OTP</span></div>
+                <div class="otp-boxes">
+                  <input maxlength="1"><input maxlength="1"><input maxlength="1"><input maxlength="1">
+                </div>
+                <button class="primary" onclick="loginAction(true)">Verify &amp; Login</button>
+              `}
+            </div>
+            <div class="signup-strip">Don't have an account? <a class="link-accent" onclick="nav('signup')">Sign Up</a></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function sendOtp() {
+      state.otpSent = true;
+      render();
+      showToast('OTP sent to your mobile');
+    }
+
+    function loginAction(otp = false) {
+      const email = document.getElementById('authEmail')?.value || document.getElementById('otpMobile')?.value || 'demo@relfam.app';
+      const payload = { name: state.user?.name || 'Arun Kumar', email, mobile: state.user?.mobile || '+91 98765 43210', address: state.user?.address || 'Chennai, Tamil Nadu, India', dob: state.user?.dob || '', language: 'English', joinedAt: state.user?.joinedAt || '25 Nov 2023' };
+      state.user = payload;
+      localStorage.setItem('eventxUser', JSON.stringify(payload));
+      state.otpSent = false;
+      state.page = 'home';
+      showToast(otp ? 'OTP verified — welcome!' : 'Welcome back!');
+    }
+
+    function logout() {
+      localStorage.removeItem('eventxUser');
+      state.user = null;
+      state.page = 'home';
+      render();
+    }
+
+    /* ---------- Bottom nav shell ---------- */
+    function bottomNav() {
+      const tabs = [
+        { key: 'home', icon: '⌂', label: 'Home' },
+        { key: 'records', icon: '▤', label: 'Records' },
+        { key: 'reminders', icon: '🔔', label: 'Reminders' },
+        { key: 'profile', icon: '●', label: 'Profile' }
+      ];
+      return `
+        <div class="bottom-nav" style="grid-template-columns:repeat(${tabs.length},1fr);">
+          ${tabs.map(t => `
+            <button class="nav-btn ${state.page === t.key ? 'active' : ''}" onclick="nav('${t.key}')"><b>${t.icon}</b>${t.label}</button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function wrapWithNav(content) {
+      return `<div class="screen">${content}${bottomNav()}${state.toast ? `<div class="toast">✓ ${state.toast}</div>` : ''}</div>`;
+    }
+    function wrapPlain(content) {
+      return `<div class="screen">${content}${state.toast ? `<div class="toast">✓ ${state.toast}</div>` : ''}</div>`;
+    }
+
+    /* ---------- Home ---------- */
+    function homeScreen() {
+      const upcoming = state.events[0];
+      const t = eventTotals(upcoming);
+      return wrapWithNav(`
+        <div class="header">
+          <button class="icon-btn" onclick="showToast('Menu coming soon')">☰</button>
+          <div class="brand-row">
+            <span class="brand-mark">💗</span>
+            <span class="brand-name">Relfam<small>CELEBRATE SMARTER</small></span>
+          </div>
+          <button class="icon-btn" onclick="nav('notifications')">🔔</button>
+        </div>
+        <div class="page" style="padding-top:10px;padding-bottom:0;">
+          <h1 style="font-size:19px;color:var(--navy);">Find an Event</h1>
+          <p class="sub">Enter the Event Code shared on invitation to find the event</p>
+          <div class="code-input-row" style="margin-top:12px;">
+            <input id="findCodeQuick" placeholder="Enter Event Code" style="text-transform:uppercase;">
+            <button class="primary" style="width:auto;padding:11px 18px;" onclick="findEventFromHome()">Search →</button>
+          </div>
+          <button class="secondary" style="margin-top:10px;" onclick="nav('find-event')">📷 Scan Invitation QR</button>
+        </div>
+        <div class="section" style="margin-top:16px;">
+          <div class="section-head"><h2>What would you like to do?</h2></div>
+        </div>
+        <div class="role-grid">
+          <button class="role-tile" style="background:linear-gradient(135deg,#dbe6ff 0%,#eef2ff 100%);" onclick="nav('create-open')">
+            <span class="ic">🎀</span>
+            <div><h3 style="color:var(--navy);">Receive Gift</h3><p>Hosting? Create or open an event and log the moi you receive.</p></div>
+          </button>
+          <button class="role-tile" style="background:linear-gradient(135deg,#ffd9e6 0%,#fff0f5 100%);" onclick="nav('collections-hub')">
+            <span class="ic">📤</span>
+            <div><h3 style="color:var(--pink-2);">Send Gift</h3><p>Attending? Open a collection and record what you're giving.</p></div>
+          </button>
+        </div>
+        <div class="section">
+          <div class="section-head"><h2>Upcoming event</h2><button class="link-text" onclick="nav('events')">See all</button></div>
+          <button class="card event-card" style="padding:12px;" onclick="state.activeEventId=${upcoming.id}; nav('event-detail')">
+            <div class="event-cover" style="background:${typeMeta(upcoming.type).grad};width:64px;height:64px;border-radius:16px;align-items:center;justify-content:center;flex-shrink:0;">
+              <span class="cover-emoji">${typeMeta(upcoming.type).emoji}</span>
+            </div>
+            <div class="event-body" style="padding:0 0 0 12px;">
+              <div class="strong">${upcoming.name}</div>
+              <div class="event-meta">📅 ${upcoming.date} · ${upcoming.venue.split(',')[0]}</div>
+            </div>
+          </button>
+        </div>
+        <div class="section">
+          <div class="section-head"><h2>Recent records</h2><button class="link-text" onclick="state.activeEventId=${upcoming.id}; nav('records')">View all</button></div>
+          <div class="list" style="display:grid;gap:10px;">
+            ${(upcoming.records.slice(0, 2).map(r => recordRowHTML(r)).join('')) || `<div class="empty-state" style="padding:18px;"><div class="e">🎁</div>No records yet</div>`}
+          </div>
+        </div>
+      `);
+    }
+
+    function notificationsScreen() {
+      const activeReminders = state.reminders.filter(r => r.status === 'Active');
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('home')">←</button>
+          <h1 style="font-size:22px;color:var(--navy);">Notifications</h1>
+          <p class="sub">Reminders due and recent activity.</p>
+          <div style="margin-top:16px;display:grid;gap:10px;">
+            ${activeReminders.map(r => `
+              <div class="record-row">
+                <span class="record-icon" style="background:#fff3d6;">⏰</span>
+                <div class="record-mid"><div class="t">${r.title}</div><div class="m"><span>📅 ${r.date}</span></div></div>
+              </div>
+            `).join('')}
+            <div class="record-row">
+              <span class="record-icon" style="background:#eaf1ff;">🎁</span>
+              <div class="record-mid"><div class="t">New gift entry recorded</div><div class="m"><span>${state.events[0].name}</span></div></div>
+            </div>
+            <div class="record-row">
+              <span class="record-icon" style="background:#e8f8f0;">✅</span>
+              <div class="record-mid"><div class="t">Package activated</div><div class="m"><span>Welcome to Relfam</span></div></div>
+            </div>
+          </div>
+        </div>
+      `);
+    }
+
+    /* ---------- My Events (Receiver) ---------- */
+    function eventsScreen() {
+      return wrapPlain(`
+        <div class="header">
+          <button class="back-link" onclick="nav('home')">←</button>
+          <div class="header-title">
+            <h1 class="display">My Events</h1>
+            <p>Manage all your events in one place</p>
+          </div>
+          <button class="icon-btn" onclick="showToast('Search coming soon')">🔎</button>
+        </div>
+        <div class="meta-row">
+          <span class="muted">📅 Total ${state.events.length} Events</span>
+          <span class="muted">Sort by: <b class="link-accent" onclick="showToast('Sorting coming soon')" style="color:var(--pink-2);">Recent</b></span>
+        </div>
+        <div class="page" style="padding-top:6px;display:grid;gap:14px;">
+          ${state.events.map(ev => eventCardHTML(ev)).join('')}
+          <button class="pink-btn primary" onclick="nav('create-event-type')">＋ Create New Event</button>
+        </div>
+      `);
+    }
+
+    function eventCardHTML(ev) {
+      const meta = typeMeta(ev.type);
+      const t = eventTotals(ev);
+      return `
+        <button class="event-card" onclick="state.activeEventId=${ev.id}; nav('event-detail')">
+          <div class="event-cover" style="background:${meta.grad};">
+            <span class="cover-emoji">${meta.emoji}</span>
+          </div>
+          <div class="event-body">
+            <div class="row"><span class="event-name">${ev.name}</span><span class="muted">›</span></div>
+            <div class="event-meta">📅 ${ev.date} 🕐 ${ev.time}</div>
+            <div class="event-meta">📍 ${ev.venue}</div>
+            <div class="stat-row">
+              <div class="stat-col"><div class="lbl">Collected</div><div class="val" style="color:var(--success);">${money(t.collected)}</div></div>
+              <div class="stat-col"><div class="lbl">Pending</div><div class="val" style="color:var(--pending);">${money(t.pending)}</div></div>
+              <div class="stat-col"><div class="lbl">Target</div><div class="val" style="color:var(--navy-2);">${money(t.completed)}</div></div>
+            </div>
+          </div>
+        </button>
+      `;
+    }
+
+    /* ---------- Event detail ---------- */
+    function eventDetailScreen() {
+      const ev = getActiveEvent();
+      const meta = typeMeta(ev.type);
+      const t = eventTotals(ev);
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('events')">←</button>
+          <div class="event-cover" style="background:${meta.grad};height:150px;border-radius:22px;align-items:flex-end;padding:16px;">
+            <span style="font-size:44px;">${meta.emoji}</span>
+          </div>
+          <h1 class="page-title display" style="font-size:24px;color:var(--navy);margin:14px 0 2px;">${ev.name}</h1>
+          <p class="sub">📅 ${ev.date} · 🕐 ${ev.time}</p>
+          <p class="sub">📍 ${ev.venue}</p>
+          <div class="row" style="margin-top:10px;">
+            <span class="code-chip">🔖 ${ev.code}</span>
+            <button class="secondary" style="width:auto;padding:9px 14px;" onclick="shareEvent(${ev.id})">📤 Share</button>
+          </div>
+          <div class="card" style="margin-top:14px;">
+            <div class="stat-row" style="border-top:0;padding-top:0;">
+              <div class="stat-col"><div class="lbl">Collected</div><div class="val" style="color:var(--success);">${money(t.collected)}</div></div>
+              <div class="stat-col"><div class="lbl">Pending</div><div class="val" style="color:var(--pending);">${money(t.pending)}</div></div>
+              <div class="stat-col"><div class="lbl">Target</div><div class="val" style="color:var(--navy-2);">${money(t.completed)}</div></div>
+            </div>
+          </div>
+          <div style="margin-top:18px;">
+            <button class="hub-card" style="margin-bottom:12px;" onclick="startEntry('event', ${ev.id})">
+              <span class="hub-icon" style="background:#eaf1ff;">➕</span>
+              <div style="flex:1;"><h3>Add Entry</h3><p>Record a gift received from a guest</p></div>
+              <span class="arrow-circle" style="background:#eaf1ff;color:var(--blue);">→</span>
+            </button>
+            <button class="hub-card" onclick="nav('records')">
+              <span class="hub-icon" style="background:#ffe8f0;">📋</span>
+              <div style="flex:1;"><h3>View Records</h3><p>See the full gift ledger</p></div>
+              <span class="arrow-circle" style="background:#ffe8f0;color:var(--pink-2);">→</span>
+            </button>
+            <button class="hub-card" onclick="nav('view-invitation')">
+              <span class="hub-icon" style="background:#fdeee9;">✉️</span>
+              <div style="flex:1;"><h3>View Invitation</h3><p>Preview the invite your guests will see</p></div>
+              <span class="arrow-circle" style="background:#fdeee9;color:#7a2b3a;">→</span>
+            </button>
+          </div>
+        </div>
+      `);
+    }
+
+    function shareEvent(eventId) {
+      const ev = state.events.find(e => e.id === eventId);
+      const text = `You're invited! 🎉\n${ev.name}\n📅 ${ev.date} at ${ev.time}\n📍 ${ev.venue}\n\nAdd your gift/contribution using event code: ${ev.code}`;
+      window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+    }
+
+    /* ---------- Find an Event (Business Logic Spec §38-39) ---------- */
+    function trustStripHTML() {
+      const items = [
+        ['🪪', 'Verified Host Identity'], ['🏦', 'Verified UPI Account'], ['✉️', 'Invitation Verified'],
+        ['👨‍👩‍👧', 'Family Verification'], ['🛡️', 'Fraud Detection AI Protection'], ['🔒', 'Secure Transactions']
+      ];
+      return `
+        <div class="trust-strip">
+          <h4>Our Security &amp; Trust Features</h4>
+          <div class="trust-strip-grid">
+            ${items.map(([icon, label]) => `<div><div class="ts-icon">${icon}</div><div class="ts-label">${label}</div></div>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function findEventScreen() {
+      return wrapPlain(`
+        <div class="page">
+          <div class="row">
+            <button class="back-link" onclick="nav('home')">←</button>
+            <div class="brand-row"><span class="brand-mark">💗</span><span class="brand-name">Relfam<small>CELEBRATE SMARTER</small></span></div>
+            <button class="icon-btn" onclick="nav('notifications')">🔔</button>
+          </div>
+          <h1 style="font-size:22px;color:var(--navy);margin-top:14px;">Find an Event</h1>
+          <p class="sub">Enter the Event Code shared on invitation to find the event</p>
+          <div class="field" style="margin-top:14px;">
+            <label>Enter Event Code</label>
+            <div class="code-input-row">
+              <input id="findCode" placeholder="e.g. WED4821" style="text-transform:uppercase;">
+              <button class="icon-btn" onclick="document.getElementById('findCode').value='';">✕</button>
+            </div>
+          </div>
+          <button class="primary" style="margin-top:6px;" onclick="findEventByCode()">Search Event →</button>
+          <div class="divider">OR</div>
+          <button class="secondary" onclick="showToast('Camera preview isn\\'t available here — try entering the code instead')">▦ Scan Invitation QR</button>
+          <div class="find-illustration">💑🔍</div>
+          ${trustStripHTML()}
+        </div>
+      `);
+    }
+
+    function findEventFromHome() {
+      const code = document.getElementById('findCodeQuick').value;
+      searchEventByCode(code);
+    }
+    function findEventByCode() {
+      const code = document.getElementById('findCode').value;
+      searchEventByCode(code);
+    }
+    function searchEventByCode(code) {
+      const clean = (code || '').trim().toUpperCase();
+      if (!clean) { showToast('Enter an event code first'); return; }
+      const ev = state.events.find(e => e.code.toUpperCase() === clean);
+      if (!ev) { showToast('No event found for that code — check and try again'); return; }
+      state.activeEventId = ev.id;
+      nav('event-overview');
+    }
+
+    function eventOverviewScreen() {
+      const ev = getActiveEvent();
+      const meta = typeMeta(ev.type);
+      return wrapPlain(`
+        <div class="page">
+          <div class="row">
+            <button class="back-link" onclick="nav('home')">←</button>
+            <button class="icon-btn" onclick="nav('share-event')">📤</button>
+          </div>
+          <div class="overview-cover" style="background:${meta.grad};">
+            <span class="heart">${meta.emoji}</span>
+          </div>
+          <h1 style="font-size:22px;color:var(--navy);margin-top:14px;">${ev.name}</h1>
+          <p class="sub">${ev.type}</p>
+          <span class="verified-badge">✓ Verified Event</span>
+          <p class="sub" style="margin-top:12px;">📅 ${ev.date} · 🕐 ${ev.time}</p>
+          <p class="sub">📍 ${ev.venue}</p>
+          <div class="host-row">
+            <span class="avatar" style="width:38px;height:38px;font-size:16px;">👤</span>
+            <div><div class="muted" style="font-size:10.5px;font-weight:700;">Hosted by</div><div class="strong">${ev.host}</div></div>
+          </div>
+          <div class="action-icon-row">
+            <button class="action-icon" onclick="nav('event-location')"><span class="ai">📍</span>View Location</button>
+            <button class="action-icon" onclick="nav('contribute')"><span class="ai">🎁</span>Contribute</button>
+            <button class="action-icon" onclick="nav('live-streaming')"><span class="ai">▶️</span>Live Streaming</button>
+            <button class="action-icon" onclick="nav('share-event')"><span class="ai">🔗</span>Share Event</button>
+          </div>
+          <div class="trust-row">
+            <div class="trust-tile"><div class="tv">${ev.trustScore}/100</div><div class="tl">🛡️ Trust Score</div></div>
+            <div class="trust-tile">
+              <div class="avatar-stack" style="justify-content:center;">${Array.from({length: Math.min(3, ev.familyVerified)}).map(() => '<span>👤</span>').join('')}</div>
+              <div class="tl">${ev.familyVerified}+ Family Verified</div>
+            </div>
+          </div>
+          ${trustStripHTML()}
+        </div>
+      `);
+    }
+
+    function eventLocationScreen() {
+      const ev = getActiveEvent();
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('event-overview')">←</button>
+          <h1 style="font-size:20px;color:var(--navy);">Event Location</h1>
+          <div class="card" style="margin-top:14px;display:flex;gap:12px;align-items:center;">
+            <span style="font-size:28px;">🏛️</span>
+            <div style="flex:1;">
+              <div class="strong">${ev.venue.split(',')[0]}</div>
+              <div class="sub">${ev.venue}</div>
+            </div>
+          </div>
+          <button class="secondary" style="margin-top:10px;" onclick="window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('${ev.venue.replace(/'/g, "\\'")}'), '_blank')">📍 Open in Maps</button>
+          <div class="map-placeholder" style="margin-top:14px;"><span style="z-index:1;">📍</span></div>
+          <div class="card" style="margin-top:14px;">
+            <div class="stat-row" style="border-top:0;padding-top:0;">
+              <div class="stat-col"><div class="lbl">Distance from you</div><div class="val" style="color:var(--pink-2);">6.4 km</div></div>
+              <div class="stat-col"><div class="lbl">Estimated travel time</div><div class="val" style="color:var(--navy-2);">18 mins</div></div>
+            </div>
+          </div>
+        </div>
+      `);
+    }
+
+    function contributeScreen() {
+      const ev = getActiveEvent();
+      state.contributeAmount = state.contributeAmount || 501;
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('event-overview')">←</button>
+          <h1 style="font-size:20px;color:var(--navy);">Contribute to this Event</h1>
+          <div class="card" style="margin-top:12px;display:flex;gap:12px;align-items:center;">
+            <span class="avatar" style="width:42px;height:42px;font-size:18px;">💗</span>
+            <div><div class="strong">${ev.name}</div><div class="sub">${ev.type}</div><span class="verified-badge">✓ Verified Event</span></div>
+          </div>
+          <div class="field" style="margin-top:16px;">
+            <label>Enter Amount</label>
+            <div class="amount-preset-row" id="amtPresetRow">
+              ${[501, 1001, 2501].map(a => `<button class="amount-preset ${state.contributeAmount === a ? 'active' : ''}" onclick="pickAmountPreset(${a}, this)">₹${a}</button>`).join('')}
+              <button class="amount-preset ${state.contributeAmount === 'custom' ? 'active' : ''}" onclick="pickAmountPreset('custom', this)">Other</button>
+            </div>
+            ${state.contributeAmount === 'custom' ? `<input id="amtCustom" type="number" placeholder="Enter amount ₹" style="margin-top:10px;">` : ''}
+          </div>
+          <div class="field">
+            <label>Your Details</label>
+            <div class="form-stack">
+              <div class="field-icon">👤<input id="contribName" value="${getUserName()}"></div>
+              <div class="field-icon">📱<input id="contribMobile" value="${state.user?.mobile || '+91 98765 43210'}"></div>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>Payment Method</label>
+            <div class="card" style="text-align:center;">
+              <div class="strong" style="font-size:12.5px;">Scan &amp; Pay using any UPI App</div>
+              <div class="qr-placeholder" style="margin-top:12px;"></div>
+              <div class="muted" style="font-size:11px;margin-top:10px;">UPI ID: ${ev.upi}</div>
+              <div class="pay-app-row">
+                <button class="pay-app" onclick="submitContribution('GPay')"><span class="pi">🅖</span>GPay</button>
+                <button class="pay-app" onclick="submitContribution('PhonePe')"><span class="pi">📱</span>PhonePe</button>
+                <button class="pay-app" onclick="submitContribution('Paytm')"><span class="pi">🅿️</span>Paytm</button>
+                <button class="pay-app" onclick="submitContribution('BHIM')"><span class="pi">🇮🇳</span>BHIM</button>
+              </div>
+            </div>
+            <p class="sub" style="margin-top:10px;text-align:center;">🔒 Your contribution will be recorded automatically after successful payment.</p>
+          </div>
+        </div>
+      `);
+    }
+
+    function pickAmountPreset(val, btnEl) {
+      state.contributeAmount = val;
+      document.getElementById('amtPresetRow').querySelectorAll('.amount-preset').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+      if (val === 'custom') render();
+    }
+
+    function submitContribution(method) {
+      const ev = getActiveEvent();
+      const amount = state.contributeAmount === 'custom'
+        ? (Number(document.getElementById('amtCustom')?.value) || 0)
+        : Number(state.contributeAmount);
+      if (amount <= 0) { showToast('Enter a valid amount'); return; }
+      const name = document.getElementById('contribName').value || getUserName();
+      const mobile = document.getElementById('contribMobile').value || '';
+      state.contributions.unshift({
+        id: state.nextRecordId++, title: ev.name, person: name, mobile, place: ev.venue.split(',')[0],
+        oldAmount: 0, newAmount: amount, amount, mode: method === 'Cash' ? 'Cash' : 'UPI', status: 'Complete',
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        direction: 'given', icon: '🎁'
+      });
+      persist();
+      showToast(`🎉 ₹${amount.toLocaleString('en-IN')} contribution recorded via ${method}!`);
+      state.contributeAmount = 501;
+      nav('event-overview');
+    }
+
+    function liveStreamingScreen() {
+      const ev = getActiveEvent();
+      state.liveChatMessages = state.liveChatMessages || [
+        { name: 'Meena R', msg: 'Congratulations! 🎉' },
+        { name: 'Suresh Kumar', msg: 'Wishing you both a happy married life 💐' },
+        { name: 'Lakshmi', msg: 'God bless you both ❤️' }
+      ];
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('event-overview')">←</button>
+          <h1 style="font-size:20px;color:var(--navy);">Live Streaming</h1>
+          <p class="sub">${ev.name} · ${ev.type}</p>
+          <div class="video-placeholder" style="margin-top:12px;">
+            <span class="live-badge">🔴 LIVE</span>
+            <span style="color:#fff;font-weight:800;font-size:12px;">▶ ${ev.name}</span>
+          </div>
+          <div class="filter-row" style="margin-top:12px;">
+            <button class="filter-chip active">Live Chat</button>
+            <button class="filter-chip" onclick="showToast('Highlights coming soon')">Highlights</button>
+            <button class="filter-chip" onclick="showToast('Details coming soon')">Details</button>
+          </div>
+          <div id="chatList" style="margin-top:6px;">
+            ${state.liveChatMessages.map(m => `
+              <div class="chat-bubble"><span class="cb-av">👤</span><div><div class="cb-name">${m.name}</div><div class="cb-msg">${m.msg}</div></div></div>
+            `).join('')}
+          </div>
+          <div class="search-row" style="margin-top:10px;">
+            <input id="chatInput" placeholder="Send your wishes...">
+            <button class="primary" style="width:auto;padding:0 18px;" onclick="sendChatMessage()">➤</button>
+          </div>
+        </div>
+      `);
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      state.liveChatMessages.push({ name: getUserName(), msg: text });
+      input.value = '';
+      document.getElementById('chatList').innerHTML = state.liveChatMessages.map(m => `
+        <div class="chat-bubble"><span class="cb-av">👤</span><div><div class="cb-name">${m.name}</div><div class="cb-msg">${m.msg}</div></div></div>
+      `).join('');
+    }
+
+    function shareEventScreen() {
+      const ev = getActiveEvent();
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('event-overview')">←</button>
+          <h1 style="font-size:20px;color:var(--navy);">Share Event</h1>
+          <div class="card" style="margin-top:12px;display:flex;gap:12px;align-items:center;">
+            <span class="avatar" style="width:42px;height:42px;font-size:18px;">💗</span>
+            <div><div class="strong">${ev.name}</div><div class="sub">${ev.type}</div><span class="verified-badge">✓ Verified Event</span></div>
+          </div>
+          <p class="sub" style="margin-top:14px;">Share this Event with your family &amp; friends</p>
+          <div class="share-code-card" style="margin-top:8px;">
+            <div class="muted" style="font-size:11px;font-weight:700;">Event Code</div>
+            <div class="code">${ev.code}</div>
+            <button class="link-text" style="margin-top:6px;" onclick="copyEventCode('${ev.code}')">⧉ Copy Code</button>
+          </div>
+          <div class="muted" style="font-size:11px;font-weight:700;margin-top:18px;">SHARE VIA</div>
+          <div class="share-grid">
+            <button class="share-app" onclick="shareEvent(${ev.id})"><span class="sa-icon">💬</span>WhatsApp</button>
+            <button class="share-app" onclick="shareVia('Instagram')"><span class="sa-icon">📷</span>Instagram</button>
+            <button class="share-app" onclick="shareVia('Facebook')"><span class="sa-icon">📘</span>Facebook</button>
+            <button class="share-app" onclick="shareVia('Telegram')"><span class="sa-icon">✈️</span>Telegram</button>
+            <button class="share-app" onclick="copyEventCode('${ev.code}')"><span class="sa-icon">🔗</span>Share Link</button>
+            <button class="share-app" onclick="shareVia('Messages')"><span class="sa-icon">💭</span>Messages</button>
+            <button class="share-app" onclick="shareVia('Email')"><span class="sa-icon">✉️</span>Email</button>
+            <button class="share-app" onclick="shareVia('More')"><span class="sa-icon">⋯</span>More</button>
+          </div>
+        </div>
+      `);
+    }
+
+    function copyEventCode(code) {
+      if (navigator.clipboard?.writeText) navigator.clipboard.writeText(code).catch(() => {});
+      showToast('Event code copied!');
+    }
+
+    function shareVia(channel) {
+      const ev = getActiveEvent();
+      const text = `You're invited to ${ev.name}! Use event code ${ev.code} to find it on Relfam.`;
+      if (channel === 'Email') { window.open('mailto:?subject=' + encodeURIComponent(ev.name) + '&body=' + encodeURIComponent(text), '_blank'); return; }
+      if (channel === 'Messages') { window.open('sms:?body=' + encodeURIComponent(text), '_blank'); return; }
+      if (navigator.share) { navigator.share({ title: ev.name, text }).catch(() => {}); return; }
+      showToast(`${channel} sharing isn't available in this preview`);
+    }
+
+    /* ---------- Create / Open hub (Receiver) ---------- */
+    function createOpenScreen() {
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('home')">←</button>
+          <div class="header-title" style="text-align:center;margin-bottom:6px;">
+            <h1 style="font-size:21px;color:var(--navy);">Create / Open Event</h1>
+            <p class="sub">Create a new event or open an existing one to manage all your details easily.</p>
+          </div>
+          <div class="hub-banner">🎉🎁🎊</div>
+          <button class="hub-card" onclick="nav('create-event-type')">
+            <span class="hub-icon" style="background:#eaf1ff;">➕</span>
+            <div style="flex:1;"><h3 style="color:var(--blue);">Create New Event</h3><p>Create a new event and add all details to get started.</p></div>
+            <span class="arrow-circle" style="background:#eaf1ff;color:var(--blue);">→</span>
+          </button>
+          <button class="hub-card" onclick="nav('events')">
+            <span class="hub-icon" style="background:#ffe8f0;">📂</span>
+            <div style="flex:1;"><h3 style="color:var(--pink-2);">Open Existing Event</h3><p>Open and continue managing your existing events.</p></div>
+            <span class="arrow-circle" style="background:#ffe8f0;color:var(--pink-2);">→</span>
+          </button>
+          <div class="note-strip">🛡️ Your Data is Safe — all your records are secure and private. Only you can access your data.</div>
+        </div>
+      `);
+    }
+
+    /* ---------- Create event: type picker ---------- */
+    function createEventTypeScreen() {
+      return wrapPlain(`
+        <div class="page">
+          <div class="row">
+            <button class="back-link" onclick="nav('create-open')">←</button>
+            <div class="header-title"><h1 style="font-size:19px;color:var(--navy);">Create New Event 🎉</h1><p>Add basic details about your event</p></div>
+            <button class="icon-btn" onclick="showToast('Help coming soon')">?</button>
+          </div>
+          <div class="card" style="margin-top:14px;text-align:center;">
+            <div style="font-size:34px;">📷</div>
+            <div class="strong" style="margin-top:6px;">Event Cover <span class="muted" style="font-weight:600;">(Optional)</span></div>
+            <p class="sub" style="margin-top:6px;">Add a cover image to make your invitation more personal and beautiful.</p>
+            <button class="secondary" style="margin-top:10px;" onclick="showToast('Image picker coming soon')">🖼️ Choose Image</button>
+          </div>
+          <div style="margin-top:18px;">
+            <div class="strong" style="font-size:13px;">Event Type <span style="color:var(--pink-2);">*</span></div>
+            <div class="type-grid">
+              ${eventTypes.map(t => `
+                <button class="type-tile ${state.selectedType === t ? 'active' : ''}" onclick="selectEventType('${t}')">
+                  <span class="ti">${t === 'More' ? '▦' : typeMeta(t).emoji}</span>${t}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+          ${state.showMore ? `
+            <div class="more-panel">
+              <div class="row"><span class="strong" style="font-size:13px;">▦ More Events</span><button onclick="state.showMore=false; render();">✕</button></div>
+              <div class="more-grid">
+                ${moreEventTypes.map(m => `
+                  <button class="more-tile" onclick="selectEventType('${m.name}')">
+                    <span style="font-size:18px;">${m.icon}</span>${m.name}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+          <button class="primary" style="margin-top:22px;" onclick="nav('create-event-form')">Continue →</button>
+          <button class="ghost" style="margin-top:10px;" onclick="showToast('Draft saved')">🔖 Save Draft</button>
+        </div>
+      `);
+    }
+
+    function selectEventType(t) {
+      state.selectedType = t;
+      state.showMore = (t === 'More');
+      render();
+    }
+
+    /* ---------- Create event: details form ---------- */
+    function createEventFormScreen() {
+      const displayType = state.selectedType === 'More' ? 'Custom Event' : state.selectedType;
+      return wrapPlain(`
+        <div class="page">
+          <div class="row">
+            <button class="back-link" onclick="nav('create-event-type')">←</button>
+            <div class="header-title"><h1 style="font-size:18px;color:var(--navy);">Create ${displayType} ✨</h1><p>Add details about your event</p></div>
+            <button class="icon-btn" onclick="showToast('Help coming soon')">?</button>
+          </div>
+          <div class="card" style="margin-top:14px;text-align:center;">
+            <div style="font-size:34px;">${typeMeta(displayType).emoji}</div>
+            <div class="strong" style="margin-top:6px;">Event Cover <span class="muted" style="font-weight:600;">(Optional)</span></div>
+            <button class="secondary" style="margin-top:10px;" onclick="showToast('Image picker coming soon')">🖼️ Choose Image</button>
+          </div>
+          <div class="form-stack" style="margin-top:16px;">
+            <div class="field">
+              <label>Event Name *</label>
+              <input id="evName" placeholder="e.g. ${getUserName()}'s ${displayType}">
+            </div>
+            <div class="field">
+              <label>Event Type / Category</label>
+              <input id="evType" value="${displayType}">
+            </div>
+            <div class="grid-2">
+              <div class="field"><label>Date *</label><input id="evDate" type="date"></div>
+              <div class="field"><label>Time *</label><input id="evTime" type="time"></div>
+            </div>
+            <div class="field">
+              <label>Venue / Location *</label>
+              <input id="evVenue" placeholder="e.g. Community Hall, Park, Home">
+            </div>
+            <div class="field">
+              <label>UPI ID for Gift Collection *</label>
+              <input id="evUpi" placeholder="e.g. name@upi">
+              <p class="sub" style="margin-top:6px;">🛡️ Your UPI ID is safe and used only for gift collection.</p>
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label>Description (optional)</label>
+              <textarea id="evDesc" placeholder="e.g. A night of music, dance & celebration"></textarea>
+            </div>
+          </div>
+          <button class="primary" style="margin-top:20px;background:linear-gradient(135deg,#4f6ef7 0%,#8a5cf7 100%);" onclick="createNewEvent()">→ Slide to create an event</button>
+          <button class="ghost" style="margin-top:10px;" onclick="showToast('Draft saved')">🔖 Save Draft</button>
+        </div>
+      `);
+    }
+
+    function createNewEvent() {
+      const displayType = state.selectedType === 'More' ? 'Custom Event' : state.selectedType;
+      const name = document.getElementById('evName').value || `${getUserName()}'s ${displayType}`;
+      const date = document.getElementById('evDate').value;
+      const time = document.getElementById('evTime').value;
+      const venue = document.getElementById('evVenue').value || 'To be announced';
+      const upi = document.getElementById('evUpi').value || 'not-set@upi';
+      const description = document.getElementById('evDesc').value || '';
+      const meta = typeMeta(displayType);
+      const ev = {
+        id: state.nextEventId++,
+        name, type: displayType, code: genCode(meta.prefix), upi, description,
+        date: date ? new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Date TBD',
+        time: time || 'Time TBD',
+        venue, host: getUserName(), trustScore: 85, familyVerified: 1, targetAmount: 0, records: []
+      };
+      state.events.unshift(ev);
+      persist();
+      state.selectedType = 'Wedding';
+      state.showMore = false;
+      state.activeEventId = ev.id;
+      nav('event-created-success');
+    }
+
+    function eventCreatedSuccessScreen() {
+      const ev = getActiveEvent();
+      const meta = typeMeta(ev.type);
+      return wrapPlain(`
+        <div class="page">
+          <div class="row">
+            <button class="back-link" onclick="nav('events')">←</button>
+            <button class="icon-btn" onclick="showToast('Help coming soon')">?</button>
+          </div>
+          <div style="text-align:center;">
+            <div class="modal-check" style="margin-top:6px;">✓</div>
+            <h1 style="font-size:22px;color:var(--navy);margin-top:14px;">Event Created Successfully! 🎉</h1>
+            <p class="sub">Your guests can now start contributing gifts.</p>
+          </div>
+          <div class="overview-cover" style="background:${meta.grad};margin-top:16px;height:120px;">
+            <span class="heart" style="padding-bottom:14px;">${meta.emoji}</span>
+          </div>
+          <div class="card" style="margin-top:14px;">
+            <div class="row">
+              <div><div class="muted" style="font-size:10.5px;font-weight:700;">EVENT TYPE</div><div class="strong" style="font-size:16px;">${ev.type}</div></div>
+              <span class="verified-badge">✓ Created on ${ev.date}</span>
+            </div>
+            <span class="code-chip" style="margin-top:8px;">🔖 Event Code: ${ev.code}</span>
+            <div class="stat-row">
+              <div class="stat-col"><div class="lbl">Event Date</div><div class="val">📅 ${ev.date}</div></div>
+              <div class="stat-col"><div class="lbl">Event Time</div><div class="val">🕐 ${ev.time}</div></div>
+            </div>
+            <p class="sub" style="margin-top:10px;">📍 ${ev.venue}</p>
+            ${ev.name ? `<p class="sub" style="margin-top:8px;"><b>Custom Event Name:</b> ${ev.name}</p>` : ''}
+            ${ev.description ? `<p class="sub" style="margin-top:4px;"><b>Description:</b> ${ev.description}</p>` : ''}
+          </div>
+          <div class="note-strip" style="margin-top:14px;background:linear-gradient(135deg,#fff3de 0%,#fff8ea 100%);">
+            🎁 <div><b>Start Tracking Gifts &amp; Contributions</b><br>Stay updated with all gifts and contributions in one place.</div>
+          </div>
+          <div class="grid-2" style="margin-top:14px;">
+            <button class="secondary" onclick="nav('event-detail')">👁️ Open Event</button>
+            <button class="secondary" onclick="nav('view-invitation')">✉️ View Invitation</button>
+          </div>
+          <button class="ghost" style="margin-top:10px;" onclick="nav('create-event-type')">✏️ Edit Event</button>
+          <button class="ghost" style="margin-top:10px;" onclick="nav('create-event-type')">➕ Create Another Event</button>
+        </div>
+      `);
+    }
+
+    function viewInvitationScreen() {
+      const ev = getActiveEvent();
+      const parts = ev.name.split(/&|and/i).map(s => s.trim()).filter(Boolean);
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('event-detail')">←</button>
+          <div class="card" style="margin-top:10px;text-align:center;background:linear-gradient(135deg,#fdf2f0 0%,#fff8f4 100%);border:1px solid #f3ddd6;">
+            <div class="muted" style="font-size:10px;letter-spacing:0.12em;font-weight:700;">TOGETHER WITH THEIR FAMILIES</div>
+            <h1 class="display" style="font-size:30px;color:#7a2b3a;margin-top:10px;">${parts.length > 1 ? `${parts[0]} ♥ ${parts[1]}` : ev.name}</h1>
+            <p class="sub" style="margin-top:8px;">request the pleasure of your company<br>as they celebrate their ${ev.type.toLowerCase()}</p>
+            <div style="margin-top:16px;text-align:left;display:grid;gap:10px;">
+              <div>📅 ${ev.date}</div>
+              <div>🕐 ${ev.time} Onwards</div>
+              <div>📍 ${ev.venue}</div>
+            </div>
+            <p class="sub" style="margin-top:16px;">Your presence and blessings<br>will make our day even more special.</p>
+          </div>
+          <button class="hub-card" style="margin-top:14px;" onclick="shareEvent(${ev.id})">
+            <span class="hub-icon" style="background:#fdeee9;">🎁</span>
+            <div style="flex:1;"><h3 style="color:#7a2b3a;">Online Gift Contribution</h3><p>If you wish to bless us with a gift, you can do it online in a simple and secure way.</p></div>
+            <span class="arrow-circle" style="background:#7a2b3a;color:#fff;">→</span>
+          </button>
+          <p class="sub" style="text-align:center;margin-top:14px;">❤️ We can't wait to celebrate with you! ❤️</p>
+        </div>
+      `);
+    }
+
+    /* ---------- Collections hub (Sender) ---------- */
+    function collectionsHubScreen() {
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('home')">←</button>
+          <div class="header-title" style="text-align:center;margin-bottom:6px;">
+            <h1 style="font-size:21px;color:var(--navy);">Create / Open Collection</h1>
+            <p class="sub">Collections organize the gifts you send — by family, friends, corporate or religious events.</p>
+          </div>
+          <div class="hub-banner">📤🎁</div>
+          <button class="hub-card" onclick="nav('create-collection')">
+            <span class="hub-icon" style="background:#eaf1ff;">➕</span>
+            <div style="flex:1;"><h3 style="color:var(--blue);">Create New Collection</h3><p>Start a new folder to organize your sent gifts.</p></div>
+            <span class="arrow-circle" style="background:#eaf1ff;color:var(--blue);">→</span>
+          </button>
+          <button class="hub-card" onclick="nav('collections-list')">
+            <span class="hub-icon" style="background:#ffe8f0;">📂</span>
+            <div style="flex:1;"><h3 style="color:var(--pink-2);">Open Existing Collection</h3><p>Continue adding to a collection you already started.</p></div>
+            <span class="arrow-circle" style="background:#ffe8f0;color:var(--pink-2);">→</span>
+          </button>
+          <div class="note-strip">🛡️ A collection is just an organizational folder — it doesn't change the record of what you actually sent.</div>
+        </div>
+      `);
+    }
+
+    function createCollectionScreen() {
+      const types = Object.keys(collectionTypeMeta).filter(t => t !== 'default');
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('collections-hub')">←</button>
+          <h1 style="font-size:22px;color:var(--navy);text-align:center;">Create New Collection</h1>
+          <div class="field" style="margin-top:16px;">
+            <label>Collection Name</label>
+            <input id="colName" placeholder="e.g. Sharma Family Events">
+          </div>
+          <div class="strong" style="font-size:13px;margin-top:6px;">Suggestions</div>
+          <div class="collection-grid">
+            ${types.map(t => `
+              <button class="collection-tile ${state.selectedCollectionType === t ? 'active' : ''}" style="background:${collMeta(t).grad};" onclick="state.selectedCollectionType='${t}'; render();">
+                <span class="ci">${collMeta(t).emoji}</span>${t} Events
+              </button>
+            `).join('')}
+          </div>
+          <button class="primary" style="margin-top:22px;background:linear-gradient(135deg,#4f6ef7 0%,#8a5cf7 100%);" onclick="createCollection()">→ Create Collection</button>
+        </div>
+      `);
+    }
+
+    function createCollection() {
+      const name = document.getElementById('colName').value || `${state.selectedCollectionType} Events`;
+      const col = { id: state.nextCollectionId++, name, type: state.selectedCollectionType, entries: [] };
+      state.collections.unshift(col);
+      persist();
+      showToast('Collection created!');
+      state.activeCollectionId = col.id;
+      nav('collection-detail');
+    }
+
+    function collectionsListScreen() {
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('collections-hub')">←</button>
+          <h1 style="font-size:22px;color:var(--navy);">Your Collections</h1>
+          <p class="sub">Organize. Track. Celebrate. Every gift you send, in one place.</p>
+          <div style="margin-top:16px;display:grid;gap:12px;">
+            ${state.collections.map(col => {
+              const meta = collMeta(col.type);
+              const t = collectionTotals(col);
+              return `
+                <button class="hub-card" style="background:${meta.grad};" onclick="state.activeCollectionId=${col.id}; nav('collection-detail')">
+                  <span class="hub-icon" style="background:rgba(255,255,255,0.6);">${meta.emoji}</span>
+                  <div style="flex:1;"><h3 style="color:var(--navy);">${col.name}</h3><p>${col.entries.length} entries · Sent ${money(t.sent)}</p></div>
+                  <span class="arrow-circle" style="background:rgba(255,255,255,0.7);color:var(--navy);">→</span>
+                </button>
+              `;
+            }).join('') || `<div class="empty-state"><div class="e">📁</div>No collections yet.</div>`}
+          </div>
+          <button class="primary" style="margin-top:16px;" onclick="nav('create-collection')">＋ Create New Collection</button>
+        </div>
+      `);
+    }
+
+    function collectionDetailScreen() {
+      const col = getActiveCollection();
+      const meta = collMeta(col.type);
+      const t = collectionTotals(col);
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('collections-list')">←</button>
+          <div style="background:${meta.grad};border-radius:22px;padding:22px;text-align:center;">
+            <span style="font-size:40px;">${meta.emoji}</span>
+            <h1 style="font-size:20px;color:var(--navy);margin-top:8px;">${col.name}</h1>
+            <p class="sub">${col.type} Collection</p>
+          </div>
+          <div class="card" style="margin-top:14px;">
+            <div class="stat-row" style="border-top:0;padding-top:0;">
+              <div class="stat-col"><div class="lbl">Total Sent</div><div class="val" style="color:var(--blue);">${money(t.sent)}</div></div>
+              <div class="stat-col"><div class="lbl">Pending</div><div class="val" style="color:var(--pending);">${money(t.pending)}</div></div>
+              <div class="stat-col"><div class="lbl">Completed</div><div class="val" style="color:var(--success);">${money(t.completed)}</div></div>
+            </div>
+          </div>
+          <button class="primary" style="margin-top:16px;" onclick="startEntry('collection', ${col.id})">＋ Add Entry</button>
+          <div style="margin-top:16px;">
+            ${col.entries.map(r => recordRowHTML(r, 'collection', col.id)).join('') || `<div class="empty-state"><div class="e">🎁</div>No entries yet — add the first gift you sent.</div>`}
+          </div>
+        </div>
+      `);
+    }
+
+    /* ---------- Unified Add Entry form (Sender & Receiver) ---------- */
+    function startEntry(kind, id) {
+      state.entryContext = { kind, id };
+      state.entryMode = 'Cash';
+      state.entryReceiverUpi = '';
+      nav('entry-form');
+    }
+
+    function entryFormScreen() {
+      const isEvent = state.entryContext.kind === 'event';
+      const ctx = isEvent ? state.events.find(e => e.id === state.entryContext.id) : state.collections.find(c => c.id === state.entryContext.id);
+      state.entryMode = state.entryMode || 'Cash';
+      const upi = isEvent ? ctx.upi : (state.entryReceiverUpi || 'not-set@upi');
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('${isEvent ? 'event-detail' : 'collection-detail'}')">←</button>
+          <h1 style="font-size:22px;color:var(--blue);text-align:center;">Add Entry</h1>
+          <p class="sub" style="text-align:center;">Add new given or received entry</p>
+          <div class="card" style="margin-top:14px;">
+            <div class="form-stack">
+              <div class="field">
+                <label>Event Name</label>
+                <div class="field-icon">📅<input id="enTitle" value="${isEvent ? ctx.name : ''}" placeholder="e.g. Akash & Priya Wedding"></div>
+              </div>
+              <div class="field">
+                <label>${isEvent ? 'Sender' : 'Receiver'} Name</label>
+                <div class="field-icon">👤<input id="enPerson" placeholder="e.g. Ramesh Kumar"><button class="icon-btn" style="width:30px;height:30px;box-shadow:none;font-size:14px;" onclick="showToast('Voice input coming soon')">🎙️</button></div>
+              </div>
+              <div class="field">
+                <label>${isEvent ? 'Sender' : 'Receiver'} Mobile No.</label>
+                <div class="mobile-row">
+                  <select id="enCode">${countryCodes.map(c => `<option value="${c}">${c}</option>`).join('')}</select>
+                  <input id="enMobile" placeholder="98765 43210">
+                </div>
+              </div>
+              <div class="field">
+                <label>Place</label>
+                <div class="field-icon">📍<input id="enPlace" placeholder="e.g. Coimbatore, Tamil Nadu"><button class="icon-btn" style="width:30px;height:30px;box-shadow:none;font-size:14px;" onclick="showToast('Voice input coming soon')">🎙️</button></div>
+              </div>
+              ${!isEvent ? `<div class="field" style="margin-bottom:0;"><label>Receiver UPI ID (optional)</label><input id="enReceiverUpi" placeholder="e.g. name@upi" oninput="state.entryReceiverUpi=this.value;"></div>` : ''}
+            </div>
+          </div>
+
+          <div class="field" style="margin-top:16px;">
+            <label>Entry Type <span class="muted" style="font-weight:600;">(select one or both)</span></label>
+            <div class="grid-2" id="entryTypeRow">
+              <label class="check-pill" id="oldTypeCard" style="flex-direction:column;align-items:flex-start;gap:2px;background:#eaf1ff;border-color:#c9daff;">
+                <div class="row" style="width:100%;"><span>🔄 <b>Old (Pending)</b></span><input type="checkbox" id="enOld" onchange="onEntryTypeChange()"></div>
+                <small class="muted" style="font-weight:600;">To be close or tally the old gift amount</small>
+              </label>
+              <label class="check-pill" id="newTypeCard" style="flex-direction:column;align-items:flex-start;gap:2px;background:#ffe8f0;border-color:#ffc9dd;">
+                <div class="row" style="width:100%;"><span>✨ <b>New (Fresh)</b></span><input type="checkbox" id="enNew" checked onchange="onEntryTypeChange()"></div>
+                <small class="muted" style="font-weight:600;">Fresh entry for this event</small>
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Enter Amount <span class="muted" style="font-weight:600;">(for selected type(s))</span></label>
+            <div class="grid-2">
+              <div><label class="muted" style="font-size:10.5px;font-weight:700;">Old (Pending) Amount</label><input id="enOldAmt" type="number" placeholder="0" oninput="updateEntryTotal()"></div>
+              <div><label class="muted" style="font-size:10.5px;font-weight:700;">New (Fresh) Amount</label><input id="enNewAmt" type="number" placeholder="0" oninput="updateEntryTotal()"></div>
+            </div>
+          </div>
+
+          <div class="summary-card" style="margin:14px 0 0;padding:14px 16px;">
+            <div class="row"><span class="strong" style="font-size:12.5px;color:var(--navy-2);">Total Amount</span><span class="strong" style="font-size:19px;color:var(--navy);" id="enTotalDisplay">₹0</span></div>
+          </div>
+
+          <div class="field" style="margin-top:16px;">
+            <label>Payment Method</label>
+            <div class="grid-2" id="payMethodRow">
+              <button class="check-pill ${state.entryMode === 'Cash' ? 'active' : ''}" id="payCash" onclick="selectPaymentMethod('Cash')" style="justify-content:flex-start;">💵 Cash</button>
+              <button class="check-pill ${state.entryMode === 'UPI' ? 'active' : ''}" id="payUpi" onclick="selectPaymentMethod('UPI')" style="justify-content:flex-start;">📲 UPI</button>
+            </div>
+          </div>
+          <div class="card" id="qrBlock" style="display:${state.entryMode === 'UPI' ? 'block' : 'none'};text-align:center;margin-top:4px;">
+            <div class="strong" style="font-size:12.5px;color:var(--blue);">Scan QR Code to Pay</div>
+            <p class="sub" style="margin-top:2px;">Scan this QR code using any UPI app</p>
+            <div class="qr-placeholder" style="margin-top:12px;"></div>
+            <div class="muted" style="font-size:11px;margin-top:10px;">UPI ID: ${upi}</div>
+          </div>
+
+          <div class="field" style="margin-top:16px;margin-bottom:0;">
+            <label>Notes (optional)</label>
+            <textarea id="enNote" placeholder="Add notes (optional)"></textarea>
+          </div>
+          <button class="primary" id="saveEntryBtn" style="margin-top:18px;background:${state.entryMode === 'UPI' ? 'linear-gradient(135deg,var(--blue-2) 0%,var(--blue) 100%)' : 'linear-gradient(135deg,var(--pink-2) 0%,var(--pink) 100%)'};box-shadow:0 14px 26px rgba(255,61,120,0.28);" onclick="saveEntry()">💾 Save Entry</button>
+          <p class="sub" style="text-align:center;margin-top:10px;">🛡️ Your payment is 100% secure and encrypted</p>
+        </div>
+      `);
+    }
+
+    function onEntryTypeChange() {
+      const isOld = document.getElementById('enOld').checked;
+      const isNew = document.getElementById('enNew').checked;
+      document.getElementById('oldTypeCard').style.opacity = isOld ? '1' : '0.55';
+      document.getElementById('newTypeCard').style.opacity = isNew ? '1' : '0.55';
+    }
+    function updateEntryTotal() {
+      const oldAmt = Number(document.getElementById('enOldAmt').value) || 0;
+      const newAmt = Number(document.getElementById('enNewAmt').value) || 0;
+      document.getElementById('enTotalDisplay').textContent = money(oldAmt + newAmt);
+    }
+    function selectPaymentMethod(mode) {
+      state.entryMode = mode;
+      document.getElementById('payCash').classList.toggle('active', mode === 'Cash');
+      document.getElementById('payUpi').classList.toggle('active', mode === 'UPI');
+      document.getElementById('qrBlock').style.display = mode === 'UPI' ? 'block' : 'none';
+      const btn = document.getElementById('saveEntryBtn');
+      btn.style.background = mode === 'UPI'
+        ? 'linear-gradient(135deg,var(--blue-2) 0%,var(--blue) 100%)'
+        : 'linear-gradient(135deg,var(--pink-2) 0%,var(--pink) 100%)';
+    }
+
+    function saveEntry() {
+      const isEvent = state.entryContext.kind === 'event';
+      const isOld = document.getElementById('enOld').checked;
+      const isNew = document.getElementById('enNew').checked;
+      if (!isOld && !isNew) { showToast('Select Old and/or New — at least one is required'); return; }
+      const oldAmount = isOld ? (Number(document.getElementById('enOldAmt').value) || 0) : 0;
+      const newAmount = isNew ? (Number(document.getElementById('enNewAmt').value) || 0) : 0;
+      const amount = oldAmount + newAmount;
+      if (amount <= 0) { showToast('Enter an amount for the selected entry type(s)'); return; }
+
+      const person = document.getElementById('enPerson').value || 'Someone special';
+      const code = document.getElementById('enCode').value;
+      const mobileVal = document.getElementById('enMobile').value;
+      const mobile = mobileVal ? `${code} ${mobileVal}` : '';
+      const place = document.getElementById('enPlace').value || '—';
+      let status = isOld && !isNew ? 'Old' : 'Pending';
+
+      const record = {
+        id: state.nextRecordId++,
+        title: document.getElementById('enTitle').value || (isEvent ? 'Moi Entry' : 'Gift Sent'),
+        person, mobile, place, oldAmount, newAmount, amount,
+        mode: state.entryMode, status,
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        direction: isEvent ? 'received' : 'given',
+        icon: isEvent ? '💝' : '🎁',
+        receiverUpi: isEvent ? undefined : (document.getElementById('enReceiverUpi').value || '')
+      };
+
+      if (isEvent) {
+        const ev = state.events.find(e => e.id === state.entryContext.id);
+        ev.records.unshift(record);
+        persist();
+        state.activeEventId = ev.id;
+      } else {
+        const col = state.collections.find(c => c.id === state.entryContext.id);
+        col.entries.unshift(record);
+        persist();
+        state.activeCollectionId = col.id;
+      }
+      state.entryReceiverUpi = '';
+      showSuccessModal('Entry Saved Successfully!', 'Thanks for the contribution.', isEvent ? 'records' : 'collection-detail');
+    }
+
+    function showSuccessModal(title, subtitle, targetPage) {
+      state.modalTarget = targetPage;
+      const overlay = document.createElement('div');
+      overlay.id = 'successModalOverlay';
+      overlay.className = 'modal-backdrop';
+      overlay.innerHTML = `
+        <div class="modal-card">
+          <div class="modal-check">✓</div>
+          <h2 style="font-size:19px;color:var(--navy);margin-top:14px;">${title}</h2>
+          <p class="sub" style="margin-top:6px;">${subtitle}</p>
+          <button class="pink-btn primary" style="margin-top:18px;" onclick="closeSuccessModal()">OK</button>
+        </div>
+      `;
+      document.getElementById('app').appendChild(overlay);
+    }
+    function closeSuccessModal() {
+      const el = document.getElementById('successModalOverlay');
+      if (el) el.remove();
+      nav(state.modalTarget);
+    }
+
+    /* ---------- Records (event ledger) ---------- */
+    function amountBucketMatch(bucket, amt) {
+      if (bucket === 'all') return true;
+      if (bucket === 'lt100') return amt < 100;
+      if (bucket === '100-500') return amt >= 100 && amt <= 500;
+      if (bucket === '500-1000') return amt > 500 && amt <= 1000;
+      if (bucket === '1000-5000') return amt > 1000 && amt <= 5000;
+      if (bucket === 'gt5000') return amt > 5000;
+      return true;
+    }
+    function visitCountOf(records, person) {
+      return records.filter(r => r.person === person).length;
+    }
+    function visitBucketMatch(bucket, count) {
+      if (bucket === '1') return count === 1;
+      if (bucket === '2') return count === 2;
+      if (bucket === '3-5') return count >= 3 && count <= 5;
+      if (bucket === '6-10') return count >= 6 && count <= 10;
+      if (bucket === 'gt10') return count > 10;
+      return true;
+    }
+
+    function periodMatch(period, dateStr) {
+      if (period === 'all') return true;
+      const d = new Date(dateStr);
+      if (isNaN(d)) return true;
+      const days = (Date.now() - d.getTime()) / 86400000;
+      if (period === '7d') return days <= 7;
+      if (period === '30d') return days <= 30;
+      return true;
+    }
+
+    function filteredRecords(ev) {
+      let list = ev.records;
+      if (state.recordsFilter !== 'all') {
+        list = list.filter(r => r.status.toLowerCase() === state.recordsFilter);
+      }
+      const q = state.recordsSearch.trim().toLowerCase();
+      if (q) list = list.filter(r => r.person.toLowerCase().includes(q) || r.place.toLowerCase().includes(q));
+      const f = state.detailedFilter;
+      if (f.places.length) list = list.filter(r => f.places.includes(r.place));
+      if (f.statuses.length) list = list.filter(r => f.statuses.includes(r.status));
+      if (f.amountBucket === 'custom') {
+        const from = Number(f.customFrom) || 0;
+        const to = Number(f.customTo) || Infinity;
+        list = list.filter(r => r.amount >= from && r.amount <= to);
+      } else {
+        list = list.filter(r => amountBucketMatch(f.amountBucket, r.amount));
+      }
+      if (f.visits.length) list = list.filter(r => f.visits.some(v => visitBucketMatch(v, visitCountOf(ev.records, r.person))));
+      list = list.filter(r => periodMatch(f.period, r.date));
+      return list;
+    }
+
+    function activeFilterCount() {
+      const f = state.detailedFilter;
+      let n = 0;
+      if (f.places.length) n += f.places.length;
+      if (f.statuses.length) n += f.statuses.length;
+      if (f.amountBucket !== 'all') n += 1;
+      if (f.period !== 'all') n += 1;
+      return n;
+    }
+
+    function recordRowHTML(r, kind, containerId) {
+      const editable = kind && containerId;
+      return `
+        <div class="record-row" ${editable ? `onclick="startEditRecord('${kind}', ${containerId}, ${r.id})" style="cursor:pointer;"` : ''}>
+          <span class="record-icon" style="background:${r.direction === 'given' ? '#eaf1ff' : '#ffe8f0'};">${r.icon}</span>
+          <div class="record-mid">
+            <div class="t">${r.title}</div>
+            <div class="m"><span>👤 ${r.person}</span><span>📍 ${r.place}</span></div>
+            <div class="m">📅 ${r.date}${r.oldAmount && r.newAmount ? ` · Old ${money(r.oldAmount)} + New ${money(r.newAmount)}` : ''}</div>
+          </div>
+          <div class="record-side">
+            <div class="amt" style="color:${r.direction === 'given' ? 'var(--blue)' : 'var(--pink-2)'};">${money(r.amount)}</div>
+            <span class="mode-chip">${r.mode}</span>
+            <div><span class="status-chip ${r.status}">${r.status}</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function recordContainer(kind, containerId) {
+      return kind === 'event'
+        ? state.events.find(e => e.id === containerId).records
+        : state.collections.find(c => c.id === containerId).entries;
+    }
+    function startEditRecord(kind, containerId, recordId) {
+      state.editContext = { kind, containerId, recordId };
+      nav('edit-record');
+    }
+    function editRecordScreen() {
+      const { kind, containerId, recordId } = state.editContext;
+      const list = recordContainer(kind, containerId);
+      const r = list.find(x => x.id === recordId);
+      const backTo = kind === 'event' ? 'records' : 'collection-detail';
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('${backTo}')">←</button>
+          <h1 style="font-size:22px;color:var(--navy);">Edit Record</h1>
+          <p class="sub">Update and save your changes</p>
+          <div class="card" style="margin-top:14px;">
+            <div class="form-stack">
+              <div class="field"><label>Name</label><div class="field-icon">👤<input id="erName" value="${r.person}"><button class="icon-btn" style="width:26px;height:26px;box-shadow:none;" onclick="document.getElementById('erName').value='';">✕</button></div></div>
+              <div class="field"><label>Place</label><div class="field-icon">📍<input id="erPlace" value="${r.place}"><button class="icon-btn" style="width:26px;height:26px;box-shadow:none;" onclick="document.getElementById('erPlace').value='';">✕</button></div></div>
+              <div class="menu-item"><div class="mi-left">💰 Amount</div><span class="strong" style="color:var(--blue);">${money(r.amount)}</span></div>
+              <div class="menu-item"><div class="mi-left">✓ Status</div><span class="status-chip ${r.status}">${r.status}</span></div>
+              <div class="menu-item" style="border-bottom:0;"><div class="mi-left">📅 Date of Record</div><span class="strong">${r.date}</span></div>
+            </div>
+          </div>
+          <p class="sub" style="margin-top:10px;">ℹ️ You can edit Name and Place only.</p>
+          <div class="group-label">Update Status</div>
+          <div style="display:grid;gap:10px;" id="statusUpdateRow">
+            <label class="check-pill" style="background:#e3f7ee;border-color:#bdeeda;" onclick="pickEditStatus('Complete', this)"><input type="radio" name="erStatus" ${r.status === 'Complete' ? 'checked' : ''}><div><b style="color:var(--success);">✓ Mark as Completed</b><div class="mi-desc">Mark this record as fully completed</div></div></label>
+            <label class="check-pill" style="background:#fff3de;border-color:#ffe1a8;" onclick="pickEditStatus('Old', this)"><input type="radio" name="erStatus" ${r.status === 'Old' ? 'checked' : ''}><div><b style="color:var(--pending);">− Mark as Partially Completed</b><div class="mi-desc">Mark this record as partially completed</div></div></label>
+            <label class="check-pill" onclick="pickEditStatus('Pending', this)"><input type="radio" name="erStatus" ${r.status === 'Pending' ? 'checked' : ''}><div><b>↻ Mark as Not Completed</b><div class="mi-desc">Revert this record to not completed</div></div></label>
+          </div>
+          <div class="grid-2" style="margin-top:16px;">
+            <button class="secondary" onclick="nav('${backTo}')">Cancel</button>
+            <button class="primary" onclick="saveRecordEdit()">Save Changes</button>
+          </div>
+        </div>
+      `);
+    }
+    function pickEditStatus(status, labelEl) {
+      state.editContext.newStatus = status;
+      labelEl.parentElement.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+      labelEl.querySelector('input[type=radio]').checked = true;
+    }
+    function saveRecordEdit() {
+      const { kind, containerId, recordId, newStatus } = state.editContext;
+      const list = recordContainer(kind, containerId);
+      const r = list.find(x => x.id === recordId);
+      r.person = document.getElementById('erName').value || r.person;
+      r.place = document.getElementById('erPlace').value || r.place;
+      if (newStatus) r.status = newStatus;
+      persist();
+      showToast('Record updated!');
+      nav(kind === 'event' ? 'records' : 'collection-detail');
+    }
+
+    function buildRecordsListHTML(ev) {
+      const list = filteredRecords(ev);
+      if (!list.length) return `<div class="empty-state"><div class="e">🎁</div>No records match this filter yet.</div>`;
+      return list.map(r => recordRowHTML(r, 'event', ev.id)).join('');
+    }
+
+    function recordsScreen() {
+      const ev = getActiveEvent();
+      const t = eventTotals(ev);
+      const yet = t.pending;
+      const filterCount = activeFilterCount();
+      return `<div class="screen">
+        <div class="page" style="padding-bottom:110px;">
+          <div class="row">
+            <div><h1 style="font-size:20px;color:var(--navy);">View Records</h1><p class="sub" style="margin-top:2px;">${ev.name}</p></div>
+            <button class="secondary" style="width:auto;padding:9px 14px;" onclick="showToast('Export coming soon')">⬇ Download</button>
+          </div>
+          <div class="summary-card" style="margin:14px 0 0;">
+            <div class="summary-title">Collection Summary</div>
+            <div class="summary-split">
+              <div class="summary-item">
+                <span class="summary-icon" style="background:#ffd9e6;">🤲</span>
+                <div><div class="lbl">Total Received</div><div class="val" style="color:var(--pink-2);">${money(t.received)}</div></div>
+              </div>
+              <div class="summary-divider"></div>
+              <div class="summary-item">
+                <span class="summary-icon" style="background:#dbe6ff;">🎯</span>
+                <div><div class="lbl">Target</div><div class="val" style="color:var(--blue);">${money(t.completed)}</div></div>
+              </div>
+            </div>
+            <div class="yet-row"><div class="lbl">Yet to Receive</div><div class="val">${money(yet)}</div></div>
+          </div>
+          <div style="margin-top:18px;">
+            <div class="row"><span class="strong" style="font-size:13.5px;">Quick Filter</span><span class="muted" style="font-size:12px;">${ev.records.length} Records</span></div>
+            <div class="filter-row" style="margin-top:8px;" id="filterChipRow">
+              ${[['all', '⊞ All'], ['pending', '🕐 Pending'], ['complete', '✓ Complete'], ['old', '🗂 Old']].map(([k, label]) => `
+                <button class="filter-chip ${state.recordsFilter === k ? 'active' : ''}" data-filter="${k}" onclick="setRecordsFilter('${k}')">${label}</button>
+              `).join('')}
+            </div>
+            <div class="search-row">
+              <input id="recordSearchInput" placeholder="Search Name / Place" value="${state.recordsSearch}" oninput="onRecordsSearch(this.value)">
+              <button class="detail-filter-btn" onclick="nav('filter-records')">⚙ Filter${filterCount ? `<span class="filter-badge">${filterCount}</span>` : ''}</button>
+            </div>
+          </div>
+          <div style="margin-top:14px;" id="recordsListContainer">
+            ${buildRecordsListHTML(ev)}
+          </div>
+        </div>
+        <button class="fab" onclick="startEntry('event', ${ev.id})">＋</button>
+        ${bottomNav()}
+        ${state.toast ? `<div class="toast">✓ ${state.toast}</div>` : ''}
+      </div>`;
+    }
+
+    function setRecordsFilter(f) {
+      state.recordsFilter = f;
+      document.querySelectorAll('#filterChipRow .filter-chip').forEach(el => el.classList.toggle('active', el.dataset.filter === f));
+      document.getElementById('recordsListContainer').innerHTML = buildRecordsListHTML(getActiveEvent());
+    }
+
+    function onRecordsSearch(v) {
+      state.recordsSearch = v;
+      document.getElementById('recordsListContainer').innerHTML = buildRecordsListHTML(getActiveEvent());
+    }
+
+    /* ---------- Filter Records (detailed) ---------- */
+    function filterRecordsScreen() {
+      const ev = getActiveEvent();
+      const places = [...new Set(ev.records.map(r => r.place))];
+      const f = state.detailedFilter;
+      const matchCount = filteredRecords(ev).length;
+      return wrapPlain(`
+        <div class="page">
+          <div class="row">
+            <button class="back-link" onclick="nav('records')">←</button>
+            <div class="header-title"><h1 style="font-size:19px;color:var(--navy);">Filter Records</h1><p>Apply filters to view records</p></div>
+            <button class="link-text" onclick="clearFilters()">↺ Reset</button>
+          </div>
+          <div class="summary-card" style="margin:14px 0 0;padding:14px 16px;display:flex;gap:12px;align-items:center;">
+            <span class="emoji-badge" style="background:#dbe6ff;">📋</span>
+            <div><span class="strong" style="font-size:19px;color:var(--blue);">${matchCount}</span> <span class="strong">Records Found</span><div class="muted" style="font-size:11px;">Matching your selected filters</div></div>
+          </div>
+
+          <div class="filter-section" style="margin-top:18px;">
+            <h4>📍 Place</h4>
+            <div class="place-grid">
+              ${places.length ? places.map(p => `
+                <button class="chip-select ${f.places.includes(p) ? 'active' : ''}" onclick="toggleFilterPlace('${p.replace(/'/g, "\\'")}')">${p}${f.places.includes(p) ? ' ✕' : ''}</button>
+              `).join('') : `<span class="muted">No places recorded yet</span>`}
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <h4>₹ Amount</h4>
+            <div class="chip-row" id="amtBucketRow">
+              ${[['all', 'All'], ['lt100', 'Below ₹100'], ['100-500', '₹100–500'], ['500-1000', '₹500–1,000'], ['1000-5000', '₹1,000–5,000'], ['gt5000', 'Above ₹5,000'], ['custom', 'Custom']].map(([k, l]) => `
+                <button class="chip-select ${f.amountBucket === k ? 'active' : ''}" onclick="setAmountBucket('${k}', this)">${l}</button>
+              `).join('')}
+            </div>
+            ${f.amountBucket === 'custom' ? `
+              <div class="grid-2" style="margin-top:10px;">
+                <input placeholder="From ₹" value="${f.customFrom}" oninput="state.detailedFilter.customFrom=this.value">
+                <input placeholder="To ₹" value="${f.customTo}" oninput="state.detailedFilter.customTo=this.value">
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="filter-section">
+            <h4>📅 No. of Visits</h4>
+            <div class="chip-row" id="visitFilterRow">
+              ${[['1', '1'], ['2', '2'], ['3-5', '3 – 5'], ['6-10', '6 – 10'], ['gt10', 'Above 10']].map(([k, l]) => `
+                <button class="chip-select ${f.visits.includes(k) ? 'active' : ''}" onclick="toggleFilterVisits('${k}')">${l}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <h4>✓ Status</h4>
+            <div class="chip-row" id="statusFilterRow">
+              ${['Pending', 'Complete', 'Old'].map(s => `
+                <button class="chip-select ${f.statuses.includes(s) ? 'active' : ''}" onclick="toggleFilterStatus('${s}')">${s}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <h4>🕐 Latest Records</h4>
+            <div class="chip-row" id="periodRow">
+              ${[['all', 'All time'], ['7d', 'Last 7 days'], ['30d', 'Last 30 days']].map(([k, l]) => `
+                <button class="chip-select ${f.period === k ? 'active' : ''}" onclick="setPeriod('${k}', this)">${l}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <button class="ghost" onclick="clearFilters()">🗑️ Clear All</button>
+            <button class="pink-btn primary" onclick="nav('records')">⚙ Apply Filter</button>
+          </div>
+          <p class="sub" style="text-align:center;margin-top:10px;">ℹ️ Filters will be applied to all records.</p>
+        </div>
+      `);
+    }
+
+    function toggleFilterPlace(p) {
+      const f = state.detailedFilter;
+      f.places = f.places.includes(p) ? f.places.filter(x => x !== p) : [...f.places, p];
+      render();
+    }
+    function toggleFilterStatus(s) {
+      const f = state.detailedFilter;
+      f.statuses = f.statuses.includes(s) ? f.statuses.filter(x => x !== s) : [...f.statuses, s];
+      render();
+    }
+    function toggleFilterVisits(v) {
+      const f = state.detailedFilter;
+      f.visits = f.visits.includes(v) ? f.visits.filter(x => x !== v) : [...f.visits, v];
+      render();
+    }
+    function setAmountBucket(k) { state.detailedFilter.amountBucket = k; render(); }
+    function setPeriod(k) { state.detailedFilter.period = k; render(); }
+    function clearFilters() {
+      state.detailedFilter = { places: [], amountBucket: 'all', customFrom: '', customTo: '', visits: [], statuses: [], period: 'all' };
+      render();
+    }
+
+    /* ---------- Profile ---------- */
+    function menuRow(icon, title, desc, target, badge) {
+      const onclick = /^(mailto:|https?:)/.test(target) ? `window.location.href='${target}'` : `nav('${target}')`;
+      return `
+        <div class="menu-item" onclick="${onclick}">
+          <div class="mi-left">
+            <span class="emoji-badge" style="width:36px;height:36px;font-size:16px;background:#eef1fb;">${icon}</span>
+            <div><div class="mi-title">${title}</div><div class="mi-desc">${desc}</div></div>
+          </div>
+          <span>${badge !== undefined ? badge : '›'}</span>
+        </div>
+      `;
+    }
+
+    function profileScreen() {
+      return wrapWithNav(`
+        <div class="page">
+          <div class="row">
+            <div style="display:flex;gap:14px;align-items:center;">
+              <div class="avatar-photo">👤<span class="cam-badge">📷</span></div>
+              <div>
+                <div class="strong" style="font-size:17px;color:var(--navy);">${getUserName()}</div>
+                <div class="muted" style="font-size:11px;margin-top:2px;">📅 Member Since ${state.user?.joinedAt || '25 Nov 2023'}</div>
+              </div>
+            </div>
+            <button class="icon-btn" onclick="nav('notifications')">🔔</button>
+          </div>
+
+          <div class="group-label">Main</div>
+          <div class="card">
+            ${menuRow('👤', 'My Profile', 'Personal information & account details', 'edit-profile')}
+            ${menuRow('📊', 'Records & Summary', 'Collections, spending, pending', 'records-summary')}
+            ${menuRow('🧾', 'Transaction History', 'View all your UPI, bank & cash transactions', 'transaction-history')}
+            ${menuRow('⏰', 'Reminders', 'Upcoming and pending reminders', 'reminders', state.reminders.filter(r => r.status === 'Active').length)}
+            ${menuRow('⚙️', 'Settings', 'App preferences and controls', 'settings')}
+          </div>
+
+          <div class="group-label">Management</div>
+          <div class="card">
+            ${menuRow('👨‍👩‍👧', 'Family Accounts', 'Shared access for family members', 'family', state.family.length)}
+            ${menuRow('🏦', 'Security', 'Password, biometrics and privacy', 'security')}
+            ${menuRow('📅', 'My Events', 'Events you are hosting', 'events', state.events.length)}
+            ${menuRow('📂', 'My Collections', 'Gifts you have sent, organized', 'collections-list', state.collections.length)}
+          </div>
+
+          <div class="group-label">General</div>
+          <div class="card">
+            ${menuRow('🎧', 'Help & Support', 'FAQ and contact options', 'help')}
+            ${menuRow('💬', 'Feedback', 'Tell us what to improve', 'feedback')}
+            ${menuRow('ℹ️', 'About App', 'Version and app information', 'about')}
+            ${menuRow('🔗', 'Share App', 'Invite friends and family', 'share')}
+          </div>
+
+          <div class="card" style="margin-top:14px;">
+            <div class="menu-item" onclick="logout()" style="color:var(--pink-2);">↪ Logout <span>›</span></div>
+          </div>
+        </div>
+      `);
+    }
+
+    function subPage(title, sub, bodyHtml, backTo = 'profile') {
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('${backTo}')">←</button>
+          <h1 style="font-size:22px;color:var(--navy);">${title}</h1>
+          ${sub ? `<p class="sub">${sub}</p>` : ''}
+          <div style="margin-top:16px;">${bodyHtml}</div>
+        </div>
+      `);
+    }
+
+    function editProfileScreen() {
+      return subPage('Edit Profile', 'Update your personal details.', `
+        <div class="form-stack">
+          <div class="field"><label>Display Name</label><input id="epName" value="${getUserName()}"></div>
+          <div class="field"><label>Address</label><input id="epAddress" value="${state.user?.address || ''}"></div>
+          <div class="field" style="margin-bottom:0;"><label>Language</label>
+            <select id="epLang">
+              ${['English', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Hindi'].map(l => `<option ${state.user?.language === l ? 'selected' : ''}>${l}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <button class="primary" style="margin-top:18px;" onclick="saveProfile()">Save Changes</button>
+        <div class="card" style="margin-top:16px;">
+          <div class="menu-item" onclick="nav('change-password')">🔒 Change Password <span>›</span></div>
+          <div class="menu-item" onclick="startMobileChange()">📱 Change Mobile Number <span>›</span></div>
+          <div class="menu-item" onclick="nav('update-dob')">🎂 Date of Birth <span>›</span></div>
+        </div>
+      `);
+    }
+    function saveProfile() {
+      state.user.name = document.getElementById('epName').value || state.user.name;
+      state.user.address = document.getElementById('epAddress').value;
+      state.user.language = document.getElementById('epLang').value;
+      localStorage.setItem('eventxUser', JSON.stringify(state.user));
+      showToast('Profile updated');
+      nav('profile');
+    }
+
+    const pwdRules = [
+      ['len', 'At least 8 characters', s => s.length >= 8],
+      ['upper', 'At least one uppercase letter (A-Z)', s => /[A-Z]/.test(s)],
+      ['lower', 'At least one lowercase letter (a-z)', s => /[a-z]/.test(s)],
+      ['num', 'At least one number (0-9)', s => /[0-9]/.test(s)],
+      ['special', 'At least one special character (!@#$%^&*)', s => /[!@#$%^&*]/.test(s)]
+    ];
+    function changePasswordScreen() {
+      return subPage('Change Password', "For your security, please create a strong password that you don't use elsewhere.", `
+        <div class="form-stack">
+          <div class="field"><label>Current Password</label><div class="field-icon">🔒<input id="cpCurrent" type="password" placeholder="Enter your current password"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('cpCurrent', this)">👁️</button></div></div>
+          <div class="field"><label>New Password</label><div class="field-icon">🔒<input id="cpNew" type="password" placeholder="Enter your new password" oninput="updatePwdStrength()"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('cpNew', this)">👁️</button></div></div>
+          <div>
+            <div class="row"><span class="muted" style="font-size:11px;font-weight:700;">Password Strength</span><span class="strong" id="pwdStrengthLabel" style="font-size:12px;color:var(--pending);">Weak</span></div>
+            <div style="display:flex;gap:4px;margin-top:6px;" id="pwdStrengthBar">
+              ${[0, 1, 2, 3, 4].map(i => `<span style="flex:1;height:5px;border-radius:99px;background:var(--line);" data-bar="${i}"></span>`).join('')}
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0;"><label>Confirm New Password</label><div class="field-icon">🔒<input id="cpConfirm" type="password" placeholder="Confirm your new password"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('cpConfirm', this)">👁️</button></div></div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <div class="strong" style="font-size:13px;">🛡️ Password must include:</div>
+          <div id="pwdChecklist" style="margin-top:8px;">
+            ${pwdRules.map(([key, label]) => `<div class="menu-item" id="rule-${key}"><span class="muted" style="font-size:12.5px;">○ ${label}</span></div>`).join('')}
+          </div>
+        </div>
+        <button class="primary" style="margin-top:18px;" onclick="changePassword()">Update Password</button>
+      `);
+    }
+    function updatePwdStrength() {
+      const val = document.getElementById('cpNew').value;
+      const passed = pwdRules.filter(([, , test]) => test(val));
+      pwdRules.forEach(([key, label]) => {
+        const ok = passed.some(p => p[0] === key);
+        document.getElementById('rule-' + key).innerHTML = `<span style="font-size:12.5px;color:${ok ? 'var(--success)' : 'var(--muted)'};">${ok ? '✓' : '○'} ${label}</span>`;
+      });
+      const bars = document.querySelectorAll('#pwdStrengthBar span');
+      const labels = ['Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+      const colors = ['var(--pending)', 'var(--pending)', '#f2a63d', 'var(--blue)', 'var(--success)'];
+      bars.forEach((b, i) => { b.style.background = i < passed.length ? colors[passed.length - 1] : 'var(--line)'; });
+      const lbl = document.getElementById('pwdStrengthLabel');
+      lbl.textContent = val ? labels[Math.max(passed.length - 1, 0)] : 'Weak';
+      lbl.style.color = val ? colors[Math.max(passed.length - 1, 0)] : 'var(--pending)';
+    }
+    function changePassword() {
+      const cur = document.getElementById('cpCurrent').value;
+      const next = document.getElementById('cpNew').value;
+      const confirm = document.getElementById('cpConfirm').value;
+      if (!cur) { showToast('Enter your current password'); return; }
+      if (!pwdRules.every(([, , test]) => test(next))) { showToast('Password does not meet all requirements'); return; }
+      if (next !== confirm) { showToast('Passwords do not match'); return; }
+      showToast('Password updated successfully');
+      nav('profile');
+    }
+
+    function startMobileChange() {
+      state.mobileChangeStage = 'enter';
+      nav('change-mobile');
+    }
+    function changeMobileScreen() {
+      if (state.mobileChangeStage === 'enter') {
+        return subPage('Change Mobile Number', `Current: ${state.user?.mobile || '—'}`, `
+          <div class="field"><label>New Mobile Number</label>
+            <div class="mobile-row">
+              <select id="nmCode">${countryCodes.map(c => `<option>${c}</option>`).join('')}</select>
+              <input id="nmNumber" placeholder="98765 43210">
+            </div>
+          </div>
+          <button class="primary" style="margin-top:6px;" onclick="sendMobileOtp()">Send OTP</button>
+        `);
+      }
+      return subPage('Verify New Number', 'Enter the OTP sent to your new mobile number.', `
+        <div class="otp-boxes"><input maxlength="1"><input maxlength="1"><input maxlength="1"><input maxlength="1"></div>
+        <button class="primary" onclick="verifyMobileOtp()">Verify &amp; Update</button>
+      `);
+    }
+    function sendMobileOtp() {
+      const code = document.getElementById('nmCode').value;
+      const num = document.getElementById('nmNumber').value;
+      if (!num) { showToast('Enter a mobile number'); return; }
+      state.pendingMobile = `${code} ${num}`;
+      state.mobileChangeStage = 'verify';
+      render();
+      showToast('OTP sent to new number');
+    }
+    function verifyMobileOtp() {
+      state.user.mobile = state.pendingMobile;
+      localStorage.setItem('eventxUser', JSON.stringify(state.user));
+      showToast('Mobile number updated — other sessions signed out');
+      nav('profile');
+    }
+
+    function updateDobScreen() {
+      return subPage('Date of Birth', 'Used for birthday reminders.', `
+        <div class="field"><label>Date of Birth</label><input id="dobInput" type="date" value="${state.user?.dob || ''}"></div>
+        <button class="primary" style="margin-top:6px;" onclick="saveDob()">Save Changes</button>
+      `);
+    }
+    function saveDob() {
+      state.user.dob = document.getElementById('dobInput').value;
+      localStorage.setItem('eventxUser', JSON.stringify(state.user));
+      showToast('Date of birth saved');
+      nav('profile');
+    }
+
+    function recordsSummaryScreen() {
+      let totalReceived = 0, receivedCount = 0;
+      state.events.forEach(ev => { const t = eventTotals(ev); totalReceived += t.received; receivedCount += ev.records.length; });
+      const allSent = state.collections.flatMap(col => col.entries).concat(state.contributions);
+      const totalGiven = allSent.reduce((s, e) => s + e.amount, 0);
+      const sentCount = allSent.length;
+      const yetToReceive = Math.max(totalGiven - totalReceived, 0);
+      const pct = sentCount ? Math.min(100, (receivedCount / sentCount) * 100) : 0;
+      return subPage('Records & Summary', 'Here is the summary of your given and received amount.', `
+        <div class="card" style="background:linear-gradient(135deg,#eef2ff 0%,#f5eeff 100%);display:flex;gap:12px;align-items:center;">
+          <span class="emoji-badge" style="background:linear-gradient(135deg,var(--blue) 0%,var(--old) 100%);color:#fff;">👨‍👩‍👧</span>
+          <div><div class="muted" style="font-size:11px;font-weight:700;">Account Name</div><div class="strong" style="font-size:16px;">My Family Events</div></div>
+        </div>
+        <div class="grid-2" style="margin-top:14px;">
+          <div class="card"><div class="strong" style="font-size:12px;color:var(--blue);">Total Given Amount</div><div class="row" style="margin-top:6px;"><span class="strong" style="font-size:20px;">${money(totalGiven)}</span><span class="emoji-badge" style="width:34px;height:34px;background:#dbe6ff;color:var(--blue);">↑</span></div></div>
+          <div class="card"><div class="strong" style="font-size:12px;color:var(--pink-2);">Total Received Amount</div><div class="row" style="margin-top:6px;"><span class="strong" style="font-size:20px;">${money(totalReceived)}</span><span class="emoji-badge" style="width:34px;height:34px;background:#ffd9e6;color:var(--pink-2);">↓</span></div></div>
+        </div>
+        <div class="card" style="margin-top:12px;">
+          <div class="row">
+            <div><div class="strong" style="font-size:12px;color:var(--pending);">Yet to Receive Gift Amount</div><div class="strong" style="font-size:22px;color:var(--pending);margin-top:4px;">${money(yetToReceive)}</div></div>
+            <span class="emoji-badge" style="background:#ffe9cf;">🎁</span>
+          </div>
+          <p class="sub" style="margin-top:6px;">Amount yet to be received from your given gifts.</p>
+        </div>
+        <div class="grid-2" style="margin-top:12px;">
+          <div class="card" style="text-align:center;"><span class="emoji-badge" style="background:#e3f7ee;margin:0 auto;">🎁</span><div class="strong" style="font-size:22px;color:var(--success);margin-top:8px;">${sentCount}</div><div class="muted" style="font-size:11px;">gifts given</div></div>
+          <div class="card" style="text-align:center;"><span class="emoji-badge" style="background:#ffe3ee;margin:0 auto;">🎁</span><div class="strong" style="font-size:22px;color:var(--pink-2);margin-top:8px;">${receivedCount}</div><div class="muted" style="font-size:11px;">gifts received</div></div>
+        </div>
+        <div class="card" style="margin-top:12px;">
+          <div class="strong" style="font-size:13px;color:var(--old);">Gift Record Completion</div>
+          <div style="height:8px;border-radius:99px;background:var(--line);margin-top:10px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:var(--old);"></div></div>
+          <p class="sub" style="margin-top:8px;">You have received ${receivedCount} of ${sentCount} gift records. (${pct.toFixed(2)}% completed)</p>
+        </div>
+        <button class="hub-card" style="margin-top:12px;" onclick="nav('transaction-history')">
+          <span class="hub-icon" style="background:#eaf1ff;">📄</span>
+          <div style="flex:1;"><h3 style="font-size:14px;">View All Records</h3><p>See all given and received entries</p></div>
+          <span class="arrow-circle" style="background:#eaf1ff;color:var(--blue);">→</span>
+        </button>
+      `);
+    }
+
+    const avatarPalette = ['#2f6bef', '#ff3d78', '#1f9d63', '#f2a63d', '#7457d1', '#16a3b8'];
+    function avatarColor(name) {
+      let h = 0;
+      for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % avatarPalette.length;
+      return avatarPalette[h];
+    }
+
+    function transactionHistoryScreen() {
+      const all = [];
+      state.events.forEach(ev => ev.records.forEach(r => all.push({ ...r, context: ev.name })));
+      state.collections.forEach(col => col.entries.forEach(e => all.push({ ...e, context: col.name })));
+      state.contributions.forEach(c => all.push({ ...c, context: 'Found via Event Code' }));
+      all.sort((a, b) => b.id - a.id);
+      state.txnFilter = state.txnFilter || 'all';
+      const filtered = state.txnFilter === 'all' ? all : all.filter(r => r.direction === state.txnFilter);
+      const groups = [];
+      filtered.forEach(r => {
+        let g = groups.find(g => g.date === r.date);
+        if (!g) { g = { date: r.date, rows: [] }; groups.push(g); }
+        g.rows.push(r);
+      });
+      return wrapPlain(`
+        <div class="page">
+          <button class="back-link" onclick="nav('profile')">←</button>
+          <h1 style="font-size:20px;color:var(--navy);text-align:center;">Transaction History</h1>
+          <div class="filter-row" style="margin-top:14px;">
+            <button class="filter-chip ${state.txnFilter === 'all' ? 'active' : ''}" onclick="setTxnFilter('all')" style="flex:1;justify-content:center;">All</button>
+            <button class="filter-chip ${state.txnFilter === 'given' ? 'active' : ''}" onclick="setTxnFilter('given')" style="flex:1;justify-content:center;">↑ Given</button>
+            <button class="filter-chip ${state.txnFilter === 'received' ? 'active' : ''}" onclick="setTxnFilter('received')" style="flex:1;justify-content:center;">↓ Received</button>
+          </div>
+          <div class="card" style="margin-top:12px;">
+            <div class="muted" style="font-size:11px;font-weight:700;">Total Transactions</div>
+            <div class="strong" style="font-size:26px;color:var(--navy);margin-top:2px;">${filtered.length}</div>
+          </div>
+          <div id="txnList" style="margin-top:14px;">${buildTxnGroupsHTML(groups)}</div>
+          <button class="secondary" style="margin-top:6px;" onclick="showToast('Export coming soon')">⬇ View All Transactions</button>
+        </div>
+      `);
+    }
+    function buildTxnGroupsHTML(groups) {
+      if (!groups.length) return `<div class="empty-state"><div class="e">🧾</div>No transactions yet.</div>`;
+      return groups.map(g => `
+        <div class="muted" style="font-size:11px;font-weight:700;margin:12px 0 8px;">${g.date}</div>
+        ${g.rows.map(r => `
+          <div class="record-row">
+            <span class="avatar" style="width:38px;height:38px;font-size:14px;color:#fff;background:${avatarColor(r.person)};">${r.person.charAt(0).toUpperCase()}</span>
+            <div class="record-mid">
+              <div class="t">${r.person}</div>
+              <div class="m"><span style="color:${r.mode === 'UPI' ? 'var(--blue)' : 'var(--success)'};font-weight:700;">${r.mode}</span></div>
+            </div>
+            <div class="record-side">
+              <div class="amt" style="color:${r.direction === 'given' ? 'var(--blue)' : 'var(--pink-2)'};">${r.direction === 'given' ? '↑' : '↓'} ${money(r.amount)}</div>
+            </div>
+          </div>
+        `).join('')}
+      `).join('');
+    }
+    function setTxnFilter(f) {
+      state.txnFilter = f;
+      render();
+    }
+
+    function remindersScreen() {
+      return wrapWithNav(`
+        <div class="page">
+          <h1 style="font-size:24px;color:var(--navy);">Reminders</h1>
+          <p class="sub">Never forget to reciprocate a gift.</p>
+          <div class="form-stack card" style="margin-top:16px;">
+            <div class="field"><label>Title</label><input id="rmTitle" placeholder="e.g. Return ₹500 to Arun"></div>
+            <div class="grid-2">
+              <div class="field"><label>Date</label><input id="rmDate" type="date"></div>
+              <div class="field"><label>Note (optional)</label><input id="rmNote" placeholder="Context"></div>
+            </div>
+            <button class="secondary" onclick="addReminder()">＋ Add Reminder</button>
+          </div>
+          <div style="margin-top:14px;display:grid;gap:10px;">
+            ${state.reminders.map(r => `
+              <div class="record-row">
+                <span class="record-icon" style="background:#fff3d6;">⏰</span>
+                <div class="record-mid">
+                  <div class="t" style="${r.status === 'Completed' ? 'text-decoration:line-through;opacity:0.6;' : ''}">${r.title}</div>
+                  <div class="m"><span>📅 ${r.date || 'No date'}</span>${r.note ? `<span>${r.note}</span>` : ''}</div>
+                </div>
+                <button class="secondary" style="width:auto;padding:8px 12px;" onclick="toggleReminder(${r.id})">${r.status === 'Active' ? '✓ Done' : '↺ Reopen'}</button>
+              </div>
+            `).join('') || `<div class="empty-state"><div class="e">⏰</div>No reminders yet.</div>`}
+          </div>
+        </div>
+      `);
+    }
+    function addReminder() {
+      const title = document.getElementById('rmTitle').value;
+      if (!title) { showToast('Enter a reminder title'); return; }
+      state.reminders.unshift({ id: state.nextReminderId++, title, date: document.getElementById('rmDate').value, note: document.getElementById('rmNote').value, status: 'Active' });
+      persist();
+      showToast('Reminder added');
+      render();
+    }
+    function toggleReminder(id) {
+      const r = state.reminders.find(x => x.id === id);
+      r.status = r.status === 'Active' ? 'Completed' : 'Active';
+      persist();
+      render();
+    }
+
+    const relationshipTypes = ['Spouse', 'Son', 'Daughter', 'Father', 'Mother', 'Brother', 'Sister', 'Other'];
+    function familyScreen() {
+      state.familyAddStage = state.familyAddStage || 'form';
+      const verified = state.familyAddStage === 'verified';
+      return subPage('Family Account', 'Add family member to your account', `
+        <div class="card">
+          <div class="form-stack">
+            <div class="field"><label>Full Name</label><div class="field-icon">👤<input id="fmName" placeholder="Enter full name" value="${state.familyDraft.name}" oninput="state.familyDraft.name=this.value;"></div></div>
+            <div class="field"><label>Mobile Number</label><div class="field-icon">📱<strong style="color:var(--blue);">+91</strong><input id="fmMobile" placeholder="98765 43210" value="${state.familyDraft.mobile}" oninput="state.familyDraft.mobile=this.value;"></div></div>
+          </div>
+          <div class="menu-item" style="border-bottom:0;">
+            <div class="mi-left"><span class="emoji-badge" style="width:36px;height:36px;font-size:16px;background:#e3f7ee;">🛡️</span><div><div class="mi-title" style="font-size:13px;">Verify your mobile number</div><div class="mi-desc">We'll send you an OTP to verify</div></div></div>
+            ${verified ? `<span class="verified-badge">✓ Verified</span>` : `<button class="secondary" style="width:auto;padding:9px 16px;" onclick="sendFamilyOtp()">Send OTP</button>`}
+          </div>
+          ${state.familyAddStage !== 'form' ? `
+            <div style="margin-top:6px;">
+              <div class="row"><span class="strong" style="font-size:12px;">Enter OTP</span>${!verified ? `<span class="link-text">Resend OTP in 45s</span>` : ''}</div>
+              <div class="otp-boxes" style="grid-template-columns:repeat(6,1fr);" id="fmOtpBoxes">
+                ${[0, 1, 2, 3, 4, 5].map(() => `<input maxlength="1" oninput="onFamilyOtpDigit()">`).join('')}
+              </div>
+              ${verified ? `<div style="color:var(--success);font-weight:800;font-size:12.5px;">✓ Mobile number verified</div>` : ''}
+            </div>
+          ` : ''}
+          <div class="field" style="margin-top:14px;margin-bottom:0;">
+            <label>Relationship Type</label>
+            <select id="fmRelation"><option value="">Select relationship</option>${relationshipTypes.map(r => `<option>${r}</option>`).join('')}</select>
+          </div>
+        </div>
+        <div class="note-strip" style="margin-top:14px;">ℹ️ <div><b>Why we need this?</b><br>This helps you manage and organize your family members better within the app.</div></div>
+        <button class="primary" style="margin-top:14px;background:linear-gradient(135deg,#6a5cf7 0%,#e84f9c 100%);" onclick="addFamilyMember()">Add Family Member →</button>
+        <p class="sub" style="text-align:center;margin-top:10px;">🔒 Your information is secure and private</p>
+
+        <div class="group-label">Family Members</div>
+        <div style="display:grid;gap:10px;">
+          ${state.family.map(m => `
+            <div class="record-row">
+              <span class="record-icon" style="background:#dbe6ff;">👤</span>
+              <div class="record-mid">
+                <div class="t">${m.name}</div>
+                <div class="m"><span>${m.relation}</span><span>${m.mobile}</span></div>
+              </div>
+              <button class="role-chip ${m.role}" onclick="cycleFamilyRole(${m.id})">${m.role}</button>
+            </div>
+          `).join('') || `<div class="empty-state"><div class="e">👨‍👩‍👧</div>No family members yet.</div>`}
+        </div>
+      `);
+    }
+    function sendFamilyOtp() {
+      const mobile = state.familyDraft.mobile;
+      if (!mobile) { showToast('Enter a mobile number first'); return; }
+      state.familyAddStage = 'sent';
+      render();
+      showToast('OTP sent to +91 ' + mobile);
+    }
+    function onFamilyOtpDigit() {
+      const boxes = document.querySelectorAll('#fmOtpBoxes input');
+      const filled = [...boxes].every(b => b.value.length === 1);
+      if (filled) {
+        state.familyAddStage = 'verified';
+        render();
+        showToast('Mobile number verified');
+      }
+    }
+    function addFamilyMember() {
+      const name = state.familyDraft.name;
+      if (!name) { showToast('Enter a name'); return; }
+      if (state.familyAddStage !== 'verified') { showToast('Please verify the mobile number first'); return; }
+      const mobile = '+91 ' + (state.familyDraft.mobile || '—');
+      const relation = document.getElementById('fmRelation').value || 'Family';
+      state.family.push({ id: state.nextFamilyId++, name, relation, mobile, role: 'Guest', status: 'Active' });
+      persist();
+      state.familyAddStage = 'form';
+      state.familyDraft = { name: '', mobile: '' };
+      showToast('Family member added!');
+      render();
+    }
+    function cycleFamilyRole(id) {
+      const order = ['Admin', 'Member', 'Guest'];
+      const m = state.family.find(x => x.id === id);
+      m.role = order[(order.indexOf(m.role) + 1) % order.length];
+      persist();
+      render();
+    }
+
+    function settingsScreen() {
+      return subPage('Settings', 'Manage your app settings and privacy.', `
+        <div class="group-label" style="margin-top:0;">Privacy &amp; Security</div>
+        <div class="card">
+          <div class="menu-item">
+            <div class="mi-left">
+              <span class="emoji-badge" style="width:36px;height:36px;font-size:16px;background:#ffe3ee;">🙈</span>
+              <div><div class="mi-title">Hide Amount for Each Record</div><div class="mi-desc">Hide amounts in all records and lists</div></div>
+            </div>
+            <button class="toggle-pill ${state.settings.hideAmounts ? 'on' : ''}" onclick="toggleSetting('hideAmounts')"></button>
+          </div>
+        </div>
+        <div class="note-strip" style="margin-top:14px;">🛡️ Your data is 100% private and secure. You are in control of your privacy.</div>
+        <div class="card" style="margin-top:24px;border-color:#ffd7e2;background:#fff5f8;">
+          <div class="menu-item" onclick="logout()" style="color:var(--pink-2);border-bottom:0;">↪ Logout <span class="muted" style="font-size:11px;">Sign out from this device</span></div>
+        </div>
+      `);
+    }
+    function toggleSetting(key) {
+      state.settings[key] = !state.settings[key];
+      persist();
+      showToast('Settings updated');
+      render();
+    }
+
+    const autoLockOptions = ['Immediately', '1 Minute', '5 Minutes', '15 Minutes', 'Never'];
+    function cycleAutoLock() {
+      const i = autoLockOptions.indexOf(state.settings.autoLock || '5 Minutes');
+      state.settings.autoLock = autoLockOptions[(i + 1) % autoLockOptions.length];
+      persist();
+      render();
+    }
+    function securityScreen() {
+      return subPage('Security', 'Manage your app security and privacy.', `
+        <div class="card" style="background:linear-gradient(135deg,#eef2ff 0%,#f5eeff 100%);">
+          <div class="row">
+            <div><div class="strong" style="font-size:15px;color:var(--navy);">Your account is secure</div><p class="sub" style="margin-top:4px;max-width:220px;">We use advanced security to keep your data safe and private.</p></div>
+            <span style="font-size:34px;">🛡️</span>
+          </div>
+        </div>
+        <div class="group-label">Account Security</div>
+        <div class="card">
+          ${menuRow('🔒', 'Change Password', 'Update your account password', 'change-password')}
+          <div class="menu-item" onclick="cycleAutoLock()">
+            <div class="mi-left"><span class="emoji-badge" style="width:36px;height:36px;font-size:16px;background:#e3f7ee;">⏱️</span><div><div class="mi-title">Auto Lock</div><div class="mi-desc">Automatically lock the app</div></div></div>
+            <span class="strong" style="color:var(--blue);font-size:12px;">${state.settings.autoLock || '5 Minutes'} ›</span>
+          </div>
+        </div>
+        <div class="group-label">Device &amp; Session</div>
+        <div class="card">
+          ${menuRow('📵', 'Logout from All Devices', 'Sign out from all devices except this one', 'logout-devices')}
+        </div>
+        <div class="note-strip" style="margin-top:14px;">🛡️ Keep your account secure — we recommend using a strong password and keeping your app up to date.</div>
+      `);
+    }
+
+    function logoutDevicesScreen() {
+      const sessions = [
+        { device: 'Windows • Chrome', loc: 'Bangalore, India', when: '2 hours ago' },
+        { device: 'Android • Samsung S23', loc: 'Mumbai, India', when: 'Yesterday, 08:45 PM' },
+        { device: 'iPad • Safari', loc: 'Hyderabad, India', when: '3 days ago' }
+      ];
+      return subPage('Logout from All Devices', 'This will sign you out from all devices except this one. You will need to login again on those devices.', `
+        <div class="note-strip" style="background:#fff3de;border-color:#ffe1a8;">⚠️ <div><b>Important</b><br>After logging out, all other devices will lose access to your account and you will need to login again.</div></div>
+        <div class="card" style="margin-top:14px;">
+          <div class="strong" style="font-size:13px;">📱 Active Session</div>
+          <p class="sub" style="margin-top:2px;">You are currently logged in on this device</p>
+          <div class="record-row" style="margin-top:10px;background:#eef2ff;border:0;">
+            <span class="record-icon" style="background:#dbe6ff;">📱</span>
+            <div class="record-mid"><div class="t">iPhone 15 Pro (This Device)</div><div class="m"><span>Chennai, India</span><span style="color:var(--success);">Currently Active</span></div></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:14px;">
+          <div class="strong" style="font-size:13px;">💻 Other Active Sessions (${sessions.length})</div>
+          ${sessions.map(s => `
+            <div class="record-row" style="margin-top:10px;">
+              <span class="record-icon" style="background:#eef1fb;">💻</span>
+              <div class="record-mid"><div class="t">${s.device}</div><div class="m"><span>${s.loc}</span><span>${s.when}</span></div></div>
+              <span class="status-chip" style="background:var(--pending-bg);color:var(--pending);">Will be logged out</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="note-strip" style="margin-top:14px;background:#fff0f3;border-color:#ffd7e2;">
+          🚪 <div><b>Logout from All Devices</b><br>Are you sure you want to logout from all other devices? This action cannot be undone.</div>
+        </div>
+        <button class="primary" style="margin-top:14px;background:linear-gradient(135deg,#ff5c5c 0%,#e0364a 100%);" onclick="confirmLogoutAllDevices()">↪ Logout from All Devices</button>
+      `);
+    }
+    function confirmLogoutAllDevices() {
+      showToast('Logged out from all other devices');
+      nav('security');
+    }
+
+    function helpScreen() {
+      return subPage('Help & Support', "We're here to help you anytime.", `
+        <div class="card" style="background:linear-gradient(135deg,#eef2ff 0%,#f5eeff 100%);">
+          <div class="strong" style="font-size:16px;color:var(--navy);">Need help?</div>
+          <p class="sub" style="margin-top:4px;">Find answers, get support and connect with our team.</p>
+          <button class="primary" style="margin-top:12px;width:auto;padding:12px 20px;" onclick="showToast('Support chat coming soon')">💬 Start a Conversation</button>
+        </div>
+        <div class="group-label">Quick Help</div>
+        <div class="card">${menuRow('📖', 'FAQs', 'Find quick answers to common questions', 'faqs')}</div>
+        <div class="group-label">Contact Support</div>
+        <div class="card">${menuRow('✉️', 'Email Support', 'support@relfam.com', 'mailto:support@relfam.com')}</div>
+        <div class="note-strip" style="margin-top:14px;">🎧 <div><b>We're here to help</b><br>Our support team usually responds within 24 hours on business days.<br>Support Hours: Mon–Fri, 9:00 AM – 6:00 PM (IST)</div></div>
+      `);
+    }
+
+    const faqs = [
+      ['What do "Old" and "New" mean when adding a record?', `
+        <div class="menu-item"><div class="mi-left"><span class="emoji-badge" style="background:#e3f7ee;">🎁</span><div><b style="color:var(--success);">New</b><div class="mi-desc" style="white-space:normal;">Select New when you are giving a gift to a person or family for the first time. This creates a new gift relationship in your ledger.</div></div></div></div>
+        <div class="menu-item"><div class="mi-left"><span class="emoji-badge" style="background:#ffe3ee;">👥</span><div><b style="color:var(--pink-2);">Old</b><div class="mi-desc" style="white-space:normal;">Select Old when you have already exchanged gifts with the same person or family before. This helps you continue tracking an existing gift history.</div></div></div></div>
+        <div class="mi-desc" style="white-space:normal;margin-top:6px;"><b>Example:</b> You attend Ravi's wedding for the first time and give ₹5,000 → New. Next year you attend Ravi's housewarming and give another ₹3,000 → Old.</div>
+      `],
+      ['How do I create a new Collection?', 'From Home, tap "Send Gift" → "Create New Collection", give it a name and category (Family, Friend, Corporate or Religious), then start adding entries.'],
+      ['How do I add a gift record?', 'Open an Event or Collection and tap "Add Entry". Fill in the sender/receiver details, choose Old and/or New, enter the amount, and save.'],
+      ['What is the difference between Contributed and Received?', "Contributed (given) is money you sent to someone else's event. Received is money guests gave you at an event you're hosting."],
+      ['How do I edit or delete a record?', 'Open the record from View Records and use Edit. You can update the name, place and status — amount and date stay fixed to protect the ledger history.'],
+      ['How do I set a reminder?', 'Go to Profile → Reminders → Add Reminder, give it a title and a date, and it will show up until you mark it done.'],
+      ['How do I change my password?', 'Go to Profile → Security → Change Password, enter your current password, then choose a new one meeting the strength requirements.']
+    ];
+    function faqsScreen() {
+      return subPage('FAQs', 'Find quick answers to common questions.', `
+        <input id="faqSearch" placeholder="Search for a question..." oninput="filterFaqs(this.value)" style="margin-bottom:14px;">
+        <div class="card" id="faqList">
+          ${faqs.map((f, i) => `
+            <div class="faq-item ${i === 0 ? 'open' : ''}" id="faq${i}" data-q="${f[0].toLowerCase()}">
+              <div class="q" onclick="toggleFaq(${i})"><span>${f[0]}</span><span>⌄</span></div>
+              <div class="a">${f[1]}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="note-strip" style="margin-top:14px;">🎧 <div><b>Can't find what you're looking for?</b><br>Our support team is here to help you.</div> <a href="mailto:support@relfam.com" class="link-text">Email Support</a></div>
+      `);
+    }
+    function toggleFaq(i) {
+      document.getElementById('faq' + i).classList.toggle('open');
+    }
+    function filterFaqs(q) {
+      const query = q.trim().toLowerCase();
+      document.querySelectorAll('#faqList .faq-item').forEach(el => {
+        el.style.display = el.dataset.q.includes(query) ? 'block' : 'none';
+      });
+    }
+
+    function feedbackScreen() {
+      state.feedbackRating = state.feedbackRating || 5;
+      return subPage('Feedback', "Tell us what's working and what is not.", `
+        <div class="card">
+          <label class="strong" style="font-size:12px;color:var(--muted);">Rating</label>
+          <div class="star-row" id="starRow" style="margin-top:8px;">
+            ${[1, 2, 3, 4, 5].map(n => `<span class="${n <= state.feedbackRating ? 'on' : ''}" onclick="setRating(${n})">★</span>`).join('')}
+          </div>
+        </div>
+        <div class="field" style="margin-top:14px;"><label>Your Feedback</label><textarea id="fbText" placeholder="What can we improve?"></textarea></div>
+        <button class="primary" onclick="submitFeedback()">Submit Feedback</button>
+      `);
+    }
+    function setRating(n) {
+      state.feedbackRating = n;
+      document.querySelectorAll('#starRow span').forEach((el, i) => el.classList.toggle('on', i < n));
+    }
+    function submitFeedback() {
+      showToast('Thanks for your feedback!');
+      state.feedbackRating = 5;
+      nav('profile');
+    }
+
+    function aboutScreen() {
+      return subPage('About Relfam', '', `
+        <div class="card" style="text-align:center;">
+          <div style="font-size:38px;">🎁</div>
+          <h2 style="margin-top:8px;color:var(--navy);">Relfam</h2>
+          <p class="sub" style="margin-top:6px;">Version 0.1.0 (MVP prototype)</p>
+          <p class="sub" style="margin-top:10px;">A digital ledger for the gifts and moi exchanged at family events — so you never lose track of who gave what.</p>
+        </div>
+      `);
+    }
+
+    function shareScreen() {
+      return subPage('Share Relfam', 'Invite friends and family to start their own ledger.', `
+        <div class="card" style="text-align:center;">
+          <div style="font-size:38px;">🔗</div>
+          <p class="sub" style="margin-top:10px;">"Track every gift and moi at your family events with Relfam — never lose count of who gave what."</p>
+          <button class="primary" style="margin-top:14px;" onclick="shareApp()">Share Now</button>
+        </div>
+      `);
+    }
+    function shareApp() {
+      const text = "Track every gift and moi at your family events with Relfam — never lose count of who gave what.";
+      if (navigator.share) {
+        navigator.share({ title: 'Relfam', text }).catch(() => {});
+      } else {
+        window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+      }
+    }
+
+    /* ---------- Router ---------- */
+    function render() {
+      if (!state.user) {
+        const preAuthPages = { otp: otpScreen, signup: signupScreen, terms: termsScreen };
+        app.innerHTML = (preAuthPages[state.page] || authScreen)();
+        return;
+      }
+      const pages = {
+        home: homeScreen,
+        notifications: notificationsScreen,
+        'find-event': findEventScreen,
+        'event-overview': eventOverviewScreen,
+        'event-location': eventLocationScreen,
+        contribute: contributeScreen,
+        'live-streaming': liveStreamingScreen,
+        'share-event': shareEventScreen,
+        events: eventsScreen,
+        'event-detail': eventDetailScreen,
+        'create-open': createOpenScreen,
+        'create-event-type': createEventTypeScreen,
+        'create-event-form': createEventFormScreen,
+        'event-created-success': eventCreatedSuccessScreen,
+        'view-invitation': viewInvitationScreen,
+        'collections-hub': collectionsHubScreen,
+        'create-collection': createCollectionScreen,
+        'collections-list': collectionsListScreen,
+        'collection-detail': collectionDetailScreen,
+        'entry-form': entryFormScreen,
+        records: recordsScreen,
+        'filter-records': filterRecordsScreen,
+        'edit-record': editRecordScreen,
+        profile: profileScreen,
+        'edit-profile': editProfileScreen,
+        'change-password': changePasswordScreen,
+        'change-mobile': changeMobileScreen,
+        'update-dob': updateDobScreen,
+        'records-summary': recordsSummaryScreen,
+        'transaction-history': transactionHistoryScreen,
+        reminders: remindersScreen,
+        family: familyScreen,
+        settings: settingsScreen,
+        security: securityScreen,
+        help: helpScreen,
+        faqs: faqsScreen,
+        'logout-devices': logoutDevicesScreen,
+        feedback: feedbackScreen,
+        about: aboutScreen,
+        share: shareScreen
+      };
+      const renderFn = pages[state.page] || homeScreen;
+      app.innerHTML = renderFn();
+    }
+
+    render();
+  </script>
+</body>
+</html>
