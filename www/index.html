@@ -497,6 +497,8 @@
       nextFamilyId: 3,
       nextReminderId: 2,
       familyDraft: { name: '', mobile: '' },
+      enDraft: { title: '', person: '', code: '+91', mobile: '', place: '', receiverUpi: '', old: false, new: true, oldAmt: '', newAmt: '', note: '' },
+      cpDraft: { current: '', next: '', confirm: '' },
       activeEventId: null,
       activeCollectionId: null,
       selectedType: 'Wedding',
@@ -585,11 +587,14 @@
             <div class="signup-strip">Don't have an account? <a class="link-accent" onclick="nav('signup')">Sign Up</a></div>
           </div>
         </div>
+        ${state.toast ? `<div class="toast">✓ ${state.toast}</div>` : ''}
       `;
     }
 
     function signupScreen() {
       state.acceptedTerms = state.acceptedTerms || false;
+      state.suDraft = state.suDraft || { name: '', email: '', mobile: '', altMobile: '', pass: '', confirm: '' };
+      const su = state.suDraft;
       return `
         <div class="login-screen">
           <div style="width:100%;">
@@ -598,12 +603,12 @@
             <p class="auth-sub">Create your account to get started</p>
             <div class="auth-card">
               <div class="form-stack">
-                <div class="field-icon">👤<input id="suName" placeholder="Enter your name"></div>
-                <div class="field-icon">✉️<input id="suEmail" placeholder="Enter your email"></div>
-                <div class="field-icon">📱<strong style="color:var(--blue);">+91</strong><input id="suMobile" placeholder="Enter phone number"></div>
-                <div class="field-icon">📱<strong style="color:var(--blue);">+91</strong><input id="suAltMobile" placeholder="Alternative mobile number (optional)"></div>
-                <div class="field-icon">🔒<input id="suPass" type="password" placeholder="Enter password"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('suPass', this)">👁️</button></div>
-                <div class="field-icon">🔒<input id="suConfirm" type="password" placeholder="Confirm password"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('suConfirm', this)">👁️</button></div>
+                <div class="field-icon">👤<input id="suName" value="${su.name}" placeholder="Enter your name" oninput="state.suDraft.name=this.value;"></div>
+                <div class="field-icon">✉️<input id="suEmail" value="${su.email}" placeholder="Enter your email" oninput="state.suDraft.email=this.value;"></div>
+                <div class="field-icon">📱<strong style="color:var(--blue);">+91</strong><input id="suMobile" value="${su.mobile}" placeholder="Enter phone number" oninput="state.suDraft.mobile=this.value;"></div>
+                <div class="field-icon">📱<strong style="color:var(--blue);">+91</strong><input id="suAltMobile" value="${su.altMobile}" placeholder="Alternative mobile number (optional)" oninput="state.suDraft.altMobile=this.value;"></div>
+                <div class="field-icon">🔒<input id="suPass" type="password" value="${su.pass}" placeholder="Enter password" oninput="state.suDraft.pass=this.value;"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('suPass', this)">👁️</button></div>
+                <div class="field-icon">🔒<input id="suConfirm" type="password" value="${su.confirm}" placeholder="Confirm password" oninput="state.suDraft.confirm=this.value;"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('suConfirm', this)">👁️</button></div>
                 <div class="row" style="gap:8px;justify-content:flex-start;">
                   <input type="checkbox" id="suTerms" ${state.acceptedTerms ? 'checked' : ''} style="width:16px;height:16px;padding:0;flex:0;" onchange="state.acceptedTerms=this.checked;">
                   <span>I agree to the <a class="link-accent" onclick="nav('terms');">Terms &amp; Conditions</a></span>
@@ -616,6 +621,7 @@
             <div class="note-strip">🛡️ Your data is safe and secure with us</div>
           </div>
         </div>
+        ${state.toast ? `<div class="toast">✓ ${state.toast}</div>` : ''}
       `;
     }
 
@@ -626,16 +632,15 @@
     }
 
     function signupAction() {
-      const name = document.getElementById('suName').value;
-      const email = document.getElementById('suEmail').value;
-      const pass = document.getElementById('suPass').value;
-      const confirm = document.getElementById('suConfirm').value;
+      const { name, email, mobile, pass, confirm } = state.suDraft;
       if (!name) { showToast('Enter your name'); return; }
       if (!document.getElementById('suTerms').checked) { showToast('Please accept the Terms & Conditions'); return; }
       if (pass.length < 8) { showToast('Password must be at least 8 characters'); return; }
       if (pass !== confirm) { showToast('Passwords do not match'); return; }
-      state.user = { name, email: email || 'demo@relfam.app', mobile: '+91 ' + (document.getElementById('suMobile').value || '98765 43210'), address: 'Chennai, Tamil Nadu, India', dob: '', language: 'English', joinedAt: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) };
+      state.user = { name, email: email || 'demo@relfam.app', mobile: '+91 ' + (mobile || '98765 43210'), address: 'Chennai, Tamil Nadu, India', dob: '', language: 'English', joinedAt: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) };
       localStorage.setItem('eventxUser', JSON.stringify(state.user));
+      state.suDraft = { name: '', email: '', mobile: '', altMobile: '', pass: '', confirm: '' };
+      state.acceptedTerms = false;
       state.page = 'home';
       showToast('Account created — welcome to Relfam!');
     }
@@ -657,6 +662,7 @@
             </div>
           </div>
         </div>
+        ${state.toast ? `<div class="toast">✓ ${state.toast}</div>` : ''}
       `;
     }
     function acceptTerms() {
@@ -690,6 +696,7 @@
             <div class="signup-strip">Don't have an account? <a class="link-accent" onclick="nav('signup')">Sign Up</a></div>
           </div>
         </div>
+        ${state.toast ? `<div class="toast">✓ ${state.toast}</div>` : ''}
       `;
     }
 
@@ -1056,7 +1063,7 @@
           <div class="field" style="margin-top:16px;">
             <label>Enter Amount</label>
             <div class="amount-preset-row" id="amtPresetRow">
-              ${[501, 1001, 2501].map(a => `<button class="amount-preset ${state.contributeAmount === a ? 'active' : ''}" onclick="pickAmountPreset(${a}, this)">₹${a}</button>`).join('')}
+              ${[501, 1001, 2501].map(a => `<button class="amount-preset ${state.contributeAmount === a ? 'active' : ''}" onclick="pickAmountPreset(${a}, this)">${money(a)}</button>`).join('')}
               <button class="amount-preset ${state.contributeAmount === 'custom' ? 'active' : ''}" onclick="pickAmountPreset('custom', this)">Other</button>
             </div>
             ${state.contributeAmount === 'custom' ? `<input id="amtCustom" type="number" placeholder="Enter amount ₹" style="margin-top:10px;">` : ''}
@@ -1534,7 +1541,8 @@
     function startEntry(kind, id) {
       state.entryContext = { kind, id };
       state.entryMode = 'Cash';
-      state.entryReceiverUpi = '';
+      const ctx = kind === 'event' ? state.events.find(e => e.id === id) : null;
+      state.enDraft = { title: ctx ? ctx.name : '', person: '', code: '+91', mobile: '', place: '', receiverUpi: '', old: false, new: true, oldAmt: '', newAmt: '', note: '' };
       nav('entry-form');
     }
 
@@ -1542,7 +1550,8 @@
       const isEvent = state.entryContext.kind === 'event';
       const ctx = isEvent ? state.events.find(e => e.id === state.entryContext.id) : state.collections.find(c => c.id === state.entryContext.id);
       state.entryMode = state.entryMode || 'Cash';
-      const upi = isEvent ? ctx.upi : (state.entryReceiverUpi || 'not-set@upi');
+      const upi = isEvent ? ctx.upi : (state.enDraft.receiverUpi || 'not-set@upi');
+      const d = state.enDraft;
       return wrapPlain(`
         <div class="page">
           <button class="back-link" onclick="nav('${isEvent ? 'event-detail' : 'collection-detail'}')">←</button>
@@ -1552,36 +1561,36 @@
             <div class="form-stack">
               <div class="field">
                 <label>Event Name</label>
-                <div class="field-icon">📅<input id="enTitle" value="${isEvent ? ctx.name : ''}" placeholder="e.g. Akash & Priya Wedding"></div>
+                <div class="field-icon">📅<input id="enTitle" value="${d.title}" placeholder="e.g. Akash & Priya Wedding" oninput="state.enDraft.title=this.value;"></div>
               </div>
               <div class="field">
                 <label>${isEvent ? 'Sender' : 'Receiver'} Name</label>
-                <div class="field-icon">👤<input id="enPerson" placeholder="e.g. Ramesh Kumar"><button class="icon-btn" style="width:30px;height:30px;box-shadow:none;font-size:14px;" onclick="showToast('Voice input coming soon')">🎙️</button></div>
+                <div class="field-icon">👤<input id="enPerson" value="${d.person}" placeholder="e.g. Ramesh Kumar" oninput="state.enDraft.person=this.value;"><button class="icon-btn" style="width:30px;height:30px;box-shadow:none;font-size:14px;" onclick="showToast('Voice input coming soon')">🎙️</button></div>
               </div>
               <div class="field">
                 <label>${isEvent ? 'Sender' : 'Receiver'} Mobile No.</label>
                 <div class="mobile-row">
-                  <select id="enCode">${countryCodes.map(c => `<option value="${c}">${c}</option>`).join('')}</select>
-                  <input id="enMobile" placeholder="98765 43210">
+                  <select id="enCode" onchange="state.enDraft.code=this.value;">${countryCodes.map(c => `<option value="${c}" ${d.code === c ? 'selected' : ''}>${c}</option>`).join('')}</select>
+                  <input id="enMobile" value="${d.mobile}" placeholder="98765 43210" oninput="state.enDraft.mobile=this.value;">
                 </div>
               </div>
               <div class="field">
                 <label>Place</label>
-                <div class="field-icon">📍<input id="enPlace" placeholder="e.g. Coimbatore, Tamil Nadu"><button class="icon-btn" style="width:30px;height:30px;box-shadow:none;font-size:14px;" onclick="showToast('Voice input coming soon')">🎙️</button></div>
+                <div class="field-icon">📍<input id="enPlace" value="${d.place}" placeholder="e.g. Coimbatore, Tamil Nadu" oninput="state.enDraft.place=this.value;"><button class="icon-btn" style="width:30px;height:30px;box-shadow:none;font-size:14px;" onclick="showToast('Voice input coming soon')">🎙️</button></div>
               </div>
-              ${!isEvent ? `<div class="field" style="margin-bottom:0;"><label>Receiver UPI ID (optional)</label><input id="enReceiverUpi" placeholder="e.g. name@upi" oninput="state.entryReceiverUpi=this.value;"></div>` : ''}
+              ${!isEvent ? `<div class="field" style="margin-bottom:0;"><label>Receiver UPI ID (optional)</label><input id="enReceiverUpi" value="${d.receiverUpi}" placeholder="e.g. name@upi" oninput="state.enDraft.receiverUpi=this.value;"></div>` : ''}
             </div>
           </div>
 
           <div class="field" style="margin-top:16px;">
             <label>Entry Type <span class="muted" style="font-weight:600;">(select one or both)</span></label>
             <div class="grid-2" id="entryTypeRow">
-              <label class="check-pill" id="oldTypeCard" style="flex-direction:column;align-items:flex-start;gap:2px;background:#eaf1ff;border-color:#c9daff;">
-                <div class="row" style="width:100%;"><span>🔄 <b>Old (Pending)</b></span><input type="checkbox" id="enOld" onchange="onEntryTypeChange()"></div>
+              <label class="check-pill" id="oldTypeCard" style="flex-direction:column;align-items:flex-start;gap:2px;background:#eaf1ff;border-color:#c9daff;opacity:${d.old ? '1' : '0.55'};">
+                <div class="row" style="width:100%;"><span>🔄 <b>Old (Pending)</b></span><input type="checkbox" id="enOld" ${d.old ? 'checked' : ''} onchange="onEntryTypeChange()"></div>
                 <small class="muted" style="font-weight:600;">To be close or tally the old gift amount</small>
               </label>
-              <label class="check-pill" id="newTypeCard" style="flex-direction:column;align-items:flex-start;gap:2px;background:#ffe8f0;border-color:#ffc9dd;">
-                <div class="row" style="width:100%;"><span>✨ <b>New (Fresh)</b></span><input type="checkbox" id="enNew" checked onchange="onEntryTypeChange()"></div>
+              <label class="check-pill" id="newTypeCard" style="flex-direction:column;align-items:flex-start;gap:2px;background:#ffe8f0;border-color:#ffc9dd;opacity:${d.new ? '1' : '0.55'};">
+                <div class="row" style="width:100%;"><span>✨ <b>New (Fresh)</b></span><input type="checkbox" id="enNew" ${d.new ? 'checked' : ''} onchange="onEntryTypeChange()"></div>
                 <small class="muted" style="font-weight:600;">Fresh entry for this event</small>
               </label>
             </div>
@@ -1590,13 +1599,13 @@
           <div class="field">
             <label>Enter Amount <span class="muted" style="font-weight:600;">(for selected type(s))</span></label>
             <div class="grid-2">
-              <div><label class="muted" style="font-size:10.5px;font-weight:700;">Old (Pending) Amount</label><input id="enOldAmt" type="number" placeholder="0" oninput="updateEntryTotal()"></div>
-              <div><label class="muted" style="font-size:10.5px;font-weight:700;">New (Fresh) Amount</label><input id="enNewAmt" type="number" placeholder="0" oninput="updateEntryTotal()"></div>
+              <div><label class="muted" style="font-size:10.5px;font-weight:700;">Old (Pending) Amount</label><input id="enOldAmt" type="number" value="${d.oldAmt}" placeholder="0" oninput="state.enDraft.oldAmt=this.value; updateEntryTotal();"></div>
+              <div><label class="muted" style="font-size:10.5px;font-weight:700;">New (Fresh) Amount</label><input id="enNewAmt" type="number" value="${d.newAmt}" placeholder="0" oninput="state.enDraft.newAmt=this.value; updateEntryTotal();"></div>
             </div>
           </div>
 
           <div class="summary-card" style="margin:14px 0 0;padding:14px 16px;">
-            <div class="row"><span class="strong" style="font-size:12.5px;color:var(--navy-2);">Total Amount</span><span class="strong" style="font-size:19px;color:var(--navy);" id="enTotalDisplay">₹0</span></div>
+            <div class="row"><span class="strong" style="font-size:12.5px;color:var(--navy-2);">Total Amount</span><span class="strong" style="font-size:19px;color:var(--navy);" id="enTotalDisplay">${money((Number(d.oldAmt) || 0) + (Number(d.newAmt) || 0))}</span></div>
           </div>
 
           <div class="field" style="margin-top:16px;">
@@ -1615,7 +1624,7 @@
 
           <div class="field" style="margin-top:16px;margin-bottom:0;">
             <label>Notes (optional)</label>
-            <textarea id="enNote" placeholder="Add notes (optional)"></textarea>
+            <textarea id="enNote" placeholder="Add notes (optional)" oninput="state.enDraft.note=this.value;">${d.note}</textarea>
           </div>
           <button class="primary" id="saveEntryBtn" style="margin-top:18px;background:${state.entryMode === 'UPI' ? 'linear-gradient(135deg,var(--blue-2) 0%,var(--blue) 100%)' : 'linear-gradient(135deg,var(--pink-2) 0%,var(--pink) 100%)'};box-shadow:0 14px 26px rgba(255,61,120,0.28);" onclick="saveEntry()">💾 Save Entry</button>
           <p class="sub" style="text-align:center;margin-top:10px;">🛡️ Your payment is 100% secure and encrypted</p>
@@ -1626,6 +1635,8 @@
     function onEntryTypeChange() {
       const isOld = document.getElementById('enOld').checked;
       const isNew = document.getElementById('enNew').checked;
+      state.enDraft.old = isOld;
+      state.enDraft.new = isNew;
       document.getElementById('oldTypeCard').style.opacity = isOld ? '1' : '0.55';
       document.getElementById('newTypeCard').style.opacity = isNew ? '1' : '0.55';
     }
@@ -1647,30 +1658,27 @@
 
     function saveEntry() {
       const isEvent = state.entryContext.kind === 'event';
-      const isOld = document.getElementById('enOld').checked;
-      const isNew = document.getElementById('enNew').checked;
-      if (!isOld && !isNew) { showToast('Select Old and/or New — at least one is required'); return; }
-      const oldAmount = isOld ? (Number(document.getElementById('enOldAmt').value) || 0) : 0;
-      const newAmount = isNew ? (Number(document.getElementById('enNewAmt').value) || 0) : 0;
+      const d = state.enDraft;
+      if (!d.old && !d.new) { showToast('Select Old and/or New — at least one is required'); return; }
+      const oldAmount = d.old ? (Number(d.oldAmt) || 0) : 0;
+      const newAmount = d.new ? (Number(d.newAmt) || 0) : 0;
       const amount = oldAmount + newAmount;
       if (amount <= 0) { showToast('Enter an amount for the selected entry type(s)'); return; }
 
-      const person = document.getElementById('enPerson').value || 'Someone special';
-      const code = document.getElementById('enCode').value;
-      const mobileVal = document.getElementById('enMobile').value;
-      const mobile = mobileVal ? `${code} ${mobileVal}` : '';
-      const place = document.getElementById('enPlace').value || '—';
-      let status = isOld && !isNew ? 'Old' : 'Pending';
+      const person = d.person || 'Someone special';
+      const mobile = d.mobile ? `${d.code} ${d.mobile}` : '';
+      const place = d.place || '—';
+      let status = d.old && !d.new ? 'Old' : 'Pending';
 
       const record = {
         id: state.nextRecordId++,
-        title: document.getElementById('enTitle').value || (isEvent ? 'Moi Entry' : 'Gift Sent'),
+        title: d.title || (isEvent ? 'Moi Entry' : 'Gift Sent'),
         person, mobile, place, oldAmount, newAmount, amount,
         mode: state.entryMode, status,
         date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
         direction: isEvent ? 'received' : 'given',
         icon: isEvent ? '💝' : '🎁',
-        receiverUpi: isEvent ? undefined : (document.getElementById('enReceiverUpi').value || '')
+        receiverUpi: isEvent ? undefined : (d.receiverUpi || '')
       };
 
       if (isEvent) {
@@ -1684,7 +1692,6 @@
         persist();
         state.activeCollectionId = col.id;
       }
-      state.entryReceiverUpi = '';
       showSuccessModal('Entry Saved Successfully!', 'Thanks for the contribution.', isEvent ? 'records' : 'collection-detail');
     }
 
@@ -2123,17 +2130,18 @@
       ['special', 'At least one special character (!@#$%^&*)', s => /[!@#$%^&*]/.test(s)]
     ];
     function changePasswordScreen() {
+      state.cpDraft = state.cpDraft || { current: '', next: '', confirm: '' };
       return subPage('Change Password', "For your security, please create a strong password that you don't use elsewhere.", `
         <div class="form-stack">
-          <div class="field"><label>Current Password</label><div class="field-icon">🔒<input id="cpCurrent" type="password" placeholder="Enter your current password"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('cpCurrent', this)">👁️</button></div></div>
-          <div class="field"><label>New Password</label><div class="field-icon">🔒<input id="cpNew" type="password" placeholder="Enter your new password" oninput="updatePwdStrength()"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('cpNew', this)">👁️</button></div></div>
+          <div class="field"><label>Current Password</label><div class="field-icon">🔒<input id="cpCurrent" type="password" placeholder="Enter your current password" value="${state.cpDraft.current}" oninput="state.cpDraft.current=this.value;"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('cpCurrent', this)">👁️</button></div></div>
+          <div class="field"><label>New Password</label><div class="field-icon">🔒<input id="cpNew" type="password" placeholder="Enter your new password" value="${state.cpDraft.next}" oninput="state.cpDraft.next=this.value; updatePwdStrength();"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('cpNew', this)">👁️</button></div></div>
           <div>
             <div class="row"><span class="muted" style="font-size:11px;font-weight:700;">Password Strength</span><span class="strong" id="pwdStrengthLabel" style="font-size:12px;color:var(--pending);">Weak</span></div>
             <div style="display:flex;gap:4px;margin-top:6px;" id="pwdStrengthBar">
               ${[0, 1, 2, 3, 4].map(i => `<span style="flex:1;height:5px;border-radius:99px;background:var(--line);" data-bar="${i}"></span>`).join('')}
             </div>
           </div>
-          <div class="field" style="margin-bottom:0;"><label>Confirm New Password</label><div class="field-icon">🔒<input id="cpConfirm" type="password" placeholder="Confirm your new password"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('cpConfirm', this)">👁️</button></div></div>
+          <div class="field" style="margin-bottom:0;"><label>Confirm New Password</label><div class="field-icon">🔒<input id="cpConfirm" type="password" placeholder="Confirm your new password" value="${state.cpDraft.confirm}" oninput="state.cpDraft.confirm=this.value;"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="togglePwd('cpConfirm', this)">👁️</button></div></div>
         </div>
         <div class="card" style="margin-top:16px;">
           <div class="strong" style="font-size:13px;">🛡️ Password must include:</div>
@@ -2145,7 +2153,7 @@
       `);
     }
     function updatePwdStrength() {
-      const val = document.getElementById('cpNew').value;
+      const val = state.cpDraft.next;
       const passed = pwdRules.filter(([, , test]) => test(val));
       pwdRules.forEach(([key, label]) => {
         const ok = passed.some(p => p[0] === key);
@@ -2160,12 +2168,11 @@
       lbl.style.color = val ? colors[Math.max(passed.length - 1, 0)] : 'var(--pending)';
     }
     function changePassword() {
-      const cur = document.getElementById('cpCurrent').value;
-      const next = document.getElementById('cpNew').value;
-      const confirm = document.getElementById('cpConfirm').value;
+      const { current: cur, next, confirm } = state.cpDraft;
       if (!cur) { showToast('Enter your current password'); return; }
       if (!pwdRules.every(([, , test]) => test(next))) { showToast('Password does not meet all requirements'); return; }
       if (next !== confirm) { showToast('Passwords do not match'); return; }
+      state.cpDraft = { current: '', next: '', confirm: '' };
       showToast('Password updated successfully');
       nav('profile');
     }
@@ -2324,15 +2331,16 @@
     }
 
     function remindersScreen() {
+      state.rmDraft = state.rmDraft || { title: '', date: '', note: '' };
       return wrapWithNav(`
         <div class="page">
           <h1 style="font-size:24px;color:var(--navy);">Reminders</h1>
           <p class="sub">Never forget to reciprocate a gift.</p>
           <div class="form-stack card" style="margin-top:16px;">
-            <div class="field"><label>Title</label><input id="rmTitle" placeholder="e.g. Return ₹500 to Arun"></div>
+            <div class="field"><label>Title</label><input id="rmTitle" value="${state.rmDraft.title}" placeholder="e.g. Return ₹500 to Arun" oninput="state.rmDraft.title=this.value;"></div>
             <div class="grid-2">
-              <div class="field"><label>Date</label><input id="rmDate" type="date"></div>
-              <div class="field"><label>Note (optional)</label><input id="rmNote" placeholder="Context"></div>
+              <div class="field"><label>Date</label><input id="rmDate" type="date" value="${state.rmDraft.date}" oninput="state.rmDraft.date=this.value;"></div>
+              <div class="field"><label>Note (optional)</label><input id="rmNote" value="${state.rmDraft.note}" placeholder="Context" oninput="state.rmDraft.note=this.value;"></div>
             </div>
             <button class="secondary" onclick="addReminder()">＋ Add Reminder</button>
           </div>
@@ -2352,10 +2360,11 @@
       `);
     }
     function addReminder() {
-      const title = document.getElementById('rmTitle').value;
+      const { title, date, note } = state.rmDraft;
       if (!title) { showToast('Enter a reminder title'); return; }
-      state.reminders.unshift({ id: state.nextReminderId++, title, date: document.getElementById('rmDate').value, note: document.getElementById('rmNote').value, status: 'Active' });
+      state.reminders.unshift({ id: state.nextReminderId++, title, date, note, status: 'Active' });
       persist();
+      state.rmDraft = { title: '', date: '', note: '' };
       showToast('Reminder added');
       render();
     }
