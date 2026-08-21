@@ -324,6 +324,28 @@
     .modal-backdrop { position: fixed; inset: 0; background: rgba(20,20,40,0.5); display: grid; place-items: center; z-index: 60; padding: 24px; }
     .modal-card { background: #fff; border-radius: 24px; padding: 30px 26px; text-align: center; width: min(340px, 100%); box-shadow: 0 24px 50px rgba(0,0,0,0.25); }
     .modal-check { width: 64px; height: 64px; border-radius: 50%; background: var(--success-bg); color: var(--success); font-size: 32px; display: grid; place-items: center; margin: 0 auto; }
+
+    /* ---------- Slide to confirm ---------- */
+    .slide-track {
+      position: relative; height: 56px; border-radius: 16px; background: #eef1fb; overflow: hidden;
+      display: flex; align-items: center; user-select: none; touch-action: none;
+    }
+    .slide-fill { position: absolute; left: 0; top: 0; height: 100%; width: 56px; background: linear-gradient(135deg,#4f6ef7 0%,#8a5cf7 100%); border-radius: 16px 0 0 16px; }
+    .slide-label { position: relative; z-index: 1; width: 100%; text-align: center; font-weight: 800; font-size: 13.5px; color: var(--navy-2); pointer-events: none; }
+    .slide-handle {
+      position: absolute; left: 3px; top: 3px; width: 50px; height: 50px; border-radius: 13px;
+      background: #fff; display: grid; place-items: center; font-size: 20px; color: var(--blue);
+      box-shadow: 0 4px 10px rgba(30,40,100,0.25); cursor: grab; z-index: 2; touch-action: none;
+    }
+    .slide-track.disabled { opacity: 0.55; pointer-events: none; }
+
+    /* ---------- Location suggestions ---------- */
+    .suggestion-box { position: relative; }
+    .suggestion-list { position: absolute; left: 0; right: 0; top: calc(100% + 4px); background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-lg); z-index: 10; max-height: 200px; overflow-y: auto; display: none; }
+    .suggestion-item { padding: 11px 14px; font-size: 12.5px; font-weight: 600; border-bottom: 1px solid var(--line); cursor: pointer; }
+    .suggestion-item:last-child { border-bottom: 0; }
+    .suggestion-item:hover { background: #f4f6fd; }
+    .cover-preview-img { width: 100%; max-height: 160px; object-fit: cover; border-radius: 14px; }
     .check-pill input { width: 16px; height: 16px; padding: 0; }
     .mobile-row { display: flex; gap: 8px; }
     .mobile-row select { flex: 0 0 84px; }
@@ -744,7 +766,7 @@
       return `<div class="screen">${content}${bottomNav()}${state.toast ? `<div class="toast">✓ ${state.toast}</div>` : ''}</div>`;
     }
     function wrapPlain(content) {
-      return `<div class="screen">${content}${state.toast ? `<div class="toast">✓ ${state.toast}</div>` : ''}</div>`;
+      return `<div class="screen">${content}${bottomNav()}${state.toast ? `<div class="toast">✓ ${state.toast}</div>` : ''}</div>`;
     }
 
     /* ---------- Home ---------- */
@@ -847,7 +869,7 @@
         </div>
         <div class="page" style="padding-top:6px;display:grid;gap:14px;">
           ${state.events.map(ev => eventCardHTML(ev)).join('')}
-          <button class="pink-btn primary" onclick="nav('create-event-type')">＋ Create New Event</button>
+          <button class="pink-btn primary" onclick="startCreateEvent()">＋ Create New Event</button>
         </div>
       `);
     }
@@ -1221,7 +1243,7 @@
             <p class="sub">Create a new event or open an existing one to manage all your details easily.</p>
           </div>
           <div class="hub-banner">🎉🎁🎊</div>
-          <button class="hub-card" onclick="nav('create-event-type')">
+          <button class="hub-card" onclick="startCreateEvent()">
             <span class="hub-icon" style="background:#eaf1ff;">➕</span>
             <div style="flex:1;"><h3 style="color:var(--blue);">Create New Event</h3><p>Create a new event and add all details to get started.</p></div>
             <span class="arrow-circle" style="background:#eaf1ff;color:var(--blue);">→</span>
@@ -1237,19 +1259,20 @@
     }
 
     /* ---------- Create event: type picker ---------- */
+    function startCreateEvent() {
+      resetNewEventDraft();
+      state.selectedType = 'Wedding';
+      state.showMore = false;
+      nav('create-event-type');
+    }
+
     function createEventTypeScreen() {
       return wrapPlain(`
         <div class="page">
           <div class="row">
             <button class="back-link" onclick="nav('create-open')">←</button>
             <div class="header-title"><h1 style="font-size:19px;color:var(--navy);">Create New Event 🎉</h1><p>Add basic details about your event</p></div>
-            <button class="icon-btn" onclick="showToast('Help coming soon')">?</button>
-          </div>
-          <div class="card" style="margin-top:14px;text-align:center;">
-            <div style="font-size:34px;">📷</div>
-            <div class="strong" style="margin-top:6px;">Event Cover <span class="muted" style="font-weight:600;">(Optional)</span></div>
-            <p class="sub" style="margin-top:6px;">Add a cover image to make your invitation more personal and beautiful.</p>
-            <button class="secondary" style="margin-top:10px;" onclick="showToast('Image picker coming soon')">🖼️ Choose Image</button>
+            <button class="icon-btn" onclick="showInfoModal('Creating an Event', 'Pick the type of event you\\'re hosting below. Choosing &quot;More&quot; opens extra categories like Anniversary or Naming Ceremony. Tap a type to continue to the details form.')">?</button>
           </div>
           <div style="margin-top:18px;">
             <div class="strong" style="font-size:13px;">Event Type <span style="color:var(--pink-2);">*</span></div>
@@ -1266,7 +1289,7 @@
               <div class="row"><span class="strong" style="font-size:13px;">▦ More Events</span><button onclick="state.showMore=false; render();">✕</button></div>
               <div class="more-grid">
                 ${moreEventTypes.map(m => `
-                  <button class="more-tile" onclick="selectEventType('${m.name}')">
+                  <button class="more-tile" onclick="selectMoreEventType('${m.name}')">
                     <span style="font-size:18px;">${m.icon}</span>${m.name}
                   </button>
                 `).join('')}
@@ -1274,7 +1297,6 @@
             </div>
           ` : ''}
           <button class="primary" style="margin-top:22px;" onclick="nav('create-event-form')">Continue →</button>
-          <button class="ghost" style="margin-top:10px;" onclick="showToast('Draft saved')">🔖 Save Draft</button>
         </div>
       `);
     }
@@ -1284,77 +1306,197 @@
       state.showMore = (t === 'More');
       render();
     }
+    function selectMoreEventType(name) {
+      state.selectedType = name;
+      state.showMore = false;
+      nav('create-event-form');
+    }
 
     /* ---------- Create event: details form ---------- */
+    function resetNewEventDraft() {
+      state.newEventDraft = { name: '', date: '', time: '', venue: '', upi: '', desc: '', cover: '' };
+    }
+    function todayIso() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+    function isValidUpi(v) {
+      return /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/.test((v || '').trim());
+    }
+    const venueSuggestions = [
+      'The Grand Taj, Anna Salai, Chennai', 'ABC Mahal, Anna Nagar, Chennai', 'Le Meridien, Chennai',
+      'Maple Banquet, Noida', 'Community Hall, Sector 21, Gurugram', 'Temple Mandapam, Coimbatore',
+      'Lotus Banquet Hall, Mumbai', 'Green Park Community Center, New Delhi', 'Rose Garden, Bangalore',
+      'Palm Grove Resort, Madurai', 'City Convention Center, Hyderabad', 'Riverside Lawns, Trichy'
+    ];
+
     function createEventFormScreen() {
+      state.newEventDraft = state.newEventDraft || { name: '', date: '', time: '', venue: '', upi: '', desc: '', cover: '' };
+      const d = state.newEventDraft;
       const displayType = state.selectedType === 'More' ? 'Custom Event' : state.selectedType;
       return wrapPlain(`
         <div class="page">
           <div class="row">
             <button class="back-link" onclick="nav('create-event-type')">←</button>
             <div class="header-title"><h1 style="font-size:18px;color:var(--navy);">Create ${displayType} ✨</h1><p>Add details about your event</p></div>
-            <button class="icon-btn" onclick="showToast('Help coming soon')">?</button>
+            <button class="icon-btn" onclick="showInfoModal('Event Details', 'Fill in your event details below. The cover image and UPI ID are required so guests can recognize and contribute to your event. Slide the bar at the bottom to finish.')">?</button>
           </div>
           <div class="card" style="margin-top:14px;text-align:center;">
-            <div style="font-size:34px;">${typeMeta(displayType).emoji}</div>
-            <div class="strong" style="margin-top:6px;">Event Cover <span class="muted" style="font-weight:600;">(Optional)</span></div>
-            <button class="secondary" style="margin-top:10px;" onclick="showToast('Image picker coming soon')">🖼️ Choose Image</button>
+            <div id="coverPreviewWrap">${d.cover ? `<img src="${d.cover}" class="cover-preview-img">` : `<div style="font-size:34px;">${typeMeta(displayType).emoji}</div>`}</div>
+            <div class="strong" style="margin-top:6px;">Event Cover <span style="color:var(--pink-2);">*</span> <span class="muted" style="font-weight:600;">(required)</span></div>
+            <p class="sub" style="margin-top:6px;">Add a cover image to make your invitation more personal and beautiful.</p>
+            <input type="file" id="evCoverFile" accept="image/*" style="display:none;" onchange="onCoverFileChange(event)">
+            <button class="secondary" style="margin-top:10px;" onclick="document.getElementById('evCoverFile').click()">🖼️ ${d.cover ? 'Change Image' : 'Choose Image'}</button>
           </div>
           <div class="form-stack" style="margin-top:16px;">
             <div class="field">
               <label>Event Name *</label>
-              <input id="evName" placeholder="e.g. ${getUserName()}'s ${displayType}">
+              <input id="evName" value="${d.name}" placeholder="e.g. ${getUserName()}'s ${displayType}" oninput="state.newEventDraft.name=this.value;">
             </div>
             <div class="field">
               <label>Event Type / Category</label>
-              <input id="evType" value="${displayType}">
+              <input id="evType" value="${displayType}" disabled>
             </div>
             <div class="grid-2">
-              <div class="field"><label>Date *</label><input id="evDate" type="date"></div>
-              <div class="field"><label>Time *</label><input id="evTime" type="time"></div>
+              <div class="field"><label>Date *</label><input id="evDate" type="date" min="${todayIso()}" value="${d.date}" oninput="state.newEventDraft.date=this.value;"></div>
+              <div class="field"><label>Time *</label><input id="evTime" type="time" value="${d.time}" oninput="state.newEventDraft.time=this.value;"></div>
             </div>
-            <div class="field">
+            <div class="field suggestion-box">
               <label>Venue / Location *</label>
-              <input id="evVenue" placeholder="e.g. Community Hall, Park, Home">
+              <div class="field-icon">📍<input id="evVenue" value="${d.venue}" placeholder="e.g. Community Hall, Park, Home" oninput="onVenueInput(this.value)" autocomplete="off"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="useCurrentLocation()" title="Use current location">🎯</button></div>
+              <div class="suggestion-list" id="venueSuggestions"></div>
             </div>
             <div class="field">
               <label>UPI ID for Gift Collection *</label>
-              <input id="evUpi" placeholder="e.g. name@upi">
+              <div class="field-icon">🔗<input id="evUpi" value="${d.upi}" placeholder="e.g. name@upi" oninput="state.newEventDraft.upi=this.value; updateUpiValidIndicator();"><span id="upiValidIcon">${d.upi && isValidUpi(d.upi) ? '✅' : ''}</span></div>
               <p class="sub" style="margin-top:6px;">🛡️ Your UPI ID is safe and used only for gift collection.</p>
             </div>
             <div class="field" style="margin-bottom:0;">
               <label>Description (optional)</label>
-              <textarea id="evDesc" placeholder="e.g. A night of music, dance & celebration"></textarea>
+              <textarea id="evDesc" placeholder="e.g. A night of music, dance & celebration" oninput="state.newEventDraft.desc=this.value;">${d.desc}</textarea>
             </div>
           </div>
-          <button class="primary" style="margin-top:20px;background:linear-gradient(135deg,#4f6ef7 0%,#8a5cf7 100%);" onclick="createNewEvent()">→ Slide to create an event</button>
-          <button class="ghost" style="margin-top:10px;" onclick="showToast('Draft saved')">🔖 Save Draft</button>
+          <div style="margin-top:20px;">
+            <div class="slide-track" id="slideTrack">
+              <div class="slide-fill" id="slideFill"></div>
+              <span class="slide-label">→ Slide to create an event</span>
+              <div class="slide-handle" id="slideHandle">→</div>
+            </div>
+          </div>
         </div>
       `);
     }
 
+    function onCoverFileChange(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.newEventDraft.cover = reader.result;
+        document.getElementById('coverPreviewWrap').innerHTML = `<img src="${reader.result}" class="cover-preview-img">`;
+        document.querySelector('.card .secondary').textContent = '🖼️ Change Image';
+      };
+      reader.readAsDataURL(file);
+    }
+    function onVenueInput(val) {
+      state.newEventDraft.venue = val;
+      const box = document.getElementById('venueSuggestions');
+      const q = val.trim().toLowerCase();
+      if (!q) { box.style.display = 'none'; box.innerHTML = ''; return; }
+      const matches = venueSuggestions.filter(v => v.toLowerCase().includes(q)).slice(0, 5);
+      if (!matches.length) { box.style.display = 'none'; box.innerHTML = ''; return; }
+      box.style.display = 'block';
+      box.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="pickVenueSuggestion('${m.replace(/'/g, "\\'")}')">📍 ${m}</div>`).join('');
+    }
+    function pickVenueSuggestion(v) {
+      state.newEventDraft.venue = v;
+      document.getElementById('evVenue').value = v;
+      const box = document.getElementById('venueSuggestions');
+      box.style.display = 'none';
+      box.innerHTML = '';
+    }
+    function useCurrentLocation() {
+      if (!navigator.geolocation) { showToast('Location access is not available on this device'); return; }
+      showToast('Getting your location...');
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const val = `Current Location (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`;
+          state.newEventDraft.venue = val;
+          document.getElementById('evVenue').value = val;
+          showToast('Location set');
+        },
+        () => showToast('Could not access your location — check permissions'),
+        { timeout: 8000 }
+      );
+    }
+    function updateUpiValidIndicator() {
+      document.getElementById('upiValidIcon').textContent = state.newEventDraft.upi && isValidUpi(state.newEventDraft.upi) ? '✅' : '';
+    }
+
+    function initSlideConfirm() {
+      const track = document.getElementById('slideTrack');
+      const handle = document.getElementById('slideHandle');
+      const fill = document.getElementById('slideFill');
+      if (!track || !handle || !fill) return;
+      let dragging = false, startX = 0, baseX = 0, currentX = 0;
+      const maxX = () => track.clientWidth - handle.offsetWidth - 6;
+      function setX(x) {
+        currentX = Math.max(0, Math.min(maxX(), x));
+        handle.style.transform = `translateX(${currentX}px)`;
+        fill.style.width = (currentX + handle.offsetWidth) + 'px';
+      }
+      function onDown(e) {
+        dragging = true;
+        startX = (e.touches ? e.touches[0].clientX : e.clientX);
+        baseX = currentX;
+      }
+      function onMove(e) {
+        if (!dragging) return;
+        const clientX = (e.touches ? e.touches[0].clientX : e.clientX);
+        setX(baseX + (clientX - startX));
+      }
+      function onUp() {
+        if (!dragging) return;
+        dragging = false;
+        if (currentX >= maxX() * 0.82) {
+          setX(maxX());
+          const ok = createNewEvent();
+          if (!ok) setX(0);
+        } else {
+          setX(0);
+        }
+      }
+      handle.addEventListener('pointerdown', onDown);
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    }
+
     function createNewEvent() {
+      const d = state.newEventDraft;
       const displayType = state.selectedType === 'More' ? 'Custom Event' : state.selectedType;
-      const name = document.getElementById('evName').value || `${getUserName()}'s ${displayType}`;
-      const date = document.getElementById('evDate').value;
-      const time = document.getElementById('evTime').value;
-      const venue = document.getElementById('evVenue').value || 'To be announced';
-      const upi = document.getElementById('evUpi').value || 'not-set@upi';
-      const description = document.getElementById('evDesc').value || '';
+      if (!d.cover) { showToast('Please add a cover image to continue'); return false; }
+      if (!d.date) { showToast('Please select an event date'); return false; }
+      if (d.date < todayIso()) { showToast('Event date cannot be in the past'); return false; }
+      if (!d.venue.trim()) { showToast('Please enter a venue or location'); return false; }
+      if (!isValidUpi(d.upi)) { showToast('Enter a valid UPI ID (e.g. name@bank)'); return false; }
+
+      const name = d.name.trim() || `${getUserName()}'s ${displayType}`;
       const meta = typeMeta(displayType);
       const ev = {
         id: state.nextEventId++,
-        name, type: displayType, code: genCode(meta.prefix), upi, description,
-        date: date ? new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Date TBD',
-        time: time || 'Time TBD',
-        venue, host: getUserName(), trustScore: 85, familyVerified: 1, targetAmount: 0, records: []
+        name, type: displayType, code: genCode(meta.prefix), upi: d.upi.trim(), description: d.desc, cover: d.cover,
+        date: new Date(d.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        time: d.time || 'Time TBD',
+        venue: d.venue.trim(), host: getUserName(), trustScore: 85, familyVerified: 1, targetAmount: 0, records: []
       };
       state.events.unshift(ev);
       persist();
+      resetNewEventDraft();
       state.selectedType = 'Wedding';
       state.showMore = false;
       state.activeEventId = ev.id;
       nav('event-created-success');
+      return true;
     }
 
     function eventCreatedSuccessScreen() {
@@ -1395,8 +1537,8 @@
             <button class="secondary" onclick="nav('event-detail')">👁️ Open Event</button>
             <button class="secondary" onclick="nav('view-invitation')">✉️ View Invitation</button>
           </div>
-          <button class="ghost" style="margin-top:10px;" onclick="nav('create-event-type')">✏️ Edit Event</button>
-          <button class="ghost" style="margin-top:10px;" onclick="nav('create-event-type')">➕ Create Another Event</button>
+          <button class="ghost" style="margin-top:10px;" onclick="startCreateEvent()">✏️ Edit Event</button>
+          <button class="ghost" style="margin-top:10px;" onclick="startCreateEvent()">➕ Create Another Event</button>
         </div>
       `);
     }
@@ -1418,11 +1560,6 @@
             </div>
             <p class="sub" style="margin-top:16px;">Your presence and blessings<br>will make our day even more special.</p>
           </div>
-          <button class="hub-card" style="margin-top:14px;" onclick="shareEvent(${ev.id})">
-            <span class="hub-icon" style="background:#fdeee9;">🎁</span>
-            <div style="flex:1;"><h3 style="color:#7a2b3a;">Online Gift Contribution</h3><p>If you wish to bless us with a gift, you can do it online in a simple and secure way.</p></div>
-            <span class="arrow-circle" style="background:#7a2b3a;color:#fff;">→</span>
-          </button>
           <p class="sub" style="text-align:center;margin-top:14px;">❤️ We can't wait to celebrate with you! ❤️</p>
         </div>
       `);
@@ -1565,7 +1702,7 @@
               </div>
               <div class="field">
                 <label>${isEvent ? 'Sender' : 'Receiver'} Name</label>
-                <div class="field-icon">👤<input id="enPerson" value="${d.person}" placeholder="e.g. Ramesh Kumar" oninput="state.enDraft.person=this.value;"><button class="icon-btn" style="width:30px;height:30px;box-shadow:none;font-size:14px;" onclick="showToast('Voice input coming soon')">🎙️</button></div>
+                <div class="field-icon">👤<input id="enPerson" value="${d.person}" placeholder="e.g. Ramesh Kumar" oninput="state.enDraft.person=this.value;"><button class="icon-btn" style="width:30px;height:30px;box-shadow:none;font-size:14px;" onclick="startVoiceInput('enPerson')">🎙️</button></div>
               </div>
               <div class="field">
                 <label>${isEvent ? 'Sender' : 'Receiver'} Mobile No.</label>
@@ -1576,7 +1713,7 @@
               </div>
               <div class="field">
                 <label>Place</label>
-                <div class="field-icon">📍<input id="enPlace" value="${d.place}" placeholder="e.g. Coimbatore, Tamil Nadu" oninput="state.enDraft.place=this.value;"><button class="icon-btn" style="width:30px;height:30px;box-shadow:none;font-size:14px;" onclick="showToast('Voice input coming soon')">🎙️</button></div>
+                <div class="field-icon">📍<input id="enPlace" value="${d.place}" placeholder="e.g. Coimbatore, Tamil Nadu" oninput="state.enDraft.place=this.value;"><button class="icon-btn" style="width:30px;height:30px;box-shadow:none;font-size:14px;" onclick="startVoiceInput('enPlace')">🎙️</button></div>
               </div>
               ${!isEvent ? `<div class="field" style="margin-bottom:0;"><label>Receiver UPI ID (optional)</label><input id="enReceiverUpi" value="${d.receiverUpi}" placeholder="e.g. name@upi" oninput="state.enDraft.receiverUpi=this.value;"></div>` : ''}
             </div>
@@ -1599,8 +1736,8 @@
           <div class="field">
             <label>Enter Amount <span class="muted" style="font-weight:600;">(for selected type(s))</span></label>
             <div class="grid-2">
-              <div><label class="muted" style="font-size:10.5px;font-weight:700;">Old (Pending) Amount</label><input id="enOldAmt" type="number" value="${d.oldAmt}" placeholder="0" oninput="state.enDraft.oldAmt=this.value; updateEntryTotal();"></div>
-              <div><label class="muted" style="font-size:10.5px;font-weight:700;">New (Fresh) Amount</label><input id="enNewAmt" type="number" value="${d.newAmt}" placeholder="0" oninput="state.enDraft.newAmt=this.value; updateEntryTotal();"></div>
+              <div><label class="muted" style="font-size:10.5px;font-weight:700;">Old (Pending) Amount</label><input id="enOldAmt" type="number" value="${d.oldAmt}" placeholder="0" ${d.old ? '' : 'disabled'} oninput="state.enDraft.oldAmt=this.value; updateEntryTotal();"></div>
+              <div><label class="muted" style="font-size:10.5px;font-weight:700;">New (Fresh) Amount</label><input id="enNewAmt" type="number" value="${d.newAmt}" placeholder="0" ${d.new ? '' : 'disabled'} oninput="state.enDraft.newAmt=this.value; updateEntryTotal();"></div>
             </div>
           </div>
 
@@ -1639,6 +1776,31 @@
       state.enDraft.new = isNew;
       document.getElementById('oldTypeCard').style.opacity = isOld ? '1' : '0.55';
       document.getElementById('newTypeCard').style.opacity = isNew ? '1' : '0.55';
+      const oldAmtInput = document.getElementById('enOldAmt');
+      const newAmtInput = document.getElementById('enNewAmt');
+      oldAmtInput.disabled = !isOld;
+      newAmtInput.disabled = !isNew;
+      if (!isOld) { oldAmtInput.value = ''; state.enDraft.oldAmt = ''; }
+      if (!isNew) { newAmtInput.value = ''; state.enDraft.newAmt = ''; }
+      updateEntryTotal();
+    }
+    function startVoiceInput(targetId) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) { showToast('Voice input is not supported on this device'); return; }
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-IN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      showToast('Listening...');
+      recognition.onresult = (e) => {
+        const text = e.results[0][0].transcript;
+        const el = document.getElementById(targetId);
+        el.value = text;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        showToast('Captured: ' + text);
+      };
+      recognition.onerror = () => showToast('Could not capture voice input');
+      recognition.start();
     }
     function updateEntryTotal() {
       const oldAmt = Number(document.getElementById('enOldAmt').value) || 0;
@@ -1714,6 +1876,24 @@
       const el = document.getElementById('successModalOverlay');
       if (el) el.remove();
       nav(state.modalTarget);
+    }
+
+    function showInfoModal(title, body) {
+      const overlay = document.createElement('div');
+      overlay.id = 'infoModalOverlay';
+      overlay.className = 'modal-backdrop';
+      overlay.innerHTML = `
+        <div class="modal-card" style="text-align:left;">
+          <div class="row"><span class="strong" style="font-size:17px;color:var(--navy);">💡 ${title}</span><button class="icon-btn" style="box-shadow:none;" onclick="closeInfoModal()">✕</button></div>
+          <p class="sub" style="margin-top:10px;">${body}</p>
+          <button class="primary" style="margin-top:16px;" onclick="closeInfoModal()">Got it</button>
+        </div>
+      `;
+      document.getElementById('app').appendChild(overlay);
+    }
+    function closeInfoModal() {
+      const el = document.getElementById('infoModalOverlay');
+      if (el) el.remove();
     }
 
     /* ---------- Records (event ledger) ---------- */
@@ -1867,7 +2047,7 @@
     function recordsScreen() {
       const ev = getActiveEvent();
       const t = eventTotals(ev);
-      const yet = t.pending;
+      const yet = Math.max(t.given - t.received, 0);
       const filterCount = activeFilterCount();
       return `<div class="screen">
         <div class="page" style="padding-bottom:110px;">
@@ -1879,13 +2059,13 @@
             <div class="summary-title">Collection Summary</div>
             <div class="summary-split">
               <div class="summary-item">
-                <span class="summary-icon" style="background:#ffd9e6;">🤲</span>
-                <div><div class="lbl">Total Received</div><div class="val" style="color:var(--pink-2);">${money(t.received)}</div></div>
+                <span class="summary-icon" style="background:#dbe6ff;">🤲</span>
+                <div><div class="lbl">Total Given</div><div class="val" style="color:var(--blue);">${money(t.given)}</div></div>
               </div>
               <div class="summary-divider"></div>
               <div class="summary-item">
-                <span class="summary-icon" style="background:#dbe6ff;">🎯</span>
-                <div><div class="lbl">Target</div><div class="val" style="color:var(--blue);">${money(t.completed)}</div></div>
+                <span class="summary-icon" style="background:#ffd9e6;">💼</span>
+                <div><div class="lbl">Total Received</div><div class="val" style="color:var(--pink-2);">${money(t.received)}</div></div>
               </div>
             </div>
             <div class="yet-row"><div class="lbl">Yet to Receive</div><div class="val">${money(yet)}</div></div>
@@ -2707,6 +2887,7 @@
       };
       const renderFn = pages[state.page] || homeScreen;
       app.innerHTML = renderFn();
+      if (state.page === 'create-event-form') initSlideConfirm();
     }
 
     render();
