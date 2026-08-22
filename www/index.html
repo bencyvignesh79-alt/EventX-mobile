@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <title>Relfam</title>
   <style>
     :root {
@@ -406,6 +407,8 @@
     .amount-preset { border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; font-weight: 800; font-size: 13px; background: #fff; flex: 1; text-align: center; min-width: 68px; }
     .amount-preset.active { border-color: var(--blue); background: #eaf1ff; color: var(--blue); }
     .qr-placeholder { width: 150px; height: 150px; margin: 0 auto; border-radius: 16px; background: repeating-conic-gradient(#1c1f3a 0% 25%, #fff 0% 50%) 0 0 / 20px 20px; border: 6px solid #fff; box-shadow: var(--shadow); }
+    .qr-box { width: 150px; height: 150px; margin: 0 auto; border-radius: 16px; overflow: hidden; border: 6px solid #fff; box-shadow: var(--shadow); background: #fff; display: grid; place-items: center; }
+    .qr-box img { width: 100%; height: 100%; object-fit: contain; }
     .pay-app-row { display: flex; justify-content: space-around; margin-top: 14px; }
     .pay-app { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; color: var(--muted); }
     .pay-app .pi { width: 42px; height: 42px; border-radius: 12px; background: #fff; border: 1px solid var(--line); display: grid; place-items: center; font-size: 18px; }
@@ -461,7 +464,7 @@
       { name: 'Anniversary', icon: '💍' }, { name: 'Naming Ceremony', icon: '👶' },
       { name: 'Reception', icon: '🍽️' }, { name: 'Puberty Ceremony', icon: '🌸' },
       { name: 'Ear Piercing Ceremony', icon: '✨' }, { name: 'Religious Function', icon: '🙏' },
-      { name: 'Memorial Gathering', icon: '🕯️' }, { name: 'Custom Event', icon: '➕' }
+      { name: 'Corporate Event', icon: '🏢' }, { name: 'Custom Event', icon: '➕' }
     ];
     const countryCodes = ['+91', '+1', '+44', '+971', '+65'];
 
@@ -532,6 +535,9 @@
       mobileChangeStage: 'enter',
       recordsFilter: 'all',
       recordsSearch: '',
+      eventsSearch: '',
+      eventsSearchOpen: false,
+      editingEventId: null,
       detailedFilter: { places: [], amountBucket: 'all', customFrom: '', customTo: '', visits: [], statuses: [], period: 'all' },
       toast: ''
     };
@@ -567,6 +573,71 @@
     }
     function typeMeta(t) { return eventTypeMeta[t] || eventTypeMeta.default; }
     function collMeta(t) { return collectionTypeMeta[t] || collectionTypeMeta.default; }
+    function statusLabel(s) { return s === 'Old' ? 'Partially Completed' : s; }
+
+    function recordsToRows(ev) {
+      const header = ['Title', 'Person', 'Place', 'Old Amount', 'New Amount', 'Amount', 'Mode', 'Status', 'Date'];
+      const rows = ev.records.map(r => [r.title, r.person, r.place, r.oldAmount || 0, r.newAmount || 0, r.amount, r.mode, statusLabel(r.status), r.date]);
+      return [header, ...rows];
+    }
+    function downloadRecordsExcel() {
+      const ev = getActiveEvent();
+      if (!ev.records.length) { showToast('No records to export yet'); return; }
+      const rows = recordsToRows(ev);
+      const csv = rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+      const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${ev.name.replace(/[^a-z0-9]+/gi, '-')}-records.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast('Excel (CSV) file downloaded');
+    }
+    function downloadRecordsPdf() {
+      const ev = getActiveEvent();
+      if (!ev.records.length) { showToast('No records to export yet'); return; }
+      const rows = recordsToRows(ev);
+      const win = window.open('', '_blank');
+      if (!win) { showToast('Please allow pop-ups to export as PDF'); return; }
+      win.document.write(`
+        <html><head><title>${ev.name} - Records</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 24px; color: #1c1f3a; }
+          h1 { font-size: 18px; margin-bottom: 2px; }
+          p { color: #6b7093; font-size: 12px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+          th, td { border: 1px solid #ddd; padding: 6px 8px; font-size: 11px; text-align: left; }
+          th { background: #f4f6fd; }
+        </style></head>
+        <body>
+          <h1>${ev.name} — Gift Records</h1>
+          <p>Exported ${new Date().toLocaleString('en-GB')}</p>
+          <table>
+            <thead><tr>${rows[0].map(h => `<th>${h}</th>`).join('')}</tr></thead>
+            <tbody>${rows.slice(1).map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+          </table>
+          <script>window.onload = () => setTimeout(() => window.print(), 200);<\/script>
+        </body></html>
+      `);
+      win.document.close();
+      win.focus();
+    }
+    function qrBoxHTML(ev, canvasId) {
+      if (ev.qrImage) return `<div class="qr-box"><img src="${ev.qrImage}"></div>`;
+      return `<div class="qr-box"><canvas id="${canvasId}" width="150" height="150"></canvas></div>`;
+    }
+    function drawEventQr(canvasId, ev, amount) {
+      if (ev.qrImage) return;
+      const canvas = document.getElementById(canvasId);
+      if (!canvas || typeof QRCode === 'undefined' || !ev.upi) return;
+      const params = new URLSearchParams({ pa: ev.upi, pn: ev.host || 'Relfam', cu: 'INR' });
+      if (amount) params.set('am', String(amount));
+      const uri = `upi://pay?${params.toString()}`;
+      QRCode.toCanvas(canvas, uri, { width: 150, margin: 1 }, () => {});
+    }
 
     /* ---------- Derived ledger totals (source of truth = records, never stored separately) ---------- */
     function eventTotals(ev) {
@@ -861,14 +932,13 @@
             <h1 class="display">My Events</h1>
             <p>Manage all your events in one place</p>
           </div>
-          <button class="icon-btn" onclick="showToast('Search coming soon')">🔎</button>
         </div>
         <div class="meta-row">
           <span class="muted">📅 Total ${state.events.length} Events</span>
           <span class="muted">Sort by: <b class="link-accent" onclick="showToast('Sorting coming soon')" style="color:var(--pink-2);">Recent</b></span>
         </div>
         <div class="page" style="padding-top:6px;display:grid;gap:14px;">
-          ${state.events.map(ev => eventCardHTML(ev)).join('')}
+          <div style="display:grid;gap:14px;">${state.events.map(ev => eventCardHTML(ev)).join('')}</div>
           <button class="pink-btn primary" onclick="startCreateEvent()">＋ Create New Event</button>
         </div>
       `);
@@ -880,16 +950,15 @@
       return `
         <button class="event-card" onclick="state.activeEventId=${ev.id}; nav('event-detail')">
           <div class="event-cover" style="background:${meta.grad};">
-            <span class="cover-emoji">${meta.emoji}</span>
+            ${ev.cover ? `<img src="${ev.cover}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">` : ''}
+            <span class="cover-emoji" style="position:relative;z-index:1;">${ev.cover ? '' : meta.emoji}</span>
           </div>
           <div class="event-body">
             <div class="row"><span class="event-name">${ev.name}</span><span class="muted">›</span></div>
             <div class="event-meta">📅 ${ev.date} 🕐 ${ev.time}</div>
             <div class="event-meta">📍 ${ev.venue}</div>
             <div class="stat-row">
-              <div class="stat-col"><div class="lbl">Collected</div><div class="val" style="color:var(--success);">${money(t.collected)}</div></div>
-              <div class="stat-col"><div class="lbl">Pending</div><div class="val" style="color:var(--pending);">${money(t.pending)}</div></div>
-              <div class="stat-col"><div class="lbl">Target</div><div class="val" style="color:var(--navy-2);">${money(t.completed)}</div></div>
+              <div class="stat-col"><div class="lbl">Collected Amount</div><div class="val" style="color:var(--success);font-size:15px;">${money(t.collected)}</div></div>
             </div>
           </div>
         </button>
@@ -904,15 +973,18 @@
       return wrapPlain(`
         <div class="page">
           <button class="back-link" onclick="nav('events')">←</button>
-          <div class="event-cover" style="background:${meta.grad};height:150px;border-radius:22px;align-items:flex-end;padding:16px;">
-            <span style="font-size:44px;">${meta.emoji}</span>
+          <div class="event-cover" style="background:${meta.grad};height:150px;border-radius:22px;align-items:flex-end;padding:16px;overflow:hidden;">
+            ${ev.cover ? `<img src="${ev.cover}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">` : `<span style="font-size:44px;position:relative;">${meta.emoji}</span>`}
           </div>
           <h1 class="page-title display" style="font-size:24px;color:var(--navy);margin:14px 0 2px;">${ev.name}</h1>
           <p class="sub">📅 ${ev.date} · 🕐 ${ev.time}</p>
           <p class="sub">📍 ${ev.venue}</p>
           <div class="row" style="margin-top:10px;">
             <span class="code-chip">🔖 ${ev.code}</span>
-            <button class="secondary" style="width:auto;padding:9px 14px;" onclick="shareEvent(${ev.id})">📤 Share</button>
+            <div class="row" style="gap:8px;">
+              <button class="icon-btn" onclick="startEditEvent(${ev.id})" title="Edit Event">✏️</button>
+              <button class="secondary" style="width:auto;padding:9px 14px;" onclick="shareEvent(${ev.id})">📤 Share</button>
+            </div>
           </div>
           <div class="card" style="margin-top:14px;">
             <div class="stat-row" style="border-top:0;padding-top:0;">
@@ -1016,8 +1088,8 @@
             <button class="back-link" onclick="nav('home')">←</button>
             <button class="icon-btn" onclick="nav('share-event')">📤</button>
           </div>
-          <div class="overview-cover" style="background:${meta.grad};">
-            <span class="heart">${meta.emoji}</span>
+          <div class="overview-cover" style="background:${meta.grad};overflow:hidden;">
+            ${ev.cover ? `<img src="${ev.cover}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">` : `<span class="heart" style="position:relative;">${meta.emoji}</span>`}
           </div>
           <h1 style="font-size:22px;color:var(--navy);margin-top:14px;">${ev.name}</h1>
           <p class="sub">${ev.type}</p>
@@ -1088,7 +1160,7 @@
               ${[501, 1001, 2501].map(a => `<button class="amount-preset ${state.contributeAmount === a ? 'active' : ''}" onclick="pickAmountPreset(${a}, this)">${money(a)}</button>`).join('')}
               <button class="amount-preset ${state.contributeAmount === 'custom' ? 'active' : ''}" onclick="pickAmountPreset('custom', this)">Other</button>
             </div>
-            ${state.contributeAmount === 'custom' ? `<input id="amtCustom" type="number" placeholder="Enter amount ₹" style="margin-top:10px;">` : ''}
+            ${state.contributeAmount === 'custom' ? `<input id="amtCustom" type="number" placeholder="Enter amount ₹" style="margin-top:10px;" oninput="drawEventQr('contributeQrCanvas', getActiveEvent(), this.value)">` : ''}
           </div>
           <div class="field">
             <label>Your Details</label>
@@ -1101,8 +1173,8 @@
             <label>Payment Method</label>
             <div class="card" style="text-align:center;">
               <div class="strong" style="font-size:12.5px;">Scan &amp; Pay using any UPI App</div>
-              <div class="qr-placeholder" style="margin-top:12px;"></div>
-              <div class="muted" style="font-size:11px;margin-top:10px;">UPI ID: ${ev.upi}</div>
+              <div style="margin-top:12px;">${qrBoxHTML(ev, 'contributeQrCanvas')}</div>
+              ${ev.upi ? `<div class="muted" style="font-size:11px;margin-top:10px;">UPI ID: ${ev.upi}</div>` : ''}
               <div class="pay-app-row">
                 <button class="pay-app" onclick="submitContribution('GPay')"><span class="pi">🅖</span>GPay</button>
                 <button class="pay-app" onclick="submitContribution('PhonePe')"><span class="pi">📱</span>PhonePe</button>
@@ -1120,7 +1192,8 @@
       state.contributeAmount = val;
       document.getElementById('amtPresetRow').querySelectorAll('.amount-preset').forEach(b => b.classList.remove('active'));
       btnEl.classList.add('active');
-      if (val === 'custom') render();
+      if (val === 'custom') { render(); return; }
+      drawEventQr('contributeQrCanvas', getActiveEvent(), val);
     }
 
     function submitContribution(method) {
@@ -1207,13 +1280,9 @@
           <div class="muted" style="font-size:11px;font-weight:700;margin-top:18px;">SHARE VIA</div>
           <div class="share-grid">
             <button class="share-app" onclick="shareEvent(${ev.id})"><span class="sa-icon">💬</span>WhatsApp</button>
-            <button class="share-app" onclick="shareVia('Instagram')"><span class="sa-icon">📷</span>Instagram</button>
-            <button class="share-app" onclick="shareVia('Facebook')"><span class="sa-icon">📘</span>Facebook</button>
-            <button class="share-app" onclick="shareVia('Telegram')"><span class="sa-icon">✈️</span>Telegram</button>
-            <button class="share-app" onclick="copyEventCode('${ev.code}')"><span class="sa-icon">🔗</span>Share Link</button>
-            <button class="share-app" onclick="shareVia('Messages')"><span class="sa-icon">💭</span>Messages</button>
-            <button class="share-app" onclick="shareVia('Email')"><span class="sa-icon">✉️</span>Email</button>
-            <button class="share-app" onclick="shareVia('More')"><span class="sa-icon">⋯</span>More</button>
+            <button class="share-app" onclick="shareViaInstagram()"><span class="sa-icon">📷</span>Instagram</button>
+            <button class="share-app" onclick="shareViaMessage()"><span class="sa-icon">💭</span>Message</button>
+            <button class="share-app" onclick="shareViaLink()"><span class="sa-icon">🔗</span>Share Link</button>
           </div>
         </div>
       `);
@@ -1224,13 +1293,42 @@
       showToast('Event code copied!');
     }
 
-    function shareVia(channel) {
+    function shareText(ev) {
+      return `You're invited to ${ev.name}! Use event code ${ev.code} to find it on Relfam.`;
+    }
+
+    // Opens a native app via its custom URL scheme; if the app isn't
+    // installed (page is still visible after a short delay), falls back
+    // to the store listing so the user can install it.
+    function openAppOrStore(schemeUrl, storeUrl) {
+      const start = Date.now();
+      window.location.href = schemeUrl;
+      setTimeout(() => {
+        if (!document.hidden && Date.now() - start < 2200) {
+          window.location.href = storeUrl;
+        }
+      }, 1600);
+    }
+
+    function shareViaMessage() {
       const ev = getActiveEvent();
-      const text = `You're invited to ${ev.name}! Use event code ${ev.code} to find it on Relfam.`;
-      if (channel === 'Email') { window.open('mailto:?subject=' + encodeURIComponent(ev.name) + '&body=' + encodeURIComponent(text), '_blank'); return; }
-      if (channel === 'Messages') { window.open('sms:?body=' + encodeURIComponent(text), '_blank'); return; }
+      window.open('sms:?body=' + encodeURIComponent(shareText(ev)), '_blank');
+    }
+
+    function shareViaLink() {
+      const ev = getActiveEvent();
+      const text = shareText(ev);
       if (navigator.share) { navigator.share({ title: ev.name, text }).catch(() => {}); return; }
-      showToast(`${channel} sharing isn't available in this preview`);
+      if (navigator.clipboard?.writeText) { navigator.clipboard.writeText(text); showToast('Link copied to clipboard!'); return; }
+      showToast('Sharing is not available on this device');
+    }
+
+    function shareViaInstagram() {
+      const ev = getActiveEvent();
+      const text = shareText(ev);
+      if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text);
+      showToast('Invite link copied — opening Instagram to paste it');
+      openAppOrStore('instagram://camera', 'https://play.google.com/store/apps/details?id=com.instagram.android');
     }
 
     /* ---------- Create / Open hub (Receiver) ---------- */
@@ -1261,9 +1359,26 @@
     /* ---------- Create event: type picker ---------- */
     function startCreateEvent() {
       resetNewEventDraft();
+      state.editingEventId = null;
       state.selectedType = 'Wedding';
       state.showMore = false;
       nav('create-event-type');
+    }
+    function startEditEvent(eventId) {
+      const ev = state.events.find(e => e.id === eventId);
+      state.editingEventId = eventId;
+      state.selectedType = ev.type;
+      state.newEventPayMode = ev.qrImage ? 'qr' : 'upi';
+      state.newEventDraft = {
+        name: ev.name, date: isoDateFromDisplay(ev.date), time: ev.time === 'Time TBD' ? '' : ev.time,
+        venue: ev.venue, upi: ev.upi || '', desc: ev.description || '', cover: ev.cover || '', qrImage: ev.qrImage || '', hostName: ev.host || ''
+      };
+      nav('create-event-form');
+    }
+    function isoDateFromDisplay(displayDate) {
+      const d = new Date(displayDate);
+      if (isNaN(d)) return '';
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
     function createEventTypeScreen() {
@@ -1314,7 +1429,19 @@
 
     /* ---------- Create event: details form ---------- */
     function resetNewEventDraft() {
-      state.newEventDraft = { name: '', date: '', time: '', venue: '', upi: '', desc: '', cover: '' };
+      state.newEventDraft = { name: '', date: '', time: '', venue: '', upi: '', desc: '', cover: '', qrImage: '', hostName: '' };
+      state.newEventPayMode = 'upi';
+    }
+    function setNewEventPayMode(mode) {
+      state.newEventPayMode = mode;
+      render();
+    }
+    function onQrFileChange(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => { state.newEventDraft.qrImage = reader.result; render(); };
+      reader.readAsDataURL(file);
     }
     function todayIso() {
       const d = new Date();
@@ -1322,6 +1449,35 @@
     }
     function isValidUpi(v) {
       return /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/.test((v || '').trim());
+    }
+    function easyTimePickerHTML(current) {
+      const m = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec((current || '').trim());
+      const hour = m ? String(Number(m[1])) : '';
+      const min = m ? m[2] : '';
+      const ampm = m ? m[3].toUpperCase() : '';
+      return `
+        <div class="grid-2" style="grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <select id="evTimeHour" onchange="updateEasyTime()">
+            <option value="">Hour</option>
+            ${Array.from({ length: 12 }, (_, i) => i + 1).map(h => `<option value="${h}" ${String(h) === hour ? 'selected' : ''}>${h}</option>`).join('')}
+          </select>
+          <select id="evTimeMin" onchange="updateEasyTime()">
+            <option value="">Min</option>
+            ${['00', '15', '30', '45'].map(mm => `<option value="${mm}" ${mm === min ? 'selected' : ''}>${mm}</option>`).join('')}
+          </select>
+          <select id="evTimeAmPm" onchange="updateEasyTime()">
+            <option value="">AM/PM</option>
+            <option ${ampm === 'AM' ? 'selected' : ''}>AM</option>
+            <option ${ampm === 'PM' ? 'selected' : ''}>PM</option>
+          </select>
+        </div>
+      `;
+    }
+    function updateEasyTime() {
+      const h = document.getElementById('evTimeHour').value;
+      const m = document.getElementById('evTimeMin').value;
+      const ap = document.getElementById('evTimeAmPm').value;
+      state.newEventDraft.time = (h && m && ap) ? `${h.padStart(2, '0')}:${m} ${ap}` : '';
     }
     const venueSuggestions = [
       'The Grand Taj, Anna Salai, Chennai', 'ABC Mahal, Anna Nagar, Chennai', 'Le Meridien, Chennai',
@@ -1331,14 +1487,15 @@
     ];
 
     function createEventFormScreen() {
-      state.newEventDraft = state.newEventDraft || { name: '', date: '', time: '', venue: '', upi: '', desc: '', cover: '' };
+      state.newEventDraft = state.newEventDraft || { name: '', date: '', time: '', venue: '', upi: '', desc: '', cover: '', qrImage: '', hostName: '' };
+      state.newEventPayMode = state.newEventPayMode || 'upi';
       const d = state.newEventDraft;
       const displayType = state.selectedType === 'More' ? 'Custom Event' : state.selectedType;
       return wrapPlain(`
         <div class="page">
           <div class="row">
-            <button class="back-link" onclick="nav('create-event-type')">←</button>
-            <div class="header-title"><h1 style="font-size:18px;color:var(--navy);">Create ${displayType} ✨</h1><p>Add details about your event</p></div>
+            <button class="back-link" onclick="nav('${state.editingEventId ? 'event-detail' : 'create-event-type'}')">←</button>
+            <div class="header-title"><h1 style="font-size:18px;color:var(--navy);">${state.editingEventId ? 'Edit' : 'Create'} ${displayType} ✨</h1><p>${state.editingEventId ? 'Update your event details' : 'Add details about your event'}</p></div>
             <button class="icon-btn" onclick="showInfoModal('Event Details', 'Fill in your event details below. The cover image and UPI ID are required so guests can recognize and contribute to your event. Slide the bar at the bottom to finish.')">?</button>
           </div>
           <div class="card" style="margin-top:14px;text-align:center;">
@@ -1354,12 +1511,16 @@
               <input id="evName" value="${d.name}" placeholder="e.g. ${getUserName()}'s ${displayType}" oninput="state.newEventDraft.name=this.value;">
             </div>
             <div class="field">
+              <label>Host / Organizer Name</label>
+              <input id="evHost" value="${d.hostName || getUserName()}" placeholder="e.g. ${getUserName()}" oninput="state.newEventDraft.hostName=this.value;">
+            </div>
+            <div class="field">
               <label>Event Type / Category</label>
               <input id="evType" value="${displayType}" disabled>
             </div>
             <div class="grid-2">
               <div class="field"><label>Date *</label><input id="evDate" type="date" min="${todayIso()}" value="${d.date}" oninput="state.newEventDraft.date=this.value;"></div>
-              <div class="field"><label>Time *</label><input id="evTime" type="time" value="${d.time}" oninput="state.newEventDraft.time=this.value;"></div>
+              <div class="field"><label>Time *</label>${easyTimePickerHTML(d.time)}</div>
             </div>
             <div class="field suggestion-box">
               <label>Venue / Location *</label>
@@ -1367,9 +1528,21 @@
               <div class="suggestion-list" id="venueSuggestions"></div>
             </div>
             <div class="field">
-              <label>UPI ID for Gift Collection *</label>
-              <div class="field-icon">🔗<input id="evUpi" value="${d.upi}" placeholder="e.g. name@upi" oninput="state.newEventDraft.upi=this.value; updateUpiValidIndicator();"><span id="upiValidIcon">${d.upi && isValidUpi(d.upi) ? '✅' : ''}</span></div>
-              <p class="sub" style="margin-top:6px;">🛡️ Your UPI ID is safe and used only for gift collection.</p>
+              <label>Payment for Gift Collection *</label>
+              <div class="auth-tabs" style="margin-bottom:10px;">
+                <button type="button" class="auth-tab ${state.newEventPayMode !== 'qr' ? 'active' : ''}" onclick="setNewEventPayMode('upi')">Enter UPI ID</button>
+                <button type="button" class="auth-tab ${state.newEventPayMode === 'qr' ? 'active' : ''}" onclick="setNewEventPayMode('qr')">Upload QR Code</button>
+              </div>
+              ${state.newEventPayMode === 'qr' ? `
+                <div class="card" style="text-align:center;">
+                  ${d.qrImage ? `<div class="qr-box" style="margin-bottom:8px;"><img src="${d.qrImage}"></div>` : `<p class="sub">Upload your bank/UPI app's QR code image.</p>`}
+                  <input type="file" id="evQrFile" accept="image/*" style="display:none;" onchange="onQrFileChange(event)">
+                  <button type="button" class="secondary" onclick="document.getElementById('evQrFile').click()">🖼️ ${d.qrImage ? 'Change QR Image' : 'Choose QR Image'}</button>
+                </div>
+              ` : `
+                <div class="field-icon">🔗<input id="evUpi" value="${d.upi}" placeholder="e.g. name@upi" oninput="state.newEventDraft.upi=this.value; updateUpiValidIndicator();"><span id="upiValidIcon">${d.upi && isValidUpi(d.upi) ? '✅' : ''}</span></div>
+              `}
+              <p class="sub" style="margin-top:6px;">🛡️ Used only for gift collection — never shared elsewhere.</p>
             </div>
             <div class="field" style="margin-bottom:0;">
               <label>Description (optional)</label>
@@ -1379,7 +1552,7 @@
           <div style="margin-top:20px;">
             <div class="slide-track" id="slideTrack">
               <div class="slide-fill" id="slideFill"></div>
-              <span class="slide-label">→ Slide to create an event</span>
+              <span class="slide-label">→ Slide to ${state.editingEventId ? 'save changes' : 'create an event'}</span>
               <div class="slide-handle" id="slideHandle">→</div>
             </div>
           </div>
@@ -1473,21 +1646,44 @@
 
     function createNewEvent() {
       const d = state.newEventDraft;
+      const isEdit = !!state.editingEventId;
       const displayType = state.selectedType === 'More' ? 'Custom Event' : state.selectedType;
       if (!d.cover) { showToast('Please add a cover image to continue'); return false; }
       if (!d.date) { showToast('Please select an event date'); return false; }
-      if (d.date < todayIso()) { showToast('Event date cannot be in the past'); return false; }
+      if (!isEdit && d.date < todayIso()) { showToast('Event date cannot be in the past'); return false; }
       if (!d.venue.trim()) { showToast('Please enter a venue or location'); return false; }
-      if (!isValidUpi(d.upi)) { showToast('Enter a valid UPI ID (e.g. name@bank)'); return false; }
+      if (state.newEventPayMode === 'qr') {
+        if (!d.qrImage) { showToast('Please upload your UPI QR code image'); return false; }
+      } else if (!isValidUpi(d.upi)) {
+        showToast('Enter a valid UPI ID (e.g. name@bank)'); return false;
+      }
 
       const name = d.name.trim() || `${getUserName()}'s ${displayType}`;
+      const host = (d.hostName || '').trim() || getUserName();
+      const upi = state.newEventPayMode === 'qr' ? '' : d.upi.trim();
+      const qrImage = state.newEventPayMode === 'qr' ? d.qrImage : '';
+      const date = new Date(d.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      const time = d.time || 'Time TBD';
+      const venue = d.venue.trim();
+
+      if (isEdit) {
+        const ev = state.events.find(e => e.id === state.editingEventId);
+        Object.assign(ev, { name, type: displayType, upi, qrImage, description: d.desc, cover: d.cover, date, time, venue, host });
+        persist();
+        resetNewEventDraft();
+        state.editingEventId = null;
+        state.activeEventId = ev.id;
+        showToast('Event updated!');
+        nav('event-detail');
+        return true;
+      }
+
       const meta = typeMeta(displayType);
       const ev = {
         id: state.nextEventId++,
-        name, type: displayType, code: genCode(meta.prefix), upi: d.upi.trim(), description: d.desc, cover: d.cover,
-        date: new Date(d.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        time: d.time || 'Time TBD',
-        venue: d.venue.trim(), host: getUserName(), trustScore: 85, familyVerified: 1, targetAmount: 0, records: []
+        name, type: displayType, code: genCode(meta.prefix), upi, qrImage,
+        description: d.desc, cover: d.cover, date, time, venue,
+        host, trustScore: 85, familyVerified: 1, targetAmount: 0, records: []
       };
       state.events.unshift(ev);
       persist();
@@ -1506,15 +1702,15 @@
         <div class="page">
           <div class="row">
             <button class="back-link" onclick="nav('events')">←</button>
-            <button class="icon-btn" onclick="showToast('Help coming soon')">?</button>
+            <button class="icon-btn" onclick="showInfoModal('Your Event is Live', 'Guests can now find your event using its code, view the invitation, and contribute gifts. Use Open Event to manage entries, or View Invitation to preview what guests will see.')">?</button>
           </div>
           <div style="text-align:center;">
             <div class="modal-check" style="margin-top:6px;">✓</div>
             <h1 style="font-size:22px;color:var(--navy);margin-top:14px;">Event Created Successfully! 🎉</h1>
             <p class="sub">Your guests can now start contributing gifts.</p>
           </div>
-          <div class="overview-cover" style="background:${meta.grad};margin-top:16px;height:120px;">
-            <span class="heart" style="padding-bottom:14px;">${meta.emoji}</span>
+          <div class="overview-cover" style="background:${meta.grad};margin-top:16px;height:120px;overflow:hidden;">
+            ${ev.cover ? `<img src="${ev.cover}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">` : `<span class="heart" style="padding-bottom:14px;position:relative;">${meta.emoji}</span>`}
           </div>
           <div class="card" style="margin-top:14px;">
             <div class="row">
@@ -1537,32 +1733,134 @@
             <button class="secondary" onclick="nav('event-detail')">👁️ Open Event</button>
             <button class="secondary" onclick="nav('view-invitation')">✉️ View Invitation</button>
           </div>
-          <button class="ghost" style="margin-top:10px;" onclick="startCreateEvent()">✏️ Edit Event</button>
+          <button class="ghost" style="margin-top:10px;" onclick="startEditEvent(${ev.id})">✏️ Edit Event</button>
           <button class="ghost" style="margin-top:10px;" onclick="startCreateEvent()">➕ Create Another Event</button>
         </div>
       `);
     }
 
+    function invitationCopy(ev) {
+      const parts = ev.name.split(/&|and/i).map(s => s.trim()).filter(Boolean);
+      const coupleHeading = parts.length > 1 ? `${parts[0]} ♥ ${parts[1]}` : ev.name;
+      switch (ev.type) {
+        case 'Wedding':
+        case 'Reception':
+          return { eyebrow: 'TOGETHER WITH THEIR FAMILIES', heading: coupleHeading, subtitle: `request the pleasure of your company<br>as they celebrate their ${ev.type.toLowerCase()}`, closing: "❤️ We can't wait to celebrate with you! ❤️" };
+        case 'Engagement':
+          return { eyebrow: 'TOGETHER WITH THEIR FAMILIES', heading: coupleHeading, subtitle: 'request the pleasure of your company<br>as they celebrate their engagement', closing: '💍 Join us as we begin this new chapter! 💍' };
+        case 'Birthday':
+          return { eyebrow: "YOU'RE INVITED TO CELEBRATE", heading: ev.name, subtitle: 'Join us for a birthday celebration<br>full of fun, cake and laughter!', closing: "🎂 Let's make it a birthday to remember! 🎂" };
+        case 'Housewarming':
+          return { eyebrow: 'WARMLY INVITES YOU TO', heading: ev.name, subtitle: 'as we celebrate our new beginning<br>with a housewarming ceremony', closing: '🏡 Your presence will make our new home complete! 🏡' };
+        case 'Baby Shower':
+          return { eyebrow: 'A LITTLE MIRACLE IS ON THE WAY', heading: ev.name, subtitle: 'Join us to celebrate and shower<br>blessings on our little one', closing: "🍼 Can't wait to celebrate with you! 🍼" };
+        default:
+          return { eyebrow: "YOU'RE CORDIALLY INVITED", heading: ev.name, subtitle: `to join us in celebrating<br>this special ${ev.type.toLowerCase()}`, closing: '✨ We look forward to celebrating with you! ✨' };
+      }
+    }
     function viewInvitationScreen() {
       const ev = getActiveEvent();
-      const parts = ev.name.split(/&|and/i).map(s => s.trim()).filter(Boolean);
+      const copy = invitationCopy(ev);
       return wrapPlain(`
         <div class="page">
           <button class="back-link" onclick="nav('event-detail')">←</button>
-          <div class="card" style="margin-top:10px;text-align:center;background:linear-gradient(135deg,#fdf2f0 0%,#fff8f4 100%);border:1px solid #f3ddd6;">
-            <div class="muted" style="font-size:10px;letter-spacing:0.12em;font-weight:700;">TOGETHER WITH THEIR FAMILIES</div>
-            <h1 class="display" style="font-size:30px;color:#7a2b3a;margin-top:10px;">${parts.length > 1 ? `${parts[0]} ♥ ${parts[1]}` : ev.name}</h1>
-            <p class="sub" style="margin-top:8px;">request the pleasure of your company<br>as they celebrate their ${ev.type.toLowerCase()}</p>
+          <div class="card" id="invitationCard" style="margin-top:10px;text-align:center;background:linear-gradient(135deg,#fdf2f0 0%,#fff8f4 100%);border:1px solid #f3ddd6;">
+            ${ev.cover ? `<img src="${ev.cover}" style="width:100%;height:110px;object-fit:cover;border-radius:14px;margin-bottom:12px;">` : ''}
+            <div class="muted" style="font-size:10px;letter-spacing:0.12em;font-weight:700;">${copy.eyebrow}</div>
+            <h1 class="display" style="font-size:28px;color:#7a2b3a;margin-top:10px;">${copy.heading}</h1>
+            <p class="sub" style="margin-top:8px;">${copy.subtitle}</p>
             <div style="margin-top:16px;text-align:left;display:grid;gap:10px;">
               <div>📅 ${ev.date}</div>
               <div>🕐 ${ev.time} Onwards</div>
               <div>📍 ${ev.venue}</div>
+              ${ev.description ? `<div>📝 ${ev.description}</div>` : ''}
             </div>
             <p class="sub" style="margin-top:16px;">Your presence and blessings<br>will make our day even more special.</p>
           </div>
-          <p class="sub" style="text-align:center;margin-top:14px;">❤️ We can't wait to celebrate with you! ❤️</p>
+          <p class="sub" style="text-align:center;margin-top:14px;">${copy.closing}</p>
+          <button class="pink-btn primary" style="margin-top:10px;" onclick="shareInvitationAsImage()">📤 Send as Image on WhatsApp</button>
         </div>
       `);
+    }
+
+    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      let lines = [];
+      for (const word of words) {
+        const test = line ? `${line} ${word}` : word;
+        if (ctx.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = test;
+        }
+      }
+      if (line) lines.push(line);
+      lines.forEach((l, i) => ctx.fillText(l, x, y + i * lineHeight));
+      return lines.length;
+    }
+
+    function shareInvitationAsImage() {
+      const ev = getActiveEvent();
+      const copy = invitationCopy(ev);
+      const canvas = document.createElement('canvas');
+      canvas.width = 800;
+      canvas.height = 1000;
+      const ctx = canvas.getContext('2d');
+
+      const grad = ctx.createLinearGradient(0, 0, 800, 1000);
+      grad.addColorStop(0, '#fdf2f0');
+      grad.addColorStop(1, '#fff8f4');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 800, 1000);
+      ctx.strokeStyle = '#f3ddd6';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(20, 20, 760, 960);
+
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#6b7093';
+      ctx.font = '600 20px Arial, sans-serif';
+      ctx.fillText(copy.eyebrow, 400, 140);
+
+      ctx.fillStyle = '#7a2b3a';
+      ctx.font = 'bold 52px Georgia, serif';
+      const headingLines = wrapCanvasText(ctx, copy.heading, 400, 230, 680, 62);
+
+      ctx.fillStyle = '#4a4a55';
+      ctx.font = '24px Arial, sans-serif';
+      const subtitleY = 230 + headingLines * 62 + 40;
+      copy.subtitle.replace(/<br\s*\/?>/g, '\n').split('\n').forEach((line, i) => ctx.fillText(line, 400, subtitleY + i * 34));
+
+      ctx.textAlign = 'left';
+      ctx.font = '26px Arial, sans-serif';
+      ctx.fillStyle = '#1c1f3a';
+      const detailsY = subtitleY + 100;
+      [`📅 ${ev.date}`, `🕐 ${ev.time} Onwards`, `📍 ${ev.venue}`].forEach((line, i) => ctx.fillText(line, 100, detailsY + i * 50));
+
+      ctx.textAlign = 'center';
+      ctx.font = '22px Arial, sans-serif';
+      ctx.fillStyle = '#7a2b3a';
+      ctx.fillText(copy.closing, 400, 920);
+
+      canvas.toBlob((blob) => {
+        if (!blob) { showToast('Could not generate invitation image'); return; }
+        const file = new File([blob], `${ev.name.replace(/[^a-z0-9]+/gi, '-')}-invitation.png`, { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: ev.name, text: `You're invited to ${ev.name}! Event code: ${ev.code}` }).catch(() => {});
+        } else {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = file.name;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          showToast('Image saved — opening WhatsApp so you can attach it');
+          setTimeout(() => shareEvent(ev.id), 900);
+        }
+      }, 'image/png');
     }
 
     /* ---------- Collections hub (Sender) ---------- */
@@ -1755,8 +2053,8 @@
           <div class="card" id="qrBlock" style="display:${state.entryMode === 'UPI' ? 'block' : 'none'};text-align:center;margin-top:4px;">
             <div class="strong" style="font-size:12.5px;color:var(--blue);">Scan QR Code to Pay</div>
             <p class="sub" style="margin-top:2px;">Scan this QR code using any UPI app</p>
-            <div class="qr-placeholder" style="margin-top:12px;"></div>
-            <div class="muted" style="font-size:11px;margin-top:10px;">UPI ID: ${upi}</div>
+            <div style="margin-top:12px;">${qrBoxHTML(isEvent ? ctx : { upi, host: getUserName() }, 'entryQrCanvas')}</div>
+            ${upi && upi !== 'not-set@upi' ? `<div class="muted" style="font-size:11px;margin-top:10px;">UPI ID: ${upi}</div>` : ''}
           </div>
 
           <div class="field" style="margin-top:16px;margin-bottom:0;">
@@ -1824,37 +2122,48 @@
       if (!d.old && !d.new) { showToast('Select Old and/or New — at least one is required'); return; }
       const oldAmount = d.old ? (Number(d.oldAmt) || 0) : 0;
       const newAmount = d.new ? (Number(d.newAmt) || 0) : 0;
-      const amount = oldAmount + newAmount;
-      if (amount <= 0) { showToast('Enter an amount for the selected entry type(s)'); return; }
+      if (oldAmount + newAmount <= 0) { showToast('Enter an amount for the selected entry type(s)'); return; }
 
       const person = d.person || 'Someone special';
       const mobile = d.mobile ? `${d.code} ${d.mobile}` : '';
       const place = d.place || '—';
-      let status = d.old && !d.new ? 'Old' : 'Pending';
+      const title = d.title || (isEvent ? 'Moi Entry' : 'Gift Sent');
+      const baseDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      const direction = isEvent ? 'received' : 'given';
+      const icon = isEvent ? '💝' : '🎁';
+      const receiverUpi = isEvent ? undefined : (d.receiverUpi || '');
 
-      const record = {
-        id: state.nextRecordId++,
-        title: d.title || (isEvent ? 'Moi Entry' : 'Gift Sent'),
-        person, mobile, place, oldAmount, newAmount, amount,
-        mode: state.entryMode, status,
-        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        direction: isEvent ? 'received' : 'given',
-        icon: isEvent ? '💝' : '🎁',
-        receiverUpi: isEvent ? undefined : (d.receiverUpi || '')
-      };
+      // Old and New are recorded as two separate, independently-editable entries
+      // when both are filled in, rather than one combined record.
+      const newRecords = [];
+      if (oldAmount > 0) {
+        newRecords.push({
+          id: state.nextRecordId++, title, person, mobile, place,
+          oldAmount, newAmount: 0, amount: oldAmount,
+          mode: state.entryMode, status: 'Old', date: baseDate, direction, icon, receiverUpi
+        });
+      }
+      if (newAmount > 0) {
+        newRecords.push({
+          id: state.nextRecordId++, title, person, mobile, place,
+          oldAmount: 0, newAmount, amount: newAmount,
+          mode: state.entryMode, status: 'Pending', date: baseDate, direction, icon, receiverUpi
+        });
+      }
 
       if (isEvent) {
         const ev = state.events.find(e => e.id === state.entryContext.id);
-        ev.records.unshift(record);
+        ev.records.unshift(...newRecords);
         persist();
         state.activeEventId = ev.id;
       } else {
         const col = state.collections.find(c => c.id === state.entryContext.id);
-        col.entries.unshift(record);
+        col.entries.unshift(...newRecords);
         persist();
         state.activeCollectionId = col.id;
       }
-      showSuccessModal('Entry Saved Successfully!', 'Thanks for the contribution.', isEvent ? 'records' : 'collection-detail');
+      const subtitle = newRecords.length > 1 ? 'Recorded as two separate entries — one Old, one New.' : 'Thanks for the contribution.';
+      showSuccessModal('Entry Saved Successfully!', subtitle, isEvent ? 'records' : 'collection-detail');
     }
 
     function showSuccessModal(title, subtitle, targetPage) {
@@ -1971,12 +2280,31 @@
             <div class="m">📅 ${r.date}${r.oldAmount && r.newAmount ? ` · Old ${money(r.oldAmount)} + New ${money(r.newAmount)}` : ''}</div>
           </div>
           <div class="record-side">
-            <div class="amt" style="color:${r.direction === 'given' ? 'var(--blue)' : 'var(--pink-2)'};">${money(r.amount)}</div>
+            <div class="row" style="gap:6px;justify-content:flex-end;">
+              <div class="amt" style="color:${r.direction === 'given' ? 'var(--blue)' : 'var(--pink-2)'};">${money(r.amount)}</div>
+              ${editable ? `<button class="icon-btn" style="width:24px;height:24px;box-shadow:none;font-size:13px;" onclick="event.stopPropagation(); showRecordInfo('${kind}', ${containerId}, ${r.id});">ℹ️</button>` : ''}
+            </div>
             <span class="mode-chip">${r.mode}</span>
-            <div><span class="status-chip ${r.status}">${r.status}</span></div>
+            <div><span class="status-chip ${r.status}">${statusLabel(r.status)}</span></div>
           </div>
         </div>
       `;
+    }
+    function showRecordInfo(kind, containerId, recordId) {
+      const list = recordContainer(kind, containerId);
+      const r = list.find(x => x.id === recordId);
+      const history = r.editedAt
+        ? `<div class="note-strip" style="margin-top:10px;">📝 <div><b>${r.editNote}</b><br>${r.editedAt}</div></div>`
+        : `<p class="sub" style="margin-top:10px;">No manual edits yet — this record is exactly as it was first entered.</p>`;
+      showInfoModal(`${r.title}`, `
+        <div style="display:grid;gap:6px;font-size:13px;">
+          <div>👤 <b>${r.person}</b> · 📍 ${r.place}</div>
+          <div>💰 ${money(r.amount)}${r.oldAmount && r.newAmount ? ` (Old ${money(r.oldAmount)} + New ${money(r.newAmount)})` : ''}</div>
+          <div>💳 ${r.mode} · 📅 ${r.date}</div>
+          <div>✓ Status: <b>${statusLabel(r.status)}</b></div>
+        </div>
+        ${history}
+      `);
     }
 
     function recordContainer(kind, containerId) {
@@ -2003,7 +2331,7 @@
               <div class="field"><label>Name</label><div class="field-icon">👤<input id="erName" value="${r.person}"><button class="icon-btn" style="width:26px;height:26px;box-shadow:none;" onclick="document.getElementById('erName').value='';">✕</button></div></div>
               <div class="field"><label>Place</label><div class="field-icon">📍<input id="erPlace" value="${r.place}"><button class="icon-btn" style="width:26px;height:26px;box-shadow:none;" onclick="document.getElementById('erPlace').value='';">✕</button></div></div>
               <div class="menu-item"><div class="mi-left">💰 Amount</div><span class="strong" style="color:var(--blue);">${money(r.amount)}</span></div>
-              <div class="menu-item"><div class="mi-left">✓ Status</div><span class="status-chip ${r.status}">${r.status}</span></div>
+              <div class="menu-item"><div class="mi-left">✓ Status</div><span class="status-chip ${r.status}">${statusLabel(r.status)}</span></div>
               <div class="menu-item" style="border-bottom:0;"><div class="mi-left">📅 Date of Record</div><span class="strong">${r.date}</span></div>
             </div>
           </div>
@@ -2012,7 +2340,6 @@
           <div style="display:grid;gap:10px;" id="statusUpdateRow">
             <label class="check-pill" style="background:#e3f7ee;border-color:#bdeeda;" onclick="pickEditStatus('Complete', this)"><input type="radio" name="erStatus" ${r.status === 'Complete' ? 'checked' : ''}><div><b style="color:var(--success);">✓ Mark as Completed</b><div class="mi-desc">Mark this record as fully completed</div></div></label>
             <label class="check-pill" style="background:#fff3de;border-color:#ffe1a8;" onclick="pickEditStatus('Old', this)"><input type="radio" name="erStatus" ${r.status === 'Old' ? 'checked' : ''}><div><b style="color:var(--pending);">− Mark as Partially Completed</b><div class="mi-desc">Mark this record as partially completed</div></div></label>
-            <label class="check-pill" onclick="pickEditStatus('Pending', this)"><input type="radio" name="erStatus" ${r.status === 'Pending' ? 'checked' : ''}><div><b>↻ Mark as Not Completed</b><div class="mi-desc">Revert this record to not completed</div></div></label>
           </div>
           <div class="grid-2" style="margin-top:16px;">
             <button class="secondary" onclick="nav('${backTo}')">Cancel</button>
@@ -2030,9 +2357,19 @@
       const { kind, containerId, recordId, newStatus } = state.editContext;
       const list = recordContainer(kind, containerId);
       const r = list.find(x => x.id === recordId);
+      const nameChanged = document.getElementById('erName').value && document.getElementById('erName').value !== r.person;
+      const placeChanged = document.getElementById('erPlace').value && document.getElementById('erPlace').value !== r.place;
+      const statusChanged = newStatus && newStatus !== r.status;
       r.person = document.getElementById('erName').value || r.person;
       r.place = document.getElementById('erPlace').value || r.place;
       if (newStatus) r.status = newStatus;
+      const notes = [];
+      if (statusChanged) notes.push(`Marked as ${statusLabel(newStatus).toLowerCase()} manually`);
+      if (nameChanged || placeChanged) notes.push('Name/Place edited manually');
+      if (notes.length) {
+        r.editNote = notes.join(' · ');
+        r.editedAt = new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      }
       persist();
       showToast('Record updated!');
       nav(kind === 'event' ? 'records' : 'collection-detail');
@@ -2053,7 +2390,10 @@
         <div class="page" style="padding-bottom:110px;">
           <div class="row">
             <div><h1 style="font-size:20px;color:var(--navy);">View Records</h1><p class="sub" style="margin-top:2px;">${ev.name}</p></div>
-            <button class="secondary" style="width:auto;padding:9px 14px;" onclick="showToast('Export coming soon')">⬇ Download</button>
+            <div class="row" style="gap:6px;">
+              <button class="secondary" style="width:auto;padding:9px 12px;font-size:11.5px;" onclick="downloadRecordsExcel()">⬇ Excel</button>
+              <button class="secondary" style="width:auto;padding:9px 12px;font-size:11.5px;" onclick="downloadRecordsPdf()">⬇ PDF</button>
+            </div>
           </div>
           <div class="summary-card" style="margin:14px 0 0;">
             <div class="summary-title">Collection Summary</div>
@@ -2073,7 +2413,7 @@
           <div style="margin-top:18px;">
             <div class="row"><span class="strong" style="font-size:13.5px;">Quick Filter</span><span class="muted" style="font-size:12px;">${ev.records.length} Records</span></div>
             <div class="filter-row" style="margin-top:8px;" id="filterChipRow">
-              ${[['all', '⊞ All'], ['pending', '🕐 Pending'], ['complete', '✓ Complete'], ['old', '🗂 Old']].map(([k, label]) => `
+              ${[['all', '⊞ All'], ['pending', '🕐 Pending'], ['complete', '✓ Complete'], ['old', '◐ Partially Completed']].map(([k, label]) => `
                 <button class="filter-chip ${state.recordsFilter === k ? 'active' : ''}" data-filter="${k}" onclick="setRecordsFilter('${k}')">${label}</button>
               `).join('')}
             </div>
@@ -2121,13 +2461,16 @@
             <div><span class="strong" style="font-size:19px;color:var(--blue);">${matchCount}</span> <span class="strong">Records Found</span><div class="muted" style="font-size:11px;">Matching your selected filters</div></div>
           </div>
 
-          <div class="filter-section" style="margin-top:18px;">
+          <div class="filter-section suggestion-box" style="margin-top:18px;">
             <h4>📍 Place</h4>
-            <div class="place-grid">
-              ${places.length ? places.map(p => `
-                <button class="chip-select ${f.places.includes(p) ? 'active' : ''}" onclick="toggleFilterPlace('${p.replace(/'/g, "\\'")}')">${p}${f.places.includes(p) ? ' ✕' : ''}</button>
-              `).join('') : `<span class="muted">No places recorded yet</span>`}
-            </div>
+            ${f.places.length ? `
+              <div class="chip-row" style="margin-bottom:8px;">
+                ${f.places.map(p => `<button class="chip-select active" onclick="toggleFilterPlace('${p.replace(/'/g, "\\'")}')">${p} ✕</button>`).join('')}
+              </div>
+            ` : ''}
+            <input id="placeSearchInput" placeholder="Search place..." autocomplete="off" oninput="onPlaceFilterSearch(this.value)" onfocus="onPlaceFilterSearch(this.value)">
+            <div class="suggestion-list" id="placeSuggestions"></div>
+            ${!places.length ? `<p class="sub" style="margin-top:6px;">No places recorded yet</p>` : ''}
           </div>
 
           <div class="filter-section">
@@ -2139,8 +2482,8 @@
             </div>
             ${f.amountBucket === 'custom' ? `
               <div class="grid-2" style="margin-top:10px;">
-                <input placeholder="From ₹" value="${f.customFrom}" oninput="state.detailedFilter.customFrom=this.value">
-                <input placeholder="To ₹" value="${f.customTo}" oninput="state.detailedFilter.customTo=this.value">
+                <input id="customFromInput" type="number" inputmode="numeric" placeholder="From ₹" value="${f.customFrom}" oninput="onCustomAmountInput('customFrom', this)">
+                <input id="customToInput" type="number" inputmode="numeric" placeholder="To ₹" value="${f.customTo}" oninput="onCustomAmountInput('customTo', this)">
               </div>
             ` : ''}
           </div>
@@ -2158,7 +2501,7 @@
             <h4>✓ Status</h4>
             <div class="chip-row" id="statusFilterRow">
               ${['Pending', 'Complete', 'Old'].map(s => `
-                <button class="chip-select ${f.statuses.includes(s) ? 'active' : ''}" onclick="toggleFilterStatus('${s}')">${s}</button>
+                <button class="chip-select ${f.statuses.includes(s) ? 'active' : ''}" onclick="toggleFilterStatus('${s}')">${statusLabel(s)}</button>
               `).join('')}
             </div>
           </div>
@@ -2174,13 +2517,37 @@
 
           <div class="grid-2">
             <button class="ghost" onclick="clearFilters()">🗑️ Clear All</button>
-            <button class="pink-btn primary" onclick="nav('records')">⚙ Apply Filter</button>
+            <button class="pink-btn primary" onclick="applyFilters()">⚙ Apply Filter</button>
           </div>
           <p class="sub" style="text-align:center;margin-top:10px;">ℹ️ Filters will be applied to all records.</p>
         </div>
       `);
     }
 
+    function onPlaceFilterSearch(val) {
+      const ev = getActiveEvent();
+      const f = state.detailedFilter;
+      const places = [...new Set(ev.records.map(r => r.place))].filter(p => !f.places.includes(p));
+      const q = val.trim().toLowerCase();
+      const matches = (q ? places.filter(p => p.toLowerCase().includes(q)) : places).slice(0, 6);
+      const box = document.getElementById('placeSuggestions');
+      if (!matches.length) { box.style.display = 'none'; box.innerHTML = ''; return; }
+      box.style.display = 'block';
+      box.innerHTML = matches.map(p => `<div class="suggestion-item" onclick="toggleFilterPlace('${p.replace(/'/g, "\\'")}')">📍 ${p}</div>`).join('');
+    }
+    function applyFilters() {
+      const f = state.detailedFilter;
+      if (f.amountBucket === 'custom' && !f.customFrom && !f.customTo) {
+        showToast('Enter a From or To amount for the custom range');
+        return;
+      }
+      nav('records');
+    }
+    function onCustomAmountInput(key, el) {
+      const digitsOnly = el.value.replace(/[^0-9]/g, '');
+      if (el.value !== digitsOnly) el.value = digitsOnly;
+      state.detailedFilter[key] = digitsOnly;
+    }
     function toggleFilterPlace(p) {
       const f = state.detailedFilter;
       f.places = f.places.includes(p) ? f.places.filter(x => x !== p) : [...f.places, p];
@@ -2888,6 +3255,16 @@
       const renderFn = pages[state.page] || homeScreen;
       app.innerHTML = renderFn();
       if (state.page === 'create-event-form') initSlideConfirm();
+      if (state.page === 'contribute') {
+        const ev = getActiveEvent();
+        drawEventQr('contributeQrCanvas', ev, typeof state.contributeAmount === 'number' ? state.contributeAmount : null);
+      }
+      if (state.page === 'entry-form') {
+        const isEvent = state.entryContext.kind === 'event';
+        const ctx = isEvent ? state.events.find(e => e.id === state.entryContext.id) : state.collections.find(c => c.id === state.entryContext.id);
+        const upi = isEvent ? ctx.upi : (state.enDraft.receiverUpi || 'not-set@upi');
+        drawEventQr('entryQrCanvas', isEvent ? ctx : { upi, host: getUserName() }, null);
+      }
     }
 
     render();
