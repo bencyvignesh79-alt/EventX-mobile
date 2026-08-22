@@ -532,6 +532,8 @@
       mobileChangeStage: 'enter',
       recordsFilter: 'all',
       recordsSearch: '',
+      eventsSearch: '',
+      eventsSearchOpen: false,
       detailedFilter: { places: [], amountBucket: 'all', customFrom: '', customTo: '', visits: [], statuses: [], period: 'all' },
       toast: ''
     };
@@ -861,17 +863,52 @@
             <h1 class="display">My Events</h1>
             <p>Manage all your events in one place</p>
           </div>
-          <button class="icon-btn" onclick="showToast('Search coming soon')">🔎</button>
+          <button class="icon-btn" onclick="toggleEventsSearch()">${state.eventsSearchOpen ? '✕' : '🔎'}</button>
         </div>
-        <div class="meta-row">
-          <span class="muted">📅 Total ${state.events.length} Events</span>
-          <span class="muted">Sort by: <b class="link-accent" onclick="showToast('Sorting coming soon')" style="color:var(--pink-2);">Recent</b></span>
-        </div>
+        ${state.eventsSearchOpen ? `
+          <div class="page" style="padding-bottom:0;">
+            <input id="eventsSearchInput" placeholder="Search by name, type or venue..." value="${state.eventsSearch}" oninput="onEventsSearch(this.value)" autofocus>
+          </div>
+        ` : ''}
+        <div class="meta-row" id="eventsMetaRow">${eventsMetaRowHTML()}</div>
         <div class="page" style="padding-top:6px;display:grid;gap:14px;">
-          ${state.events.map(ev => eventCardHTML(ev)).join('')}
+          <div id="eventsListContainer" style="display:grid;gap:14px;">${buildEventsListHTML()}</div>
           <button class="pink-btn primary" onclick="startCreateEvent()">＋ Create New Event</button>
         </div>
       `);
+    }
+
+    function eventsMetaRowHTML() {
+      const q = state.eventsSearch.trim().toLowerCase();
+      const count = q ? filteredEvents().length : state.events.length;
+      return `
+        <span class="muted">📅 ${q ? `Showing ${count} of ${state.events.length}` : `Total ${count} Events`}</span>
+        <span class="muted">Sort by: <b class="link-accent" onclick="showToast('Sorting coming soon')" style="color:var(--pink-2);">Recent</b></span>
+      `;
+    }
+    function filteredEvents() {
+      const q = state.eventsSearch.trim().toLowerCase();
+      if (!q) return state.events;
+      return state.events.filter(ev =>
+        ev.name.toLowerCase().includes(q) ||
+        ev.type.toLowerCase().includes(q) ||
+        ev.venue.toLowerCase().includes(q)
+      );
+    }
+    function buildEventsListHTML() {
+      const list = filteredEvents();
+      if (!list.length) return `<div class="empty-state"><div class="e">🔎</div>No events match "${state.eventsSearch}".</div>`;
+      return list.map(ev => eventCardHTML(ev)).join('');
+    }
+    function toggleEventsSearch() {
+      state.eventsSearchOpen = !state.eventsSearchOpen;
+      if (!state.eventsSearchOpen) state.eventsSearch = '';
+      render();
+    }
+    function onEventsSearch(v) {
+      state.eventsSearch = v;
+      document.getElementById('eventsListContainer').innerHTML = buildEventsListHTML();
+      document.getElementById('eventsMetaRow').innerHTML = eventsMetaRowHTML();
     }
 
     function eventCardHTML(ev) {
