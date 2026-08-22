@@ -235,20 +235,33 @@
 
     /* ---------- Hub cards (Create/Open, Send/Receive) ---------- */
     .hub-banner {
-      margin: 4px 0 18px; border-radius: 22px; padding: 22px 18px; text-align: center; font-size: 40px;
-      background: linear-gradient(135deg, #eef4ff 0%, #fff0f6 100%); box-shadow: var(--shadow);
+      position: relative; margin: 4px 0 18px; border-radius: 22px; padding: 26px 18px; text-align: center; font-size: 40px;
+      background: linear-gradient(135deg, #eef4ff 0%, #fdeef9 55%, #fff6e8 100%); box-shadow: var(--shadow); overflow: hidden;
+      letter-spacing: 6px;
     }
+    .hub-banner::before, .hub-banner::after {
+      content: '✨'; position: absolute; font-size: 16px; opacity: 0.6;
+    }
+    .hub-banner::before { top: 12px; left: 18px; }
+    .hub-banner::after { bottom: 12px; right: 18px; }
     .hub-card {
-      display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; border-radius: 22px;
-      padding: 18px; border: 1px solid var(--line); box-shadow: var(--shadow); margin-bottom: 14px;
+      position: relative; display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; border-radius: 22px;
+      padding: 18px; border: 1px solid rgba(0,0,0,0.04); box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden;
+    }
+    .hub-card::before {
+      content: ''; position: absolute; top: 0; right: 0; width: 0; height: 0;
+      border-style: solid; border-width: 0 30px 30px 0; border-color: transparent var(--gold) transparent transparent; opacity: 0.9;
     }
     .hub-icon {
       width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.7); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
     }
     .hub-card .arrow-circle {
-      width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-size: 17px; flex-shrink: 0;
+      width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
     }
     .hub-card h3 { font-size: 16.5px; font-weight: 800; }
+    .hub-card .flourish { width: 44px; height: 2px; margin: 6px 0; background: linear-gradient(90deg, var(--gold-2), transparent); }
     .hub-card p { margin: 3px 0 0; font-size: 12px; color: var(--muted); }
 
     /* ---------- Type grid ---------- */
@@ -263,6 +276,47 @@
     .more-panel { margin-top: 14px; border-radius: 18px; padding: 14px; background: #f4f6fd; }
     .more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
     .more-tile { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 14px; padding: 10px 12px; font-size: 12px; font-weight: 700; text-align: left; }
+
+    /* ---------- Create Event (per-type) ---------- */
+    .create-progress { display: flex; gap: 6px; margin: 12px 0 4px; }
+    .create-progress .seg { flex: 1; height: 5px; border-radius: 4px; background: #e7ebfa; }
+    .step-badge { display: flex; align-items: center; gap: 8px; margin: 10px 0 4px; }
+    .step-badge .num { width: 22px; height: 22px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 11px; font-weight: 800; display: grid; place-items: center; }
+    .step-badge .lbl { font-size: 12.5px; font-weight: 800; color: var(--blue); }
+    .cover-empty { display: grid; grid-template-columns: 108px 1fr; gap: 14px; padding: 16px; text-align: left; }
+    .cover-empty .img-box {
+      border: 2px dashed var(--line); border-radius: 16px; height: 108px; display: grid; place-items: center;
+      text-align: center; font-size: 11px; font-weight: 700; color: var(--muted); gap: 4px; padding: 8px; position: relative;
+    }
+    .cover-empty .img-box .cam { font-size: 26px; }
+    .cover-empty .img-box .plus-badge {
+      position: absolute; bottom: 6px; right: 6px; width: 20px; height: 20px; border-radius: 50%;
+      background: var(--blue); color: #fff; font-size: 12px; display: grid; place-items: center;
+    }
+    .cover-empty .quote { grid-column: 1 / -1; margin-top: 8px; text-align: center; font-size: 12px; font-style: italic; font-weight: 700; }
+    .cover-filled { position: relative; border-radius: 16px; overflow: hidden; height: 150px; }
+    .cover-filled img, .cover-filled .ph { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cover-filled .ph { display: grid; place-items: center; font-size: 40px; }
+    .cover-filled .edit-fab {
+      position: absolute; bottom: 8px; right: 8px; width: 34px; height: 34px; border-radius: 50%;
+      background: #fff; box-shadow: var(--shadow); display: grid; place-items: center; font-size: 14px;
+    }
+    .detail-section { border-radius: 18px; padding: 14px; margin-top: 14px; background: #fff; box-shadow: var(--shadow); }
+    .detail-section .sec-head { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 13.5px; margin-bottom: 10px; }
+    .person-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .person-col { border-radius: 14px; padding: 10px; }
+    .person-col .p-head { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 12px; margin-bottom: 8px; }
+    .person-col .field { margin-bottom: 8px; }
+    .person-col .field label { font-size: 10.5px; }
+    .info-banner { display: flex; gap: 8px; align-items: flex-start; border-radius: 14px; padding: 10px 12px; font-size: 11.5px; font-weight: 600; margin-top: 10px; }
+    .org-tile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+    .org-tile {
+      border: 1px solid var(--line); border-radius: 14px; padding: 10px 4px; text-align: center; background: #fff;
+      font-size: 10.5px; font-weight: 700; display: grid; place-items: center; gap: 4px; position: relative;
+    }
+    .org-tile.active { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(47,107,239,0.15); color: var(--blue); }
+    .add-address-link { background: none; border: none; padding: 0; margin-top: 6px; font-size: 12px; font-weight: 800; color: var(--pink-2); }
+    .save-draft-btn { margin-top: 10px; background: #fff; border: 1.5px solid #ffd7e2; color: var(--pink-2); font-weight: 800; }
     .collection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
     .collection-tile {
       border-radius: 18px; padding: 16px 10px; text-align: center; box-shadow: var(--shadow);
@@ -463,9 +517,20 @@
     const moreEventTypes = [
       { name: 'Anniversary', icon: '💍' }, { name: 'Naming Ceremony', icon: '👶' },
       { name: 'Reception', icon: '🍽️' }, { name: 'Puberty Ceremony', icon: '🌸' },
-      { name: 'Ear Piercing Ceremony', icon: '✨' }, { name: 'Religious Function', icon: '🙏' },
+      { name: 'Ear Piercing Ceremony', icon: '✨' }, { name: 'Religious Event', icon: '🙏' },
       { name: 'Corporate Event', icon: '🏢' }, { name: 'Custom Event', icon: '➕' }
     ];
+    const mainCreateTypes = ['Wedding', 'Engagement', 'Housewarming', 'Birthday', 'Baby Shower'];
+    function isMoreType(t) { return !mainCreateTypes.includes(t); }
+    const createTypeTheme = {
+      'Wedding':       { color: 'var(--blue)', bg: '#eaf1ff', grad: 'linear-gradient(135deg,#2f6bef 0%,#5c8dff 100%)', emoji: '💍', quote: '"A beautiful beginning to forever."' },
+      'Engagement':    { color: 'var(--pink-2)', bg: '#ffeaf3', grad: 'linear-gradient(135deg,#ff3d78 0%,#ff8ab0 100%)', emoji: '💖', quote: '"Two hearts, one promise."' },
+      'Housewarming':  { color: 'var(--blue)', bg: '#eaf6ff', grad: 'linear-gradient(135deg,#2f6bef 0%,#5cc0ff 100%)', emoji: '🏡', quote: '"New home. New memories. New beginnings."' },
+      'Birthday':      { color: '#f2994a', bg: '#fff3e6', grad: 'linear-gradient(135deg,#f2994a 0%,#ffb86b 100%)', emoji: '🎂', quote: '"Make a wish, celebrate big!"' },
+      'Baby Shower':   { color: '#9b6fd1', bg: '#f3ecfc', grad: 'linear-gradient(135deg,#9b6fd1 0%,#c79cf0 100%)', emoji: '🍼', quote: '"A little one is on the way!"' },
+      'default':       { color: 'var(--blue)', bg: '#eaf1ff', grad: 'linear-gradient(135deg,#4f6ef7 0%,#8a5cf7 100%)', emoji: '✨', quote: '' }
+    };
+    function themeFor(t) { return createTypeTheme[t] || createTypeTheme.default; }
     const countryCodes = ['+91', '+1', '+44', '+971', '+65'];
 
     function genCode(prefix) {
@@ -820,13 +885,16 @@
     function bottomNav() {
       const tabs = [
         { key: 'home', icon: '⌂', label: 'Home' },
+        { key: 'events', icon: '◷', label: 'Events' },
+        { key: 'create-open', icon: '＋', label: '', fab: true },
         { key: 'records', icon: '▤', label: 'Records' },
-        { key: 'reminders', icon: '🔔', label: 'Reminders' },
         { key: 'profile', icon: '●', label: 'Profile' }
       ];
       return `
         <div class="bottom-nav" style="grid-template-columns:repeat(${tabs.length},1fr);">
-          ${tabs.map(t => `
+          ${tabs.map(t => t.fab ? `
+            <button class="nav-btn" onclick="nav('${t.key}')"><span class="nav-fab">${t.icon}</span></button>
+          ` : `
             <button class="nav-btn ${state.page === t.key ? 'active' : ''}" onclick="nav('${t.key}')"><b>${t.icon}</b>${t.label}</button>
           `).join('')}
         </div>
@@ -838,6 +906,24 @@
     }
     function wrapPlain(content) {
       return `<div class="screen">${content}${bottomNav()}${state.toast ? `<div class="toast">✓ ${state.toast}</div>` : ''}</div>`;
+    }
+    function formNav() {
+      const tabs = [
+        { key: 'home', icon: '⌂', label: 'Home' },
+        { key: 'records', icon: '▤', label: 'Records' },
+        { key: 'reminders', icon: '🔔', label: 'Reminder' },
+        { key: 'profile', icon: '●', label: 'Profile' }
+      ];
+      return `
+        <div class="bottom-nav" style="grid-template-columns:repeat(${tabs.length},1fr);">
+          ${tabs.map(t => `
+            <button class="nav-btn ${t.key === 'home' ? 'active' : ''}" onclick="nav('${t.key}')"><b>${t.icon}</b>${t.label}</button>
+          `).join('')}
+        </div>
+      `;
+    }
+    function wrapForm(content) {
+      return `<div class="screen">${content}${formNav()}${state.toast ? `<div class="toast">✓ ${state.toast}</div>` : ''}</div>`;
     }
 
     /* ---------- Home ---------- */
@@ -1335,20 +1421,20 @@
     function createOpenScreen() {
       return wrapPlain(`
         <div class="page">
-          <button class="back-link" onclick="nav('home')">←</button>
-          <div class="header-title" style="text-align:center;margin-bottom:6px;">
-            <h1 style="font-size:21px;color:var(--navy);">Create / Open Event</h1>
-            <p class="sub">Create a new event or open an existing one to manage all your details easily.</p>
+          <div class="row">
+            <button class="back-link" onclick="nav('home')">←</button>
+            <div class="header-title"><h1 style="font-size:21px;color:var(--navy);">Create / Open Event</h1><p>Create a new event or open an existing one to manage all your details easily.</p></div>
+            <button class="icon-btn" onclick="showInfoModal('Create / Open Event', 'Create a brand new event to start collecting gifts, or open one you\\'ve already created to keep managing it — add entries, view records, share the invite.')">?</button>
           </div>
-          <div class="hub-banner">🎉🎁🎊</div>
-          <button class="hub-card" onclick="startCreateEvent()">
+          <div class="hub-banner">🎊🎁💐</div>
+          <button class="hub-card" style="background:linear-gradient(135deg,#f4f8ff 0%,#ffffff 100%);" onclick="startCreateEvent()">
             <span class="hub-icon" style="background:#eaf1ff;">➕</span>
-            <div style="flex:1;"><h3 style="color:var(--blue);">Create New Event</h3><p>Create a new event and add all details to get started.</p></div>
+            <div style="flex:1;"><h3 style="color:var(--blue);">Create New Event</h3><div class="flourish"></div><p>Create a new event and add all details to get started.</p></div>
             <span class="arrow-circle" style="background:#eaf1ff;color:var(--blue);">→</span>
           </button>
-          <button class="hub-card" onclick="nav('events')">
+          <button class="hub-card" style="background:linear-gradient(135deg,#fff4f8 0%,#ffffff 100%);" onclick="nav('events')">
             <span class="hub-icon" style="background:#ffe8f0;">📂</span>
-            <div style="flex:1;"><h3 style="color:var(--pink-2);">Open Existing Event</h3><p>Open and continue managing your existing events.</p></div>
+            <div style="flex:1;"><h3 style="color:var(--pink-2);">Open Existing Event</h3><div class="flourish"></div><p>Open and continue managing your existing events.</p></div>
             <span class="arrow-circle" style="background:#ffe8f0;color:var(--pink-2);">→</span>
           </button>
           <div class="note-strip">🛡️ Your Data is Safe — all your records are secure and private. Only you can access your data.</div>
@@ -1371,7 +1457,8 @@
       state.newEventPayMode = ev.qrImage ? 'qr' : 'upi';
       state.newEventDraft = {
         name: ev.name, date: isoDateFromDisplay(ev.date), time: ev.time === 'Time TBD' ? '' : ev.time,
-        venue: ev.venue, upi: ev.upi || '', desc: ev.description || '', cover: ev.cover || '', qrImage: ev.qrImage || '', hostName: ev.host || ''
+        venue: ev.venue, upi: ev.upi || '', desc: ev.description || '', cover: ev.cover || '', qrImage: ev.qrImage || '', hostName: ev.host || '',
+        showFullAddress: !!(ev.typeFields && ev.typeFields.fullAddress), typeFields: Object.assign({}, ev.typeFields || {})
       };
       nav('create-event-form');
     }
@@ -1382,7 +1469,7 @@
     }
 
     function createEventTypeScreen() {
-      return wrapPlain(`
+      return wrapForm(`
         <div class="page">
           <div class="row">
             <button class="back-link" onclick="nav('create-open')">←</button>
@@ -1429,8 +1516,33 @@
 
     /* ---------- Create event: details form ---------- */
     function resetNewEventDraft() {
-      state.newEventDraft = { name: '', date: '', time: '', venue: '', upi: '', desc: '', cover: '', qrImage: '', hostName: '' };
+      state.newEventDraft = { name: '', date: '', time: '', venue: '', upi: '', desc: '', cover: '', qrImage: '', hostName: '', showFullAddress: false, typeFields: {} };
       state.newEventPayMode = 'upi';
+    }
+    function toggleFullAddress() {
+      state.newEventDraft.showFullAddress = !state.newEventDraft.showFullAddress;
+      render();
+    }
+    function computeTurningAge(dob, eventDateIso) {
+      if (!dob) return '';
+      const birth = new Date(dob);
+      if (isNaN(birth)) return '';
+      const ref = eventDateIso ? new Date(eventDateIso) : new Date();
+      let age = ref.getFullYear() - birth.getFullYear();
+      const m = ref.getMonth() - birth.getMonth();
+      if (m < 0 || (m === 0 && ref.getDate() < birth.getDate())) age--;
+      return age >= 0 ? age : '';
+    }
+    function onTypeFieldInput(key, value) {
+      state.newEventDraft.typeFields[key] = value;
+    }
+    function onTypeFieldInputRerender(key, value) {
+      state.newEventDraft.typeFields[key] = value;
+      render();
+    }
+    function saveEventDraft() {
+      localStorage.setItem('eventxSavedDraft', JSON.stringify({ selectedType: state.selectedType, draft: state.newEventDraft, payMode: state.newEventPayMode }));
+      showToast('Draft saved — resume anytime from Create New Event');
     }
     function setNewEventPayMode(mode) {
       state.newEventPayMode = mode;
@@ -1486,75 +1598,272 @@
       'Palm Grove Resort, Madurai', 'City Convention Center, Hyderabad', 'Riverside Lawns, Trichy'
     ];
 
-    function createEventFormScreen() {
-      state.newEventDraft = state.newEventDraft || { name: '', date: '', time: '', venue: '', upi: '', desc: '', cover: '', qrImage: '', hostName: '' };
-      state.newEventPayMode = state.newEventPayMode || 'upi';
-      const d = state.newEventDraft;
-      const displayType = state.selectedType === 'More' ? 'Custom Event' : state.selectedType;
-      return wrapPlain(`
-        <div class="page">
-          <div class="row">
-            <button class="back-link" onclick="nav('${state.editingEventId ? 'event-detail' : 'create-event-type'}')">←</button>
-            <div class="header-title"><h1 style="font-size:18px;color:var(--navy);">${state.editingEventId ? 'Edit' : 'Create'} ${displayType} ✨</h1><p>${state.editingEventId ? 'Update your event details' : 'Add details about your event'}</p></div>
-            <button class="icon-btn" onclick="showInfoModal('Event Details', 'Fill in your event details below. The cover image and UPI ID are required so guests can recognize and contribute to your event. Slide the bar at the bottom to finish.')">?</button>
+    function paymentBlockHTML(d, label, note) {
+      return `
+        <div class="field" style="margin-bottom:0;">
+          <label>${label}</label>
+          <div class="auth-tabs" style="margin-bottom:10px;">
+            <button type="button" class="auth-tab ${state.newEventPayMode !== 'qr' ? 'active' : ''}" onclick="setNewEventPayMode('upi')">Enter UPI ID</button>
+            <button type="button" class="auth-tab ${state.newEventPayMode === 'qr' ? 'active' : ''}" onclick="setNewEventPayMode('qr')">Upload QR Code</button>
           </div>
-          <div class="card" style="margin-top:14px;text-align:center;">
-            <div id="coverPreviewWrap">${d.cover ? `<img src="${d.cover}" class="cover-preview-img">` : `<div style="font-size:34px;">${typeMeta(displayType).emoji}</div>`}</div>
-            <div class="strong" style="margin-top:6px;">Event Cover <span style="color:var(--pink-2);">*</span> <span class="muted" style="font-weight:600;">(required)</span></div>
-            <p class="sub" style="margin-top:6px;">Add a cover image to make your invitation more personal and beautiful.</p>
-            <input type="file" id="evCoverFile" accept="image/*" style="display:none;" onchange="onCoverFileChange(event)">
-            <button class="secondary" style="margin-top:10px;" onclick="document.getElementById('evCoverFile').click()">🖼️ ${d.cover ? 'Change Image' : 'Choose Image'}</button>
+          ${state.newEventPayMode === 'qr' ? `
+            <div class="card" style="text-align:center;">
+              ${d.qrImage ? `<div class="qr-box" style="margin-bottom:8px;"><img src="${d.qrImage}"></div>` : `<p class="sub">Upload your bank/UPI app's QR code image.</p>`}
+              <input type="file" id="evQrFile" accept="image/*" style="display:none;" onchange="onQrFileChange(event)">
+              <button type="button" class="secondary" onclick="document.getElementById('evQrFile').click()">🖼️ ${d.qrImage ? 'Change QR Image' : 'Choose QR Image'}</button>
+            </div>
+          ` : `
+            <div class="field-icon">🔗<input id="evUpi" value="${d.upi}" placeholder="e.g. name@upi" oninput="state.newEventDraft.upi=this.value; updateUpiValidIndicator();"><span id="upiValidIcon">${d.upi && isValidUpi(d.upi) ? '✅' : ''}</span></div>
+          `}
+          <p class="sub" style="margin-top:6px;">🛡️ ${note}</p>
+        </div>
+      `;
+    }
+
+    function coverSectionHTML(d, displayType, theme, isMore) {
+      if (!isMore) {
+        return `
+          <div class="card cover-empty">
+            <div class="img-box">
+              ${d.cover ? `<img src="${d.cover}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">` : `
+                <span class="cam">📷</span>
+                <span>Upload Cover Image</span>
+                <span style="font-weight:600;color:var(--muted);font-size:9.5px;">JPG, PNG up to 5MB</span>
+              `}
+              <span class="plus-badge" style="background:${theme.color};" onclick="document.getElementById('evCoverFile').click()">+</span>
+            </div>
+            <div>
+              <div class="strong" style="font-size:13px;">Event Cover <span class="muted" style="font-weight:600;">(Optional)</span></div>
+              <p class="sub" style="margin-top:4px;font-size:11.5px;">Add a cover image to make your invitation more personal and beautiful.</p>
+              <input type="file" id="evCoverFile" accept="image/*" style="display:none;" onchange="onCoverFileChange(event)">
+              <button class="secondary" style="margin-top:8px;padding:9px 12px;font-size:11.5px;width:auto;" onclick="document.getElementById('evCoverFile').click()">🖼️ ${d.cover ? 'Change Image' : 'Choose Image'}</button>
+            </div>
+            ${theme.quote ? `<div class="quote" style="color:${theme.color};">🌿 ${theme.quote} 🌿</div>` : ''}
           </div>
-          <div class="form-stack" style="margin-top:16px;">
-            <div class="field">
-              <label>Event Name *</label>
-              <input id="evName" value="${d.name}" placeholder="e.g. ${getUserName()}'s ${displayType}" oninput="state.newEventDraft.name=this.value;">
+        `;
+      }
+      return `
+        <div class="card" style="padding:10px;">
+          <div class="cover-filled">
+            ${d.cover ? `<img src="${d.cover}">` : `<div class="ph" style="background:${theme.bg};">${theme.emoji}</div>`}
+            <span class="edit-fab" onclick="document.getElementById('evCoverFile').click()">📷</span>
+          </div>
+          <input type="file" id="evCoverFile" accept="image/*" style="display:none;" onchange="onCoverFileChange(event)">
+          <div class="strong" style="margin-top:8px;font-size:12.5px;">Event Cover <span class="muted" style="font-weight:600;">(Optional)</span></div>
+          <p class="sub" style="margin-top:2px;">Add a cover image to make your invitation more personal and beautiful.</p>
+        </div>
+      `;
+    }
+
+    function personColHTML(o) {
+      const tf = o.tf;
+      return `
+        <div class="person-col" style="background:${o.bg};">
+          <div class="p-head" style="color:${o.color};">👤 ${o.label}</div>
+          <div class="field"><label>${o.nameLabel} *</label><input value="${tf[o.prefix + 'Name'] || ''}" placeholder="e.g. ${o.sample}" oninput="onTypeFieldInput('${o.prefix}Name', this.value)"></div>
+          <div class="field"><label>${o.degreeLabel}</label><input value="${tf[o.prefix + 'Degree'] || ''}" placeholder="e.g. B.Tech in CS" oninput="onTypeFieldInput('${o.prefix}Degree', this.value)"></div>
+          <div class="field" style="margin-bottom:0;"><label>${o.occLabel}</label><input value="${tf[o.prefix + 'Occupation'] || ''}" placeholder="e.g. Software Engineer" oninput="onTypeFieldInput('${o.prefix}Occupation', this.value)"></div>
+        </div>
+      `;
+    }
+    function changeTypeRowHTML(typeName) {
+      return `
+        <div class="card" style="display:flex;align-items:center;gap:10px;padding:12px 14px;margin-top:10px;cursor:pointer;" onclick="nav('create-event-type')">
+          <span style="font-size:18px;">${(typeMeta(typeName).emoji) || '✨'}</span>
+          <div style="flex:1;"><div class="muted" style="font-size:10.5px;">Event Type</div><div class="strong" style="font-size:13px;">${typeName}</div></div>
+          <span class="muted">⌄</span>
+        </div>
+      `;
+    }
+
+    function typeDetailsSectionHTML(displayType, d) {
+      const tf = d.typeFields;
+      if (displayType === 'Wedding' || displayType === 'Engagement') {
+        return `
+          <div class="detail-section">
+            <div class="sec-head">👫 Bride & Groom Details <span style="color:var(--pink-2);">*</span></div>
+            <div class="person-cols">
+              ${personColHTML({ prefix: 'groom', label: 'Groom Details', bg: '#eef3ff', color: 'var(--blue)', tf, sample: 'Arun Kumar', nameLabel: 'Full Name', degreeLabel: 'Degree *', occLabel: 'Occupation *' })}
+              ${personColHTML({ prefix: 'bride', label: 'Bride Details', bg: '#fff0f5', color: 'var(--pink-2)', tf, sample: 'Priya Sharma', nameLabel: 'Full Name', degreeLabel: 'Degree *', occLabel: 'Occupation *' })}
             </div>
-            <div class="field">
-              <label>Host / Organizer Name</label>
-              <input id="evHost" value="${d.hostName || getUserName()}" placeholder="e.g. ${getUserName()}" oninput="state.newEventDraft.hostName=this.value;">
+          </div>
+        `;
+      }
+      if (displayType === 'Housewarming') {
+        return `
+          <div class="detail-section">
+            <div class="sec-head">🏠 Host Details <span style="color:var(--pink-2);">*</span></div>
+            <div class="grid-2">
+              <div class="field"><label>Full Name *</label><input value="${tf.hostFullName || ''}" placeholder="e.g. Rahul & Sneha" oninput="onTypeFieldInput('hostFullName', this.value)"></div>
+              <div class="field"><label>Phone Number *</label><input value="${tf.hostPhone || ''}" placeholder="e.g. +91 98765 43210" oninput="onTypeFieldInput('hostPhone', this.value)"></div>
             </div>
-            <div class="field">
-              <label>Event Type / Category</label>
-              <input id="evType" value="${displayType}" disabled>
+            <div class="field"><label>Address *</label><input value="${tf.hostAddress || ''}" placeholder="e.g. 123, Green Meadows Layout" oninput="onTypeFieldInput('hostAddress', this.value)"></div>
+            <div class="field" style="margin-bottom:0;"><label>Email (Optional)</label><input value="${tf.hostEmail || ''}" placeholder="e.g. name@email.com" oninput="onTypeFieldInput('hostEmail', this.value)"></div>
+          </div>
+        `;
+      }
+      if (displayType === 'Birthday') {
+        const age = computeTurningAge(tf.dob, d.date);
+        return `
+          <div class="detail-section">
+            <div class="sec-head">🎂 Birthday Details <span style="color:var(--pink-2);">*</span></div>
+            <div class="grid-2">
+              <div class="field"><label>Birthday Person Name *</label><input value="${tf.birthdayPerson || ''}" placeholder="e.g. Aarav Kumar" oninput="onTypeFieldInput('birthdayPerson', this.value)"></div>
+              <div class="field"><label>Date of Birth *</label><input type="date" value="${tf.dob || ''}" oninput="onTypeFieldInputRerender('dob', this.value)"></div>
             </div>
             <div class="grid-2">
-              <div class="field"><label>Date *</label><input id="evDate" type="date" min="${todayIso()}" value="${d.date}" oninput="state.newEventDraft.date=this.value;"></div>
-              <div class="field"><label>Time *</label>${easyTimePickerHTML(d.time)}</div>
-            </div>
-            <div class="field suggestion-box">
-              <label>Venue / Location *</label>
-              <div class="field-icon">📍<input id="evVenue" value="${d.venue}" placeholder="e.g. Community Hall, Park, Home" oninput="onVenueInput(this.value)" autocomplete="off"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="useCurrentLocation()" title="Use current location">🎯</button></div>
-              <div class="suggestion-list" id="venueSuggestions"></div>
-            </div>
-            <div class="field">
-              <label>Payment for Gift Collection *</label>
-              <div class="auth-tabs" style="margin-bottom:10px;">
-                <button type="button" class="auth-tab ${state.newEventPayMode !== 'qr' ? 'active' : ''}" onclick="setNewEventPayMode('upi')">Enter UPI ID</button>
-                <button type="button" class="auth-tab ${state.newEventPayMode === 'qr' ? 'active' : ''}" onclick="setNewEventPayMode('qr')">Upload QR Code</button>
+              <div class="field"><label>Turning Age</label><input value="${age !== '' ? 'Turning ' + age + ' Years' : ''}" placeholder="Automatically calculated" disabled></div>
+              <div class="field">
+                <label>Relationship (Optional)</label>
+                <select onchange="onTypeFieldInput('relationship', this.value)">
+                  <option value="">Select</option>
+                  ${['Son', 'Daughter', 'Self', 'Spouse', 'Sibling', 'Friend', 'Other'].map(r => `<option ${tf.relationship === r ? 'selected' : ''}>${r}</option>`).join('')}
+                </select>
               </div>
-              ${state.newEventPayMode === 'qr' ? `
-                <div class="card" style="text-align:center;">
-                  ${d.qrImage ? `<div class="qr-box" style="margin-bottom:8px;"><img src="${d.qrImage}"></div>` : `<p class="sub">Upload your bank/UPI app's QR code image.</p>`}
-                  <input type="file" id="evQrFile" accept="image/*" style="display:none;" onchange="onQrFileChange(event)">
-                  <button type="button" class="secondary" onclick="document.getElementById('evQrFile').click()">🖼️ ${d.qrImage ? 'Change QR Image' : 'Choose QR Image'}</button>
-                </div>
-              ` : `
-                <div class="field-icon">🔗<input id="evUpi" value="${d.upi}" placeholder="e.g. name@upi" oninput="state.newEventDraft.upi=this.value; updateUpiValidIndicator();"><span id="upiValidIcon">${d.upi && isValidUpi(d.upi) ? '✅' : ''}</span></div>
-              `}
-              <p class="sub" style="margin-top:6px;">🛡️ Used only for gift collection — never shared elsewhere.</p>
             </div>
-            <div class="field" style="margin-bottom:0;">
-              <label>Description (optional)</label>
-              <textarea id="evDesc" placeholder="e.g. A night of music, dance & celebration" oninput="state.newEventDraft.desc=this.value;">${d.desc}</textarea>
+            <div class="info-banner" style="background:#fff3e6;color:#a15a12;">💡 <span>Age will be updated automatically if you change the Date of Birth or Event Date.</span></div>
+          </div>
+        `;
+      }
+      if (displayType === 'Baby Shower') {
+        return `
+          <div class="detail-section">
+            <div class="sec-head">🍼 Baby Shower Details <span style="color:var(--pink-2);">*</span></div>
+            <div class="field"><label>Honoree (Mom-to-be) Name *</label><input value="${tf.honoreeName || ''}" placeholder="e.g. Priya Sharma" oninput="onTypeFieldInput('honoreeName', this.value)"></div>
+            <div class="field" style="margin-bottom:0;"><label>Event Name *</label><input value="${d.name}" placeholder="e.g. Priya's Baby Shower" oninput="state.newEventDraft.name=this.value;"></div>
+            <div class="info-banner" style="background:#f3ecfc;color:#6a3fa0;">💜 <span>This information will be used to personalize your invitation.</span></div>
+          </div>
+        `;
+      }
+      if (displayType === 'Reception') {
+        return `
+          ${changeTypeRowHTML('Reception')}
+          <div class="detail-section">
+            <div class="person-cols">
+              ${personColHTML({ prefix: 'groom', label: '👑 Groom Details', bg: '#eef3ff', color: 'var(--blue)', tf, sample: 'Karthik', nameLabel: 'Groom Name', degreeLabel: 'Education (Optional)', occLabel: 'Occupation (Optional)' })}
+              ${personColHTML({ prefix: 'bride', label: '👑 Bride Details', bg: '#fff0f5', color: 'var(--pink-2)', tf, sample: 'Priya', nameLabel: 'Bride Name', degreeLabel: 'Education (Optional)', occLabel: 'Occupation (Optional)' })}
             </div>
           </div>
+        `;
+      }
+      if (displayType === 'Puberty Ceremony') {
+        return `
+          ${changeTypeRowHTML('Puberty Ceremony')}
+          <div class="detail-section">
+            <div class="field"><label>Name of Celebrant *</label><input value="${tf.celebrantName || ''}" placeholder="e.g. Ananya" oninput="onTypeFieldInput('celebrantName', this.value)"></div>
+            <p class="sub" style="margin:-4px 0 12px;">ⓘ Person who is being celebrated in this ceremony.</p>
+            <div style="background:#fff0f5;border-radius:14px;padding:10px;">
+              <div class="sec-head" style="color:var(--pink-2);font-size:12px;margin-bottom:8px;">👨‍👩‍👧 Parent / Guardian Details</div>
+              <div class="field"><label>Father's Name *</label><input value="${tf.fatherName || ''}" placeholder="e.g. Ramesh" oninput="onTypeFieldInput('fatherName', this.value)"></div>
+              <div class="field" style="margin-bottom:0;"><label>Mother's Name *</label><input value="${tf.motherName || ''}" placeholder="e.g. Lakshmi" oninput="onTypeFieldInput('motherName', this.value)"></div>
+            </div>
+          </div>
+        `;
+      }
+      if (displayType === 'Corporate Event') {
+        return `
+          <div class="detail-section">
+            <div class="sec-head">🏢 Event Type / Organization <span style="color:var(--pink-2);">*</span></div>
+            <p class="sub" style="margin-top:-4px;">Select the type of organization hosting this event</p>
+            <div class="org-tile-grid">
+              ${['School', 'College / University', 'Office / Company'].map(o => `
+                <button type="button" class="org-tile ${tf.orgType === o ? 'active' : ''}" onclick="onTypeFieldInputRerender('orgType','${o}')">${o}</button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+      return '';
+    }
+
+    function tailSectionHTML(d, opts) {
+      const o = Object.assign({ title: '📅 Event Details', showName: true, namePlaceholder: '', venueLabel: 'Location', venueRequired: false, showAddFullAddress: false, upiLabel: 'UPI ID *', upiNote: 'This UPI ID will be used to collect contributions.', extraTopFields: '' }, opts);
+      return `
+        <div class="form-stack" style="margin-top:14px;">
+          <div class="strong" style="font-size:13.5px;">${o.title}</div>
+          ${o.showName ? `<div class="field"><label>Event Name *</label><input id="evName" value="${d.name}" placeholder="${o.namePlaceholder}" oninput="state.newEventDraft.name=this.value;"></div>` : ''}
+          ${o.extraTopFields}
+          <div class="grid-2">
+            <div class="field"><label>Date *</label><input id="evDate" type="date" min="${todayIso()}" value="${d.date}" oninput="state.newEventDraft.date=this.value;"></div>
+            <div class="field"><label>Time *</label>${easyTimePickerHTML(d.time)}</div>
+          </div>
+          <div class="field suggestion-box">
+            <label>${o.venueLabel} ${o.venueRequired ? '*' : '(Optional)'}</label>
+            <div class="field-icon">📍<input id="evVenue" value="${d.venue}" placeholder="e.g. Community Hall, Park, Home" oninput="onVenueInput(this.value)" autocomplete="off"><button class="icon-btn" style="width:28px;height:28px;box-shadow:none;font-size:13px;" onclick="useCurrentLocation()" title="Use current location">🎯</button></div>
+            <div class="suggestion-list" id="venueSuggestions"></div>
+            ${o.showAddFullAddress ? `
+              <button type="button" class="add-address-link" onclick="toggleFullAddress()">${d.showFullAddress ? '− Hide' : '+ Add'} Full Address</button>
+              ${d.showFullAddress ? `<div class="field" style="margin-top:8px;margin-bottom:0;"><textarea placeholder="Full address (street, area, city, pincode)" oninput="onTypeFieldInput('fullAddress', this.value)">${d.typeFields.fullAddress || ''}</textarea></div>` : ''}
+            ` : ''}
+          </div>
+          ${paymentBlockHTML(d, o.upiLabel, o.upiNote)}
+        </div>
+      `;
+    }
+
+    function createEventFormScreen() {
+      state.newEventDraft = state.newEventDraft || { name: '', date: '', time: '', venue: '', upi: '', desc: '', cover: '', qrImage: '', hostName: '', showFullAddress: false, typeFields: {} };
+      state.newEventDraft.typeFields = state.newEventDraft.typeFields || {};
+      state.newEventPayMode = state.newEventPayMode || 'upi';
+      const d = state.newEventDraft;
+      const tf = d.typeFields;
+      const isEdit = !!state.editingEventId;
+      const displayType = state.selectedType === 'More' ? 'Custom Event' : state.selectedType;
+      const isMore = isMoreType(displayType);
+      const theme = themeFor(displayType);
+      const titleText = isEdit ? `Edit ${displayType}` : (isMore ? `Create ${displayType}` : 'Create New Event');
+      const subtitleText = isEdit ? 'Update your event details' : (isMore ? `Add details about ${displayType === 'Reception' ? 'the reception' : 'your event'}` : 'Add basic details about your event');
+
+      const tailOpts = { title: '📅 Event Details', showName: true, namePlaceholder: `e.g. ${getUserName()}'s ${displayType}`, venueLabel: 'Location', venueRequired: false, showAddFullAddress: false, upiLabel: 'UPI ID *', upiNote: 'This UPI ID will be used to collect contributions.', extraTopFields: '' };
+      if (displayType === 'Baby Shower') {
+        tailOpts.title = '📅 Event Date & Time';
+        tailOpts.showName = false;
+      }
+      if (isMore) {
+        tailOpts.venueLabel = displayType === 'Religious Event' ? 'Place / Address' : (displayType === 'Custom Event' ? 'Venue / Location' : 'Venue');
+        tailOpts.venueRequired = true;
+        tailOpts.showAddFullAddress = true;
+        tailOpts.upiLabel = displayType === 'Custom Event' ? 'UPI ID for Payments / Contributions *' : 'UPI ID for Gift Collection *';
+        tailOpts.upiNote = displayType === 'Custom Event' ? 'Your UPI ID is safe and will be used only for payment collection.' : 'Your UPI ID is safe and will be used only for gift collection.';
+        if (displayType === 'Custom Event') {
+          tailOpts.extraTopFields = `<div class="field"><label>Event Type / Category (Optional)</label><select onchange="onTypeFieldInput('customCategory', this.value)"><option value="">Select category</option>${['Get Together', 'Celebration', 'Meet-up', 'Festival', 'Reunion', 'Other'].map(c => `<option ${tf.customCategory === c ? 'selected' : ''}>${c}</option>`).join('')}</select></div>`;
+        }
+        if (displayType === 'Religious Event') {
+          tailOpts.extraTopFields = `
+            <div class="field"><label>Type of Religious Place *</label><select onchange="onTypeFieldInput('religiousPlaceType', this.value)"><option value="">Select</option>${['Temple', 'Church', 'Mosque', 'Gurudwara', 'Other'].map(c => `<option ${tf.religiousPlaceType === c ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
+            <div class="field"><label>Temple / Church / Mosque Name *</label><input value="${tf.placeName || ''}" placeholder="Enter name of temple, church or mosque" oninput="onTypeFieldInput('placeName', this.value)"></div>
+          `;
+        }
+        if (displayType === 'Corporate Event') {
+          tailOpts.extraTopFields = `
+            <div class="field"><label>Organization / Institution Name *</label><input value="${tf.orgName || ''}" placeholder="e.g. St. Joseph's College of Engineering" oninput="onTypeFieldInput('orgName', this.value)"></div>
+            <div class="field"><label>Department / Section (Optional)</label><input value="${tf.deptSection || ''}" placeholder="e.g. Computer Science Department" oninput="onTypeFieldInput('deptSection', this.value)"></div>
+          `;
+        }
+      }
+
+      return wrapForm(`
+        <div class="page">
+          <div class="row">
+            <button class="back-link" onclick="nav('${isEdit ? 'event-detail' : 'create-event-type'}')">←</button>
+            <div class="header-title"><h1 style="font-size:19px;color:${isMore ? 'var(--navy)' : theme.color};">${titleText} ${theme.emoji}</h1><p>${subtitleText}</p></div>
+            <button class="icon-btn" onclick="showInfoModal('Event Details', 'Fill in your event details below. Slide the bar at the bottom to finish${isMore ? ', or tap Save Draft to continue later' : ''}.')">?</button>
+          </div>
+          ${isMore ? `<div class="step-badge"><span class="num">1</span><span class="lbl">Event Details</span></div>` : `
+            <div class="create-progress">
+              <div class="seg" style="background:${theme.color};"></div><div class="seg"></div><div class="seg"></div>
+            </div>
+          `}
+          ${coverSectionHTML(d, displayType, theme, isMore)}
+          ${typeDetailsSectionHTML(displayType, d)}
+          ${tailSectionHTML(d, tailOpts)}
           <div style="margin-top:20px;">
             <div class="slide-track" id="slideTrack">
-              <div class="slide-fill" id="slideFill"></div>
-              <span class="slide-label">→ Slide to ${state.editingEventId ? 'save changes' : 'create an event'}</span>
-              <div class="slide-handle" id="slideHandle">→</div>
+              <div class="slide-fill" id="slideFill" style="background:${theme.grad};"></div>
+              <span class="slide-label">→ Slide to ${isEdit ? 'save changes' : (isMore ? 'create an event' : 'Create Event')}</span>
+              <div class="slide-handle" id="slideHandle" style="color:${theme.color};">→</div>
             </div>
+            ${isMore ? `<button type="button" class="secondary save-draft-btn" onclick="saveEventDraft()">🔖 Save Draft</button>` : ''}
           </div>
         </div>
       `);
@@ -1564,11 +1873,7 @@
       const file = evt.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = () => {
-        state.newEventDraft.cover = reader.result;
-        document.getElementById('coverPreviewWrap').innerHTML = `<img src="${reader.result}" class="cover-preview-img">`;
-        document.querySelector('.card .secondary').textContent = '🖼️ Change Image';
-      };
+      reader.onload = () => { state.newEventDraft.cover = reader.result; render(); };
       reader.readAsDataURL(file);
     }
     function onVenueInput(val) {
@@ -1646,29 +1951,70 @@
 
     function createNewEvent() {
       const d = state.newEventDraft;
+      const tf = d.typeFields;
       const isEdit = !!state.editingEventId;
       const displayType = state.selectedType === 'More' ? 'Custom Event' : state.selectedType;
-      if (!d.cover) { showToast('Please add a cover image to continue'); return false; }
+      const isMore = isMoreType(displayType);
       if (!d.date) { showToast('Please select an event date'); return false; }
       if (!isEdit && d.date < todayIso()) { showToast('Event date cannot be in the past'); return false; }
-      if (!d.venue.trim()) { showToast('Please enter a venue or location'); return false; }
+      if (isMore && !d.venue.trim()) { showToast('Please enter a venue'); return false; }
       if (state.newEventPayMode === 'qr') {
         if (!d.qrImage) { showToast('Please upload your UPI QR code image'); return false; }
       } else if (!isValidUpi(d.upi)) {
         showToast('Enter a valid UPI ID (e.g. name@bank)'); return false;
       }
+      if ((displayType === 'Wedding' || displayType === 'Engagement' || displayType === 'Reception') && (!(tf.groomName || '').trim() || !(tf.brideName || '').trim())) {
+        showToast('Please enter both Groom and Bride names'); return false;
+      }
+      if (displayType === 'Housewarming' && (!(tf.hostFullName || '').trim() || !(tf.hostPhone || '').trim() || !(tf.hostAddress || '').trim())) {
+        showToast('Please fill in the Host Details'); return false;
+      }
+      if (displayType === 'Birthday' && (!(tf.birthdayPerson || '').trim() || !tf.dob)) {
+        showToast('Please fill in the Birthday Details'); return false;
+      }
+      if (displayType === 'Baby Shower' && !(tf.honoreeName || '').trim()) {
+        showToast('Please enter the Honoree (Mom-to-be) Name'); return false;
+      }
+      if (displayType === 'Puberty Ceremony' && (!(tf.celebrantName || '').trim() || !(tf.fatherName || '').trim() || !(tf.motherName || '').trim())) {
+        showToast('Please fill in the celebrant and parent/guardian details'); return false;
+      }
+      if (displayType === 'Religious Event' && (!(tf.religiousPlaceType || '').trim() || !(tf.placeName || '').trim())) {
+        showToast('Please fill in the religious place details'); return false;
+      }
+      if (displayType === 'Corporate Event' && (!(tf.orgType || '').trim() || !(tf.orgName || '').trim())) {
+        showToast('Please fill in the organization details'); return false;
+      }
 
-      const name = d.name.trim() || `${getUserName()}'s ${displayType}`;
-      const host = (d.hostName || '').trim() || getUserName();
+      const autoName = () => {
+        if (displayType === 'Wedding' || displayType === 'Engagement' || displayType === 'Reception') {
+          const both = [tf.groomName, tf.brideName].filter(Boolean).join(' & ');
+          return both ? `${both} ${displayType}` : `${getUserName()}'s ${displayType}`;
+        }
+        if (displayType === 'Birthday') return tf.birthdayPerson ? `${tf.birthdayPerson}'s Birthday` : `${getUserName()}'s Birthday`;
+        if (displayType === 'Housewarming') return tf.hostFullName ? `${tf.hostFullName} Housewarming` : `${getUserName()}'s Housewarming`;
+        return `${getUserName()}'s ${displayType}`;
+      };
+      const autoHost = () => {
+        if (displayType === 'Wedding' || displayType === 'Engagement' || displayType === 'Reception') {
+          return [tf.groomName, tf.brideName].filter(Boolean).join(' & ') || getUserName();
+        }
+        if (displayType === 'Housewarming') return tf.hostFullName || getUserName();
+        if (displayType === 'Corporate Event') return tf.orgName || getUserName();
+        return getUserName();
+      };
+
+      const name = d.name.trim() || autoName();
+      const host = autoHost();
       const upi = state.newEventPayMode === 'qr' ? '' : d.upi.trim();
       const qrImage = state.newEventPayMode === 'qr' ? d.qrImage : '';
       const date = new Date(d.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
       const time = d.time || 'Time TBD';
       const venue = d.venue.trim();
+      const typeFields = Object.assign({}, tf);
 
       if (isEdit) {
         const ev = state.events.find(e => e.id === state.editingEventId);
-        Object.assign(ev, { name, type: displayType, upi, qrImage, description: d.desc, cover: d.cover, date, time, venue, host });
+        Object.assign(ev, { name, type: displayType, upi, qrImage, description: d.desc, cover: d.cover, date, time, venue, host, typeFields });
         persist();
         resetNewEventDraft();
         state.editingEventId = null;
@@ -1682,7 +2028,7 @@
       const ev = {
         id: state.nextEventId++,
         name, type: displayType, code: genCode(meta.prefix), upi, qrImage,
-        description: d.desc, cover: d.cover, date, time, venue,
+        description: d.desc, cover: d.cover, date, time, venue, typeFields,
         host, trustScore: 85, familyVerified: 1, targetAmount: 0, records: []
       };
       state.events.unshift(ev);
@@ -2881,6 +3227,7 @@
       state.rmDraft = state.rmDraft || { title: '', date: '', note: '' };
       return wrapWithNav(`
         <div class="page">
+          <button class="back-link" onclick="nav('profile')">←</button>
           <h1 style="font-size:24px;color:var(--navy);">Reminders</h1>
           <p class="sub">Never forget to reciprocate a gift.</p>
           <div class="form-stack card" style="margin-top:16px;">
